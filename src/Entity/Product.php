@@ -28,8 +28,9 @@ class Product
     #[ORM\Column]
     private ?int $quantity = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $size = null;
+    #[ORM\ManyToOne(targetEntity: Size::class, inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Size $size = null;
 
     #[ORM\Column(length: 50)]
     private ?string $color = null;
@@ -68,8 +69,11 @@ class Product
     public function getQuantity(): ?int { return $this->quantity; }
     public function setQuantity(int $quantity): self { $this->quantity = $quantity; return $this; }
     
-    public function getSize(): ?string { return $this->size; }
-    public function setSize(string $size): self { $this->size = $size; return $this; }
+    public function getSize(): ?Size { return $this->size; }
+    public function setSize(?Size $size): self { 
+        $this->size = $size;
+        return $this;
+    }
     
     public function getColor(): ?string { return $this->color; }
     public function setColor(string $color): self { $this->color = $color; return $this; }

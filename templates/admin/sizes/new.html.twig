@@ -1,0 +1,169 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Taille - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i> Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_categories') }}">
+                            <i class="fas fa-tags"></i> Catégories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_sizes') }}">
+                            <i class="fas fa-ruler"></i> Tailles
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i> Commandes
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Nouvelle Taille</h1>
+                <a href="{{ path('admin_sizes') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            {{ form_start(form) }}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.name, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Nom de la taille *'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.code, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Code *'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.type, {
+                                        'attr': {'class': 'form-select'},
+                                        'label': 'Type de taille *'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.position, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Position'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                {{ form_widget(form.isActive, {
+                                    'attr': {'class': 'form-check-input'}
+                                }) }}
+                                {{ form_label(form.isActive, 'Taille active', {
+                                    'label_attr': {'class': 'form-check-label'}
+                                }) }}
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Créer la taille
+                                </button>
+                                <a href="{{ path('admin_sizes') }}" class="btn btn-outline-secondary">
+                                    Annuler
+                                </a>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Conseils</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted">
+                                <strong>Nom :</strong> Nom complet de la taille (ex: "Small", "Medium", "38", "40").
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Code :</strong> Code court pour l'affichage (ex: "S", "M", "38", "40").
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Type :</strong> Définit le type de produit associé.
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Position :</strong> Détermine l'ordre d'affichage.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Tailles standards -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Tailles standards</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Vêtements :</h6>
+                            <div class="d-flex flex-wrap gap-1 mb-3">
+                                <span class="badge bg-light text-dark">XS</span>
+                                <span class="badge bg-light text-dark">S</span>
+                                <span class="badge bg-light text-dark">M</span>
+                                <span class="badge bg-light text-dark">L</span>
+                                <span class="badge bg-light text-dark">XL</span>
+                                <span class="badge bg-light text-dark">XXL</span>
+                            </div>
+                            
+                            <h6>Chaussures :</h6>
+                            <div class="d-flex flex-wrap gap-1 mb-3">
+                                <span class="badge bg-light text-dark">36</span>
+                                <span class="badge bg-light text-dark">37</span>
+                                <span class="badge bg-light text-dark">38</span>
+                                <span class="badge bg-light text-dark">39</span>
+                                <span class="badge bg-light text-dark">40</span>
+                                <span class="badge bg-light text-dark">41</span>
+                            </div>
+                            
+                            <h6>Accessoires :</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span class="badge bg-light text-dark">Unique</span>
+                                <span class="badge bg-light text-dark">Standard</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

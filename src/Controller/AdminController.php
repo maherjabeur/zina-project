@@ -9,6 +9,7 @@ use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,12 +33,32 @@ class AdminController extends AbstractController
     }
 
     #[Route('/products', name: 'admin_products')]
-    public function products(ProductRepository $productRepository): Response
+    public function products(Request $request, ProductRepository $productRepository, PaginatorInterface $paginator): Response
     {
-        $products = $productRepository->findAll();
+        $page = $request->query->getInt('page', 1);
+        $search = $request->query->get('search');
+        
+        // Créer la requête de base
+        $queryBuilder = $productRepository->createQueryBuilder('p')
+            ->orderBy('p.createdAt', 'DESC');
+
+        // Ajouter la recherche si spécifiée
+        if ($search) {
+            $queryBuilder
+                ->andWhere('p.name LIKE :search OR p.description LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Paginer les résultats
+        $products = $paginator->paginate(
+            $queryBuilder,
+            $page,
+            5 // limite par page
+        );
 
         return $this->render('admin/products/index.html.twig', [
             'products' => $products,
+            'search' => $search,
         ]);
     }
 
@@ -65,12 +86,41 @@ class AdminController extends AbstractController
     }
 
     #[Route('/orders', name: 'admin_orders')]
-    public function orders(OrderRepository $orderRepository): Response
+    public function orders(Request $request, OrderRepository $orderRepository, PaginatorInterface $paginator): Response
     {
-        $orders = $orderRepository->findBy([], ['createdAt' => 'DESC']);
-
+        $page = $request->query->getInt('page', 1);
+        $status = $request->query->get('status');
+        $search = $request->query->get('search');
+        
+        // Créer la requête de base
+        $queryBuilder = $orderRepository->createQueryBuilder('o')
+            ->orderBy('o.createdAt', 'DESC');
+    
+        // Filtre par statut
+        if ($status) {
+            $queryBuilder
+                ->andWhere('o.status = :status')
+                ->setParameter('status', $status);
+        }
+    
+        // Recherche
+        if ($search) {
+            $queryBuilder
+                ->andWhere('o.orderNumber LIKE :search OR o.customerName LIKE :search OR o.customerEmail LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+    
+        // Paginer les résultats
+        $orders = $paginator->paginate(
+            $queryBuilder,
+            $page,
+            10 // limite par page
+        );
+    
         return $this->render('admin/orders/index.html.twig', [
             'orders' => $orders,
+            'current_status' => $status,
+            'search' => $search,
         ]);
     }
 

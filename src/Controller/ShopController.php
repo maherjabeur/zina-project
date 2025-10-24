@@ -12,13 +12,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\SizeRepository;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ShopController extends AbstractController
 {
     #[Route('/', name: 'home')]
     public function index(ProductRepository $productRepository, SliderImageRepository $sliderImageRepository): Response
     {
-        $featuredProducts = $productRepository->findBy(['isActive' => true], ['createdAt' => 'DESC'], 8);
+        $featuredProducts = $productRepository->findFeaturedHome(8);
         $sliderImages = $sliderImageRepository->findActiveSlides();
 
         return $this->render('shop/index.html.twig', [
@@ -28,24 +30,36 @@ class ShopController extends AbstractController
     }
 
     #[Route('/products', name: 'products')]
-    public function products(Request $request, ProductRepository $productRepository, CategoryRepository $categoryRepository): Response
-    {
+    public function products(
+        Request $request,
+        ProductRepository $productRepository,
+        CategoryRepository $categoryRepository,
+        SizeRepository $sizeRepository,
+        PaginatorInterface $paginator
+    ): Response {
         $categorySlug = $request->query->get('category');
-        $size = $request->query->get('size');
-
-        if ($categorySlug) {
-            $products = $productRepository->findByCategorySlug($categorySlug);
-        } else {
-            $products = $productRepository->findByFilters($categorySlug, $size);
-        }
-
+        $sizeCode = $request->query->get('size');
+        $page = $request->query->getInt('page', 1);
+        
+        // Créer la requête de base
+        $query = $productRepository->findPaginated($page, 12, $categorySlug, $sizeCode);
+        
+        // Paginer les résultats
+        $products = $paginator->paginate(
+            $query,
+            $page,
+            12 // limite par page
+        );
+        
         $categories = $categoryRepository->findActiveCategories();
-
+        $sizes = $sizeRepository->findActiveSizes();
+        
         return $this->render('shop/products.html.twig', [
             'products' => $products,
             'categories' => $categories,
+            'sizes' => $sizes,
             'currentCategory' => $categorySlug,
-            'currentSize' => $size,
+            'currentSize' => $sizeCode,
         ]);
     }
 

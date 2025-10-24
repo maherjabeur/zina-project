@@ -13,7 +13,22 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-
+    public function findFeaturedHome(int $maxResults = 8): array
+    {
+        return $qb = $this->createQueryBuilder('p')
+            ->join('p.category', 'c')
+            ->join('p.size', 's')
+            ->where('p.isActive = :active')
+            ->andWhere('c.isActive = :categoryActive')
+            ->andWhere('s.isActive = :sizeActive')
+            ->setParameter('active', true)
+            ->setParameter('categoryActive', true)
+            ->setParameter('sizeActive', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult();
+    }
 
     /**
      * Trouve les produits par catégorie
@@ -58,28 +73,7 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByFilters(?string $categorySlug = null, ?string $size = null): array
-    {
-        $qb = $this->createQueryBuilder('p')
-            ->join('p.category', 'c')
-            ->where('p.isActive = :active')
-            ->andWhere('c.isActive = :categoryActive')
-            ->setParameter('active', true)
-            ->setParameter('categoryActive', true)
-            ->orderBy('p.createdAt', 'DESC');
 
-        if ($categorySlug) {
-            $qb->andWhere('c.slug = :categorySlug')
-                ->setParameter('categorySlug', $categorySlug);
-        }
-
-        if ($size) {
-            $qb->andWhere('p.size = :size')
-                ->setParameter('size', $size);
-        }
-
-        return $qb->getQuery()->getResult();
-    }
     // Ajoutez cette méthode pour la recherche
     public function search(string $query, ?string $categorySlug = null): array
     {
@@ -98,12 +92,12 @@ class ProductRepository extends ServiceEntityRepository
                 $qb->expr()->like('LOWER(p.color)', 'LOWER(:query)')
             )
         )
-        ->setParameter('query', '%' . $query . '%');
+            ->setParameter('query', '%' . $query . '%');
 
         // Filtre par catégorie si spécifié
         if ($categorySlug) {
             $qb->andWhere('c.slug = :categorySlug')
-               ->setParameter('categorySlug', $categorySlug);
+                ->setParameter('categorySlug', $categorySlug);
         }
 
         return $qb
@@ -125,5 +119,82 @@ class ProductRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+    public function findBySize(string $sizeCode): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.size', 's')
+            ->where('s.code = :sizeCode')
+            ->andWhere('p.isActive = :active')
+            ->andWhere('s.isActive = :sizeActive')
+            ->setParameter('sizeCode', $sizeCode)
+            ->setParameter('active', true)
+            ->setParameter('sizeActive', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByFilters(?string $categorySlug = null, ?string $sizeCode = null): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->join('p.category', 'c')
+            ->join('p.size', 's')
+            ->where('p.isActive = :active')
+            ->andWhere('c.isActive = :categoryActive')
+            ->andWhere('s.isActive = :sizeActive')
+            ->setParameter('active', true)
+            ->setParameter('categoryActive', true)
+            ->setParameter('sizeActive', true)
+            ->orderBy('p.createdAt', 'DESC');
+
+        if ($categorySlug) {
+            $qb->andWhere('c.slug = :categorySlug')
+                ->setParameter('categorySlug', $categorySlug);
+        }
+
+        if ($sizeCode) {
+            $qb->andWhere('s.code = :sizeCode')
+                ->setParameter('sizeCode', $sizeCode);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+    // Méthode pour la pagination
+    public function findPaginated(int $page = 1, int $limit = 12, ?string $categorySlug = null, ?string $sizeCode = null)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->join('p.category', 'c')
+            ->join('p.size', 's')
+            ->where('p.isActive = :active')
+            ->andWhere('c.isActive = :categoryActive')
+            ->andWhere('s.isActive = :sizeActive')
+            ->setParameter('active', true)
+            ->setParameter('categoryActive', true)
+            ->setParameter('sizeActive', true)
+            ->orderBy('p.createdAt', 'DESC');
+
+        if ($categorySlug) {
+            $qb->andWhere('c.slug = :categorySlug')
+               ->setParameter('categorySlug', $categorySlug);
+        }
+
+        if ($sizeCode) {
+            $qb->andWhere('s.code = :sizeCode')
+               ->setParameter('sizeCode', $sizeCode);
+        }
+
+        return $qb;
+    }
+
+    // Méthode pour compter les produits (utile pour les statistiques)
+    public function countActiveProducts(): int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->where('p.isActive = :active')
+            ->setParameter('active', true)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

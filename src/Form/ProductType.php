@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Product;
 use App\Entity\Category;
+use App\Entity\Size;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -43,9 +44,12 @@ class ProductType extends AbstractType
                 'attr' => ['class' => 'form-select'],
                 'placeholder' => 'Choisir une catégorie...'
             ])
-            ->add('size', TextType::class, [
+            ->add('size', EntityType::class, [
                 'label' => 'Taille *',
-                'attr' => ['class' => 'form-control']
+                'class' => Size::class,
+                'choice_label' => 'name',
+                'attr' => ['class' => 'form-select'],
+                'placeholder' => 'Choisir une taille...'
             ])
             ->add('color', TextType::class, [
                 'label' => 'Couleur *',

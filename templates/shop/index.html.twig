@@ -3,8 +3,6 @@
 {% block body %}
     <!-- Hero Slider -->
     <div class="hero-slider">
-        <!-- Hero Slider Dynamique -->
-    <div class="hero-slider">
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 {% for slide in slider_images %}
@@ -55,85 +53,122 @@
     <section class="container my-5">
         <h2 class="text-center mb-4">Produits en Vedette</h2>
         <div class="row">
-            {% for product in featuredProducts %}
-                <div class="col-md-3 mb-4">
-                    <div class="card product-card h-100">
-                        {% if product.images|length > 0 %}
-                            <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" 
-                                 class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
-                        {% else %}
-                            <img src="{{ asset('images/placeholder.jpg') }}" 
-                                 class="card-img-top" alt="Image non disponible" style="height: 250px; object-fit: cover;">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text">{{ product.price }} Dt</p>
-                            <p class="card-text">
-                                <small class="text-muted">Taille: {{ product.size }}</small><br>
-                                <small class="text-muted">Couleur: {{ product.color }}</small>
-                            </p>
-                            <a href="{{ path('product_detail', {'id': product.id}) }}" class="btn btn-primary">Voir détails</a>
+            {% if featuredProducts is defined and featuredProducts|length > 0 %}
+                {% for product in featuredProducts %}
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card product-card h-100">
+                            {% if product.images|length > 0 %}
+                                <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" 
+                                     class="card-img-top" alt="{{ product.name }}" 
+                                     style="height: 250px; object-fit: cover;">
+                            {% else %}
+                                <img src="{{ asset('images/placeholder.jpg') }}" 
+                                     class="card-img-top" alt="Image non disponible" 
+                                     style="height: 250px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-muted small flex-grow-1">
+                                    {{ product.description|length > 80 ? product.description|slice(0, 80) ~ '...' : product.description }}
+                                </p>
+                                <div class="mt-auto">
+                                    <p class="h5 text-primary mb-2">{{ product.price }} Dt</p>
+                                    <p class="card-text small mb-2">
+                                        <span class="badge bg-light text-dark">
+                                            Taille: {{ product.size.name ?? product.size }}
+                                        </span><br>
+                                        <span class="badge bg-light text-dark">
+                                            Couleur: {{ product.color }}
+                                        </span>
+                                    </p>
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ path('product_detail', {'id': product.id}) }}" 
+                                           class="btn btn-outline-primary">Voir détails</a>
+                                        {% if product.quantity > 0 %}
+                                            <form action="{{ path('cart_add', {'id': product.id}) }}" method="POST" class="d-inline">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-shopping-cart"></i> Ajouter
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <button class="btn btn-secondary w-100" disabled>
+                                                Rupture de stock
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-tshirt fa-3x text-muted mb-3"></i>
+                    <h4>Aucun produit en vedette</h4>
+                    <p class="text-muted">Découvrez tous nos produits disponibles.</p>
+                    <a href="{{ path('products') }}" class="btn btn-primary">
+                        <i class="fas fa-bag-shopping me-2"></i>Voir tous les produits
+                    </a>
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </section>
+
     <!-- Section Contact -->
-<section class="bg-light py-5 mt-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <h2 class="mb-4">Une question ? Contactez-nous !</h2>
-                <p class="lead mb-4">
-                    Notre équipe est à votre écoute pour répondre à toutes vos questions 
-                    et vous accompagner dans vos achats.
-                </p>
-                <div class="row">
-                    <div class="col-sm-6 mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-phone text-primary me-3 fa-lg"></i>
-                            <div>
-                                <h6 class="mb-1">Téléphone</h6>
-                                <p class="mb-0">01 23 45 67 89</p>
+    <section class="bg-light py-5 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="mb-4">Une question ? Contactez-nous !</h2>
+                    <p class="lead mb-4">
+                        Notre équipe est à votre écoute pour répondre à toutes vos questions 
+                        et vous accompagner dans vos achats.
+                    </p>
+                    <div class="row">
+                        <div class="col-sm-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-phone text-primary me-3 fa-lg"></i>
+                                <div>
+                                    <h6 class="mb-1">Téléphone</h6>
+                                    <p class="mb-0">01 23 45 67 89</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-envelope text-primary me-3 fa-lg"></i>
+                                <div>
+                                    <h6 class="mb-1">Email</h6>
+                                    <p class="mb-0">contact@boutique-femme.com</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6 mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-envelope text-primary me-3 fa-lg"></i>
-                            <div>
-                                <h6 class="mb-1">Email</h6>
-                                <p class="mb-0">contact@boutique-femme.com</p>
-                            </div>
-                        </div>
-                    </div>
+                    <a href="{{ path('contact') }}" class="btn btn-primary btn-lg mt-3">
+                        <i class="fas fa-paper-plane me-2"></i>Nous contacter
+                    </a>
                 </div>
-                <a href="{{ path('contact') }}" class="btn btn-primary btn-lg mt-3">
-                    <i class="fas fa-paper-plane me-2"></i>Nous contacter
-                </a>
-            </div>
-            <div class="col-lg-6">
-                <div class="card shadow">
-                    <div class="card-body p-4">
-                        <h5 class="card-title mb-4">Envoyez-nous un message</h5>
-                        <form action="{{ path('contact') }}" method="GET">
-                            <div class="mb-3">
-                                <input type="text" class="form-control" placeholder="Votre nom" required>
-                            </div>
-                            <div class="mb-3">
-                                <input type="email" class="form-control" placeholder="Votre email" required>
-                            </div>
-                            <div class="mb-3">
-                                <textarea class="form-control" rows="3" placeholder="Votre message" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Envoyer le message</button>
-                        </form>
+                <div class="col-lg-6">
+                    <div class="card shadow">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-4">Envoyez-nous un message</h5>
+                            <form action="{{ path('contact') }}" method="GET">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Votre nom" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" placeholder="Votre email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" rows="3" placeholder="Votre message" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Envoyer le message</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
+    </section>
 {% endblock %}

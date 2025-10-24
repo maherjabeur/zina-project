@@ -1,72 +1,99 @@
+
 {% extends 'base.html.twig' %}
 
-{% block title %}Nos Produits - Boutique Femme{% endblock %}
+{% block title %}
+    {% if currentCategory %}
+        {{ categories|filter(c => c.slug == currentCategory)|first.name }} - Boutique
+    {% else %}
+        Nos Produits - Boutique Femme
+    {% endif %}
+{% endblock %}
 
 {% block body %}
 <div class="container my-5">
     <div class="row">
         <!-- Sidebar avec filtres -->
         <div class="col-md-3">
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Filtres</h5>
                 </div>
                 <div class="card-body">
-                    <form method="get" action="{{ path('products') }}">
-                        <!-- Filtre par catégorie -->
-                     <div class="mb-3">
-    <label class="form-label">Catégories</label>
-    <div class="list-group">
-        <a href="{{ path('products') }}" 
-           class="list-group-item list-group-item-action {{ not currentCategory ? 'active' : '' }}">
-            Toutes les catégories
-        </a>
-        {% for category in categories %}
-            <a href="{{ path('products', {'category': category.slug}) }}" 
-               class="list-group-item list-group-item-action d-flex align-items-center {{ currentCategory == category.slug ? 'active' : '' }}">
-                {% if category.icon %}
-                    <i class="{{ category.icon }} me-2" style="color: {{ category.color ?? '#6c757d' }}"></i>
-                {% endif %}
-                {{ category.name }}
-                <span class="badge bg-primary rounded-pill ms-auto">{{ category.products|length }}</span>
-            </a>
-        {% endfor %}
-    </div>
-</div>
-
-                        <!-- Filtre par taille -->
-                        <div class="mb-3">
-                            <label class="form-label">Taille</label>
-                            <select name="size" class="form-select" onchange="this.form.submit()">
-                                <option value="">Toutes les tailles</option>
-                                <option value="XS" {{ app.request.get('size') == 'XS' ? 'selected' : '' }}>XS</option>
-                                <option value="S" {{ app.request.get('size') == 'S' ? 'selected' : '' }}>S</option>
-                                <option value="M" {{ app.request.get('size') == 'M' ? 'selected' : '' }}>M</option>
-                                <option value="L" {{ app.request.get('size') == 'L' ? 'selected' : '' }}>L</option>
-                                <option value="XL" {{ app.request.get('size') == 'XL' ? 'selected' : '' }}>XL</option>
-                                <option value="36" {{ app.request.get('size') == '36' ? 'selected' : '' }}>36</option>
-                                <option value="38" {{ app.request.get('size') == '38' ? 'selected' : '' }}>38</option>
-                                <option value="40" {{ app.request.get('size') == '40' ? 'selected' : '' }}>40</option>
-                                <option value="42" {{ app.request.get('size') == '42' ? 'selected' : '' }}>42</option>
-                            </select>
+                    <!-- Filtre par catégorie -->
+                    <div class="mb-4">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Catégories</h6>
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('products', {'size': currentSize}) }}" 
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ not currentCategory ? 'active' : '' }}">
+                                Toutes les catégories
+                                <span class="badge bg-primary rounded-pill">{{ products.getTotalItemCount }}</span>
+                            </a>
+                            {% for category in categories %}
+                                <a href="{{ path('products', {'category': category.slug, 'size': currentSize}) }}" 
+                                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ currentCategory == category.slug ? 'active' : '' }}">
+                                    {% if category.icon %}
+                                        <i class="{{ category.icon }} me-2" style="color: {{ category.color ?? '#6c757d' }}"></i>
+                                    {% endif %}
+                                    {{ category.name }}
+                                    <span class="badge bg-primary rounded-pill">{{ category.products|length }}</span>
+                                </a>
+                            {% endfor %}
                         </div>
+                    </div>
 
-                        <!-- Bouton reset -->
-                        <div class="d-grid">
-                            <a href="{{ path('products') }}" class="btn btn-outline-secondary">Réinitialiser</a>
+                    <!-- Filtre par taille -->
+                    <div class="mb-3">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Tailles</h6>
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('products', {'category': currentCategory}) }}" 
+                               class="list-group-item list-group-item-action {{ not currentSize ? 'active' : '' }}">
+                                Toutes les tailles
+                            </a>
+                            {% for size in sizes %}
+                                <a href="{{ path('products', {'category': currentCategory, 'size': size.code}) }}" 
+                                   class="list-group-item list-group-item-action {{ currentSize == size.code ? 'active' : '' }}">
+                                    {{ size.name }}
+                                </a>
+                            {% endfor %}
                         </div>
-                    </form>
+                    </div>
+
+                    <!-- Statistiques -->
+                    <div class="mt-4 pt-3 border-top">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            {{ products.getTotalItemCount }} produit(s) trouvé(s)
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Liste des produits -->
         <div class="col-md-9">
+            <!-- En-tête -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>Nos Produits</h1>
-                <span class="text-muted">{{ products|length }} produit(s) trouvé(s)</span>
+                <div>
+                    <h1 class="h3 mb-1">
+                        {% if currentCategory %}
+                            {{ categories|filter(c => c.slug == currentCategory)|first.name }}
+                        {% else %}
+                            Tous nos produits
+                        {% endif %}
+                    </h1>
+                    <p class="text-muted mb-0">
+                        {{ products.getTotalItemCount }} produit(s) 
+                        {% if currentCategory or currentSize %}correspondant à vos critères{% endif %}
+                    </p>
+                </div>
+                <div class="d-none d-md-block">
+                    <small class="text-muted">
+                        Page {{ products.getCurrentPageNumber }} sur {{ products.getPageCount }}
+                    </small>
+                </div>
             </div>
 
+            <!-- Produits -->
             {% if products|length > 0 %}
                 <div class="row">
                     {% for product in products %}
@@ -75,22 +102,25 @@
                                 {% if product.images|length > 0 %}
                                     <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" 
                                          class="card-img-top" alt="{{ product.name }}" 
-                                         style="height: 300px; object-fit: cover;">
+                                         style="height: 250px; object-fit: cover;">
                                 {% else %}
                                     <img src="{{ asset('images/placeholder.jpg') }}" 
                                          class="card-img-top" alt="Image non disponible" 
-                                         style="height: 300px; object-fit: cover;">
+                                         style="height: 250px; object-fit: cover;">
                                 {% endif %}
                                 
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title">{{ product.name }}</h5>
-                                    <p class="card-text text-muted small">{{ product.description|length > 100 ? product.description|slice(0, 100) ~ '...' : product.description }}</p>
+                                    <p class="card-text text-muted small flex-grow-1">
+                                        {{ product.description|length > 100 ? product.description|slice(0, 100) ~ '...' : product.description }}
+                                    </p>
                                     
                                     <div class="mt-auto">
                                         <p class="h5 text-primary mb-2">{{ product.price }} Dt</p>
                                         <p class="card-text small mb-2">
-                                            <span class="badge bg-light text-dark">{{ product.size }}</span>
+                                            <span class="badge bg-light text-dark">{{ product.size.name }}</span>
                                             <span class="badge bg-light text-dark">{{ product.color }}</span>
+                                            <span class="badge bg-info">{{ product.category.name }}</span>
                                         </p>
                                         
                                         <div class="d-grid gap-2">
@@ -115,12 +145,19 @@
                         </div>
                     {% endfor %}
                 </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-5">
+                    {{ knp_pagination_render(products, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig') }}
+                </div>
             {% else %}
                 <div class="text-center py-5">
                     <i class="fas fa-search fa-3x text-muted mb-3"></i>
                     <h3>Aucun produit trouvé</h3>
-                    <p class="text-muted">Essayez de modifier vos critères de recherche.</p>
-                    <a href="{{ path('products') }}" class="btn btn-primary">Voir tous les produits</a>
+                    <p class="text-muted mb-4">Essayez de modifier vos critères de recherche.</p>
+                    <a href="{{ path('products') }}" class="btn btn-primary">
+                        <i class="fas fa-bag-shopping me-2"></i> Voir tous les produits
+                    </a>
                 </div>
             {% endif %}
         </div>

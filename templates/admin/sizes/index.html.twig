@@ -1,7 +1,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion des Catégories - Admin{% endblock %}
+{% block title %}Gestion des Tailles - Admin{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
@@ -10,7 +10,9 @@
         <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
-                    <li class="nav-item">
+                  
+                    
+                       <li class="nav-item">
                         <a class="nav-link" href="{{ path('admin_dashboard') }}">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
@@ -20,13 +22,13 @@
                             <i class="fas fa-tshirt"></i> Produits
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_sizes') }}">
+                    <li class="nav-item ">
+                        <a class="nav-link active" href="{{ path('admin_sizes') }}">
                             <i class="fas fa-ruler"></i> Tailles
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ path('admin_categories') }}">
+                        <a class="nav-link " href="{{ path('admin_categories') }}">
                             <i class="fas fa-tags"></i> Catégories
                         </a>
                     </li>
@@ -52,9 +54,9 @@
         <!-- Main content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestion des Catégories</h1>
-                <a href="{{ path('admin_category_new') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Nouvelle catégorie
+                <h1 class="h2">Gestion des Tailles</h1>
+                <a href="{{ path('admin_size_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nouvelle taille
                 </a>
             </div>
 
@@ -63,8 +65,8 @@
                 <div class="col-md-3">
                     <div class="card text-white bg-primary">
                         <div class="card-body">
-                            <h6 class="card-title">Total catégories</h6>
-                            <h4 class="card-text">{{ categories|length }}</h4>
+                            <h6 class="card-title">Total tailles</h6>
+                            <h4 class="card-text">{{ sizes|length }}</h4>
                         </div>
                     </div>
                 </div>
@@ -72,7 +74,7 @@
                     <div class="card text-white bg-success">
                         <div class="card-body">
                             <h6 class="card-title">Actives</h6>
-                            <h4 class="card-text">{{ categories|filter(c => c[0].isActive)|length }}</h4>
+                            <h4 class="card-text">{{ sizes|filter(s => s[0].isActive)|length }}</h4>
                         </div>
                     </div>
                 </div>
@@ -80,24 +82,44 @@
                     <div class="card text-white bg-info">
                         <div class="card-body">
                             <h6 class="card-title">Total produits</h6>
-                            <h4 class="card-text">{{ categories|reduce((total, c) => total + c.productCount, 0) }}</h4>
+                            <h4 class="card-text">{{ sizes|reduce((total, s) => total + s.productCount, 0) }}</h4>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Liste des catégories -->
+            <!-- Filtres par type -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="btn-group" role="group">
+                        <a href="{{ path('admin_sizes') }}" class="btn btn-outline-primary active">
+                            Toutes
+                        </a>
+                        <a href="{{ path('admin_sizes', {'type': 'clothing'}) }}" class="btn btn-outline-primary">
+                            Vêtements
+                        </a>
+                        <a href="{{ path('admin_sizes', {'type': 'shoes'}) }}" class="btn btn-outline-primary">
+                            Chaussures
+                        </a>
+                        <a href="{{ path('admin_sizes', {'type': 'accessories'}) }}" class="btn btn-outline-primary">
+                            Accessoires
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des tailles -->
             <div class="card">
                 <div class="card-body">
-                    {% if categories|length > 0 %}
+                    {% if sizes|length > 0 %}
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>Nom</th>
-                                        <th>Slug</th>
+                                        <th>Code</th>
+                                        <th>Type</th>
                                         <th>Produits</th>
-                                        <th>Couleur</th>
                                         <th>Position</th>
                                         <th>Statut</th>
                                         <th>Créée le</th>
@@ -105,64 +127,55 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for categoryData in categories %}
-                                        {% set category = categoryData[0] %}
-                                        {% set productCount = categoryData.productCount %}
+                                    {% for sizeData in sizes %}
+                                        {% set size = sizeData[0] %}
+                                        {% set productCount = sizeData.productCount %}
                                         <tr>
                                             <td>
-                                                <div class="d-flex align-items-center">
-                                                    {% if category.icon %}
-                                                        <i class="{{ category.icon }} me-2" style="color: {{ category.color ?? '#6c757d' }}"></i>
-                                                    {% endif %}
-                                                    <strong>{{ category.name }}</strong>
-                                                </div>
-                                                {% if category.description %}
-                                                    <small class="text-muted">{{ category.description|slice(0, 50) }}...</small>
-                                                {% endif %}
+                                                <strong>{{ size.name }}</strong>
                                             </td>
                                             <td>
-                                                <code>{{ category.slug }}</code>
+                                                <code>{{ size.code }}</code>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ 
+                                                    size.type == 'clothing' ? 'primary' : 
+                                                    (size.type == 'shoes' ? 'success' : 'info') 
+                                                }}">
+                                                    {{ size.type }}
+                                                </span>
                                             </td>
                                             <td>
                                                 <span class="badge bg-primary">{{ productCount }}</span>
                                             </td>
                                             <td>
-                                                {% if category.color %}
-                                                    <span class="badge" style="background-color: {{ category.color }}; color: white">
-                                                        {{ category.color }}
-                                                    </span>
-                                                {% else %}
-                                                    <span class="text-muted">-</span>
-                                                {% endif %}
+                                                <span class="badge bg-secondary">{{ size.position }}</span>
                                             </td>
                                             <td>
-                                                <span class="badge bg-secondary">{{ category.position }}</span>
-                                            </td>
-                                            <td>
-                                                {% if category.isActive %}
+                                                {% if size.isActive %}
                                                     <span class="badge bg-success">Active</span>
                                                 {% else %}
                                                     <span class="badge bg-secondary">Inactive</span>
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                <small class="text-muted">{{ category.createdAt|date('d/m/Y') }}</small>
+                                                <small class="text-muted">{{ size.createdAt|date('d/m/Y') }}</small>
                                             </td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="{{ path('admin_category_edit', {'id': category.id}) }}" 
+                                                    <a href="{{ path('admin_size_edit', {'id': size.id}) }}" 
                                                        class="btn btn-outline-secondary" title="Modifier">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <form method="POST" action="{{ path('admin_category_toggle', {'id': category.id}) }}" 
+                                                    <form method="POST" action="{{ path('admin_size_toggle', {'id': size.id}) }}" 
                                                           class="d-inline">
-                                                        <button type="submit" class="btn btn-{{ category.isActive ? 'warning' : 'success' }}" 
-                                                                title="{{ category.isActive ? 'Désactiver' : 'Activer' }}">
-                                                            <i class="fas fa-{{ category.isActive ? 'pause' : 'play' }}"></i>
+                                                        <button type="submit" class="btn btn-{{ size.isActive ? 'warning' : 'success' }}" 
+                                                                title="{{ size.isActive ? 'Désactiver' : 'Activer' }}">
+                                                            <i class="fas fa-{{ size.isActive ? 'pause' : 'play' }}"></i>
                                                         </button>
                                                     </form>
-                                                    <form method="POST" action="{{ path('admin_category_delete', {'id': category.id}) }}" 
-                                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')"
+                                                    <form method="POST" action="{{ path('admin_size_delete', {'id': size.id}) }}" 
+                                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette taille ?')"
                                                           class="d-inline">
                                                         <button type="submit" class="btn btn-outline-danger" title="Supprimer">
                                                             <i class="fas fa-trash"></i>
@@ -177,11 +190,11 @@
                         </div>
                     {% else %}
                         <div class="text-center py-5">
-                            <i class="fas fa-tags fa-3x text-muted mb-3"></i>
-                            <h3>Aucune catégorie</h3>
-                            <p class="text-muted">Commencez par créer votre première catégorie.</p>
-                            <a href="{{ path('admin_category_new') }}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Créer une catégorie
+                            <i class="fas fa-ruler fa-3x text-muted mb-3"></i>
+                            <h3>Aucune taille</h3>
+                            <p class="text-muted">Commencez par créer votre première taille.</p>
+                            <a href="{{ path('admin_size_new') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Créer une taille
                             </a>
                         </div>
                     {% endif %}

@@ -36,7 +36,7 @@ class AdminSliderController extends AbstractController
             'recentOrders' => $recentOrders,
         ]);
     }
-
+    
     #[Route('/new', name: 'admin_slider_new')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {

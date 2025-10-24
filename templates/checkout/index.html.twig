@@ -67,13 +67,13 @@
                             <div class="col-md-6 mb-3">
                                 <label for="customer_name" class="form-label">Nom complet *</label>
                                 <input type="text" class="form-control" id="customer_name" name="customer_name" 
-                                       value="{{ app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : '' }}" 
+                                       value="" 
                                        required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="customer_phone" class="form-label">Téléphone *</label>
                                 <input type="tel" class="form-control" id="customer_phone" name="customer_phone" 
-                                       value="{{ app.user ? app.user.phone : '' }}" 
+                                       value="" 
                                        pattern="[0-9]{8}" 
                                        title="Veuillez entrer un numéro de téléphone valide (8 chiffres)"
                                        required>
@@ -84,7 +84,7 @@
                         <div class="mb-3">
                             <label for="customer_email" class="form-label">Email (optionnel)</label>
                             <input type="email" class="form-control" id="customer_email" name="customer_email" 
-                                   value="{{ app.user ? app.user.email : '' }}"
+                                   value=""
                                    placeholder="email@exemple.com">
                             <div class="form-text">Pour recevoir la confirmation de commande</div>
                         </div>
