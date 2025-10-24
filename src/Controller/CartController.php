@@ -1,0 +1,142 @@
+<?php
+// src/Controller/CartController.php
+namespace App\Controller;
+
+use App\Entity\Product;
+use App\Repository\ProductRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Annotation\Route;
+
+class CartController extends AbstractController
+{
+    #[Route('/cart', name: 'cart')]
+    public function index(SessionInterface $session, ProductRepository $productRepository): Response
+    {
+        $cart = $session->get('cart', []);
+        $cartData = [];
+        $total = 0;
+
+        foreach ($cart as $id => $quantity) {
+            $product = $productRepository->find($id);
+            if ($product) {
+                $cartData[] = [
+                    'product' => $product,
+                    'quantity' => $quantity
+                ];
+                $total += $product->getPrice() * $quantity;
+            }
+        }
+
+        return $this->render('cart/index.html.twig', [
+            'cartData' => $cartData,
+            'total' => $total
+        ]);
+    }
+
+    #[Route('/cart/add/{id}', name: 'cart_add')]
+    public function add(Product $product, Request $request, SessionInterface $session): Response
+    {
+        $quantity = (int) $request->request->get('quantity', 1);
+        $cart = $session->get('cart', []);
+
+        $id = $product->getId();
+        if (isset($cart[$id])) {
+            $cart[$id] += $quantity;
+        } else {
+            $cart[$id] = $quantity;
+        }
+
+        $session->set('cart', $cart);
+
+        $this->addFlash('success', 'Produit ajouté au panier !');
+
+        // Rediriger vers la page précédente ou vers le panier
+        $referer = $request->headers->get('referer');
+        if ($referer) {
+            return $this->redirect($referer);
+        }
+
+        return $this->redirectToRoute('cart');
+    }
+
+    #[Route('/cart/remove/{id}', name: 'cart_remove')]
+    public function remove(Product $product, SessionInterface $session): Response
+    {
+        $cart = $session->get('cart', []);
+        $id = $product->getId();
+
+        if (isset($cart[$id])) {
+            unset($cart[$id]);
+        }
+
+        $session->set('cart', $cart);
+
+        $this->addFlash('success', 'Produit retiré du panier !');
+
+        return $this->redirectToRoute('cart');
+    }
+
+    #[Route('/cart/update', name: 'cart_update', methods: ['POST'])]
+    public function update(Request $request, SessionInterface $session): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $productId = $data['productId'] ?? null;
+        $quantity = (int) ($data['quantity'] ?? 1);
+
+        $cart = $session->get('cart', []);
+
+        if ($quantity <= 0) {
+            unset($cart[$productId]);
+        } else {
+            $cart[$productId] = $quantity;
+        }
+
+        $session->set('cart', $cart);
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    #[Route('/cart/clear', name: 'cart_clear')]
+    public function clear(SessionInterface $session): Response
+    {
+        $session->remove('cart');
+
+        $this->addFlash('success', 'Panier vidé !');
+
+        return $this->redirectToRoute('cart');
+    }
+
+    /**
+     * Affiche un mini-panier pour AJAX
+     */
+    #[Route('/cart/mini', name: 'cart_mini')]
+    public function miniCart(SessionInterface $session, ProductRepository $productRepository): Response
+    {
+        $cart = $session->get('cart', []);
+        $cartData = [];
+        $total = 0;
+        $itemCount = 0;
+
+        foreach ($cart as $id => $quantity) {
+            $product = $productRepository->find($id);
+            if ($product) {
+                $cartData[] = [
+                    'product' => $product,
+                    'quantity' => $quantity
+                ];
+                $total += $product->getPrice() * $quantity;
+                $itemCount += $quantity;
+            }
+        }
+
+        return $this->render('cart/_mini_cart.html.twig', [
+            'cartData' => $cartData,
+            'total' => $total,
+            'itemCount' => $itemCount
+        ]);
+    }
+}

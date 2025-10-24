@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de Bord Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                     <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i> Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{ path('admin_categories') }}">
+                            <i class="fas fa-tags"></i> Catégories
+                        </a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link position-relative" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                            {% if pendingOrders|length > 0 %}
+                                <span class="badge bg-danger">{{ pendingOrders|length }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_slider') }}">
+                            <i class="fas fa-images"></i> Slider
+                        </a>
+                    </li>
+                   
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Tableau de Bord</h1>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Commandes en attente</h5>
+                            <h2 class="card-text">{{ pendingOrders|length }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Commandes récentes -->
+            <div class="row">
+                <div class="col-12">
+                    <h3>Commandes Récentes</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>N° Commande</th>
+                                    <th>Client</th>
+                                    <th>Total</th>
+                                    <th>Statut</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recentOrders %}
+                                    <tr>
+                                        <td>{{ order.orderNumber }}</td>
+                                        <td>{{ order.customerName }}</td>
+                                        <td>{{ order.total }} Dt</td>
+                                        <td>
+                                            <span class="badge bg-{{ order.status == 'pending' ? 'warning' : 'success' }}">
+                                                {{ order.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ order.createdAt|date('d/m/Y H:i') }}</td>
+                                        <td>
+                                              <form method="POST" action="{{ path('admin_order_update_status', {'id': order.id}) }}" class="d-inline">
+        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+            {% for statusValue, statusLabel in constant('App\\Entity\\Order::STATUSES') %}
+                <option value="{{ statusValue }}" {{ order.status == statusValue ? 'selected' : '' }}>
+                    {{ statusLabel }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+<div class="mini-cart">
+    {% if cartData|length > 0 %}
+        <div class="list-group list-group-flush">
+            {% for item in cartData|slice(0, 3) %}
+                <div class="list-group-item">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            {% if item.product.images|length > 0 %}
+                                <img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" 
+                                     class="rounded" alt="{{ item.product.name }}"
+                                     style="width: 40px; height: 40px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-0 small">{{ item.product.name }}</h6>
+                            <small class="text-muted">{{ item.quantity }} x {{ item.product.price }} Dt</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="p-3 border-top">
+            <div class="d-flex justify-content-between mb-2">
+                <strong>Total:</strong>
+                <strong>{{ total|number_format(2) }} Dt</strong>
+            </div>
+            <div class="d-grid gap-2">
+                <a href="{{ path('cart') }}" class="btn btn-primary btn-sm">Voir le panier</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="p-3 text-center">
+            <p class="text-muted mb-0">Votre panier est vide</p>
+        </div>
+    {% endif %}
+</div>

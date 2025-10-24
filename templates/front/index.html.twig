@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container mt-4">
+    <div id="carouselExample" class="carousel slide">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="/images/slide1.jpg" class="d-block w-100">
+        </div>
+        <div class="carousel-item">
+          <img src="/images/slide2.jpg" class="d-block w-100">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+
+    <h2 class="mt-4">Nos produits</h2>
+    <div class="row">
+        {% for produit in produits %}
+        <div class="col-md-3">
+            <div class="card">
+                <img src="{{ produit.images[0].imageName|default('/images/default.png') }}" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">{{ produit.nom }}</h5>
+                    <p class="card-text">{{ produit.prix }} DT</p>
+                    <a href="{{ path('produit_show', {'id': produit.id}) }}" class="btn btn-primary">Voir</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

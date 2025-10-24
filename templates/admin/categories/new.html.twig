@@ -1,0 +1,201 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Catégorie - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i> Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_categories') }}">
+                            <i class="fas fa-tags"></i> Catégories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i> Commandes
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Nouvelle Catégorie</h1>
+                <a href="{{ path('admin_categories') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            {{ form_start(form) }}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.name, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Nom de la catégorie *'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.slug, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Slug (URL) *'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            {{ form_row(form.description, {
+                                'attr': {'class': 'form-control', 'rows': 3},
+                                'label': 'Description'
+                            }) }}
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    {{ form_row(form.color, {
+                                        'attr': {'class': 'form-control form-control-color'},
+                                        'label': 'Couleur'
+                                    }) }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form_row(form.icon, {
+                                        'attr': {'class': 'form-select'},
+                                        'label': 'Icône'
+                                    }) }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form_row(form.position, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Position'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                {{ form_widget(form.isActive, {
+                                    'attr': {'class': 'form-check-input'}
+                                }) }}
+                                {{ form_label(form.isActive, 'Catégorie active', {
+                                    'label_attr': {'class': 'form-check-label'}
+                                }) }}
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Créer la catégorie
+                                </button>
+                                <a href="{{ path('admin_categories') }}" class="btn btn-outline-secondary">
+                                    Annuler
+                                </a>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Conseils</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted">
+                                <strong>Nom :</strong> Choisissez un nom clair et descriptif.
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Slug :</strong> Version URL-friendly du nom (minuscules, tirets).
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Couleur :</strong> Utilisée pour l'affichage dans le frontend.
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Position :</strong> Détermine l'ordre d'affichage des catégories.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Aperçu -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Aperçu</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="border rounded p-3 bg-light">
+                                <div id="categoryPreview">
+                                    <p class="text-muted mb-0">L'aperçu apparaîtra ici...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('{{ form.name.vars.id }}');
+    const slugInput = document.getElementById('{{ form.slug.vars.id }}');
+    const colorInput = document.getElementById('{{ form.color.vars.id }}');
+    const iconSelect = document.getElementById('{{ form.icon.vars.id }}');
+    const previewDiv = document.getElementById('categoryPreview');
+
+    function updatePreview() {
+        const name = nameInput.value || 'Nom de la catégorie';
+        const color = colorInput.value || '#6c757d';
+        const icon = iconSelect.value || 'fas fa-tag';
+        
+        previewDiv.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="${icon} me-2" style="color: ${color}; font-size: 1.2rem;"></i>
+                <strong style="color: ${color}">${name}</strong>
+            </div>
+            <small class="text-muted">Ceci est un aperçu de l'affichage</small>
+        `;
+    }
+
+    // Générer automatiquement le slug à partir du nom
+    nameInput.addEventListener('blur', function() {
+        if (!slugInput.value) {
+            const slug = this.value
+                .toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+            slugInput.value = slug;
+        }
+        updatePreview();
+    });
+
+    // Mettre à jour l'aperçu quand les champs changent
+    [nameInput, colorInput, iconSelect].forEach(input => {
+        input.addEventListener('input', updatePreview);
+    });
+
+    // Initialiser l'aperçu
+    updatePreview();
+});
+</script>
+{% endblock %}

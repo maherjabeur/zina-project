@@ -1,0 +1,155 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Images - {{ product.name }} - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i>
+                            Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_slider') }}">
+                            <i class="fas fa-images"></i>
+                            Slider
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Gestion des Images - {{ product.name }}</h1>
+                <div>
+                    <a href="{{ path('admin_product_edit', {'id': product.id}) }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-edit"></i> Modifier le produit
+                    </a>
+                    <a href="{{ path('admin_products') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Retour aux produits
+                    </a>
+                </div>
+            </div>
+
+            <!-- Ajouter une image -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Ajouter une image</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ path('admin_product_image_add', {'id': product.id}) }}" enctype="multipart/form-data">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="image_file" class="form-label">Image</label>
+                                            <input type="file" class="form-control" id="image_file" name="file" required>
+                                            <div class="form-text">Formats acceptés: JPG, PNG, WebP. Taille max: 5MB</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="image_position" class="form-label">Position</label>
+                                            <input type="number" class="form-control" id="image_position" name="position" value="0" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-upload"></i> Uploader
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des images existantes -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Images du produit ({{ product.images|length }})</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if product.images|length > 0 %}
+                                <div class="row">
+                                    {% for image in product.images|sort((a, b) => a.position <=> b.position) %}
+                                        <div class="col-md-4 col-lg-3 mb-4">
+                                            <div class="card h-100">
+                                                <img src="{{ asset('uploads/products/' ~ image.filename) }}" 
+                                                     class="card-img-top" alt="Image {{ loop.index }}"
+                                                     style="height: 200px; object-fit: cover;">
+                                                <div class="card-body">
+                                                    <p class="card-text text-center">
+                                                        <small class="text-muted">Position: {{ image.position }}</small>
+                                                    </p>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div class="btn-group w-100">
+                                                        {% if loop.first == false %}
+                                                            <form method="POST" action="{{ path('admin_product_image_move_up', {'id': image.id}) }}" class="d-inline">
+                                                                <button type="submit" class="btn btn-sm btn-outline-primary" title="Déplacer vers le haut">
+                                                                    <i class="fas fa-arrow-up"></i>
+                                                                </button>
+                                                            </form>
+                                                        {% endif %}
+                                                        
+                                                        {% if loop.last == false %}
+                                                            <form method="POST" action="{{ path('admin_product_image_move_down', {'id': image.id}) }}" class="d-inline">
+                                                                <button type="submit" class="btn btn-sm btn-outline-primary" title="Déplacer vers le bas">
+                                                                    <i class="fas fa-arrow-down"></i>
+                                                                </button>
+                                                            </form>
+                                                        {% endif %}
+                                                        
+                                                        <form method="POST" action="{{ path('admin_product_image_delete', {'id': image.id}) }}" 
+                                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette image ?')"
+                                                              class="d-inline">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                                    <h5>Aucune image</h5>
+                                    <p class="text-muted">Ajoutez des images pour ce produit.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

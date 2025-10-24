@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande Confirmée - Boutique Femme{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card border-0 shadow">
+                <div class="card-body py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h1 class="h2 mb-3">Commande Confirmée !</h1>
+                    
+                    <p class="lead mb-4">
+                        Merci pour votre commande <strong>{{ order.customerName }}</strong> !
+                    </p>
+                    
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Détails de votre commande</h5>
+                            <p class="mb-1"><strong>Numéro de commande :</strong> {{ order.orderNumber }}</p>
+                            <p class="mb-1"><strong>Date :</strong> {{ order.createdAt|date('d/m/Y à H:i') }}</p>
+                            <p class="mb-1"><strong>Total :</strong> {{ order.total }} Dt</p>
+                            <p class="mb-0"><strong>Statut :</strong> 
+                                <span class="badge bg-warning">{{ order.status }}</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <p class="text-muted mb-4">
+                        Un email de confirmation a été envoyé à <strong>{{ order.customerEmail }}</strong>.
+                        Vous recevrez un email de suivi lorsque votre commande sera expédiée.
+                    </p>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{{ path('home') }}" class="btn btn-primary btn-lg me-md-2">
+                            <i class="fas fa-home"></i> Retour à l'accueil
+                        </a>
+                        <a href="{{ path('products') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-shopping-bag"></i> Continuer mes achats
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

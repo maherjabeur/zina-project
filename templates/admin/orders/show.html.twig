@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande {{ order.orderNumber }} - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <!-- Sidebar identique à celui de la liste -->
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Commande {{ order.orderNumber }}</h1>
+                <a href="{{ path('admin_orders') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- Articles de la commande -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Articles commandés</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>Taille</th>
+                                            <th>Couleur</th>
+                                            <th>Prix unitaire</th>
+                                            <th>Quantité</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.items %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ item.product.name }}</strong>
+                                                </td>
+                                                <td>{{ item.size }}</td>
+                                                <td>{{ item.color }}</td>
+                                                <td>{{ item.unitPrice }} Dt</td>
+                                                <td>{{ item.quantity }}</td>
+                                                <td>{{ item.total }} Dt</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5" class="text-end"><strong>Total:</strong></td>
+                                            <td><strong>{{ order.total }} Dt</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Informations client -->
+                   <div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Informations client</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>Nom:</strong> {{ order.customerName }}</p>
+        <p><strong>Téléphone:</strong> {{ order.customerPhone }}</p>
+        <p><strong>Email:</strong> {{ order.customerEmail ?? '<span class="text-muted">Non renseigné</span>' }}</p>
+        {% if order.user %}
+            <p><strong>Client enregistré:</strong> Oui</p>
+        {% endif %}
+    </div>
+</div>
+
+                    <!-- Livraison -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Livraison</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Adresse:</strong></p>
+                            <p>{{ order.shippingAddress|nl2br }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Statut -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Statut de la commande</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ path('admin_order_update_status', {'id': order.id}) }}">
+                                <div class="mb-3">
+                                    <select name="status" class="form-select">
+                                        {% for statusValue, statusLabel in constant('App\\Entity\\Order::STATUSES') %}
+                                            <option value="{{ statusValue }}" {{ order.status == statusValue ? 'selected' : '' }}>
+                                                {{ statusLabel }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    Mettre à jour le statut
+                                </button>
+                            </form>
+                            <hr>
+                            <p class="small text-muted mb-1">
+                                <strong>Créée le:</strong> {{ order.createdAt|date('d/m/Y à H:i') }}
+                            </p>
+                            {% if order.updatedAt %}
+                                <p class="small text-muted mb-0">
+                                    <strong>Modifiée le:</strong> {{ order.updatedAt|date('d/m/Y à H:i') }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

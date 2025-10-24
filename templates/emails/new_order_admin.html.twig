@@ -1,0 +1,63 @@
+<!-- templates/emails/new_order_admin.html.twig -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #f8f9fa; padding: 20px; text-align: center; }
+        .order-details { margin: 20px 0; }
+        .product-table { width: 100%; border-collapse: collapse; }
+        .product-table th, .product-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .product-table th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nouvelle Commande Reçue</h1>
+        </div>
+        
+        <div class="order-details">
+            <h2>Détails de la commande</h2>
+            <p><strong>Numéro de commande:</strong> {{ order.orderNumber }}</p>
+            <p><strong>Client:</strong> {{ order.customerName }}</p>
+            <p><strong>Téléphone:</strong> {{ order.customerPhone }}</p>
+            <p><strong>Email:</strong> {{ order.customerEmail }}</p>
+            <p><strong>Date:</strong> {{ order.createdAt|date('d/m/Y H:i') }}</p>
+            <p><strong>Total:</strong> {{ order.total }} Dt</p>
+        </div>
+
+        <h3>Articles commandés:</h3>
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Taille</th>
+                    <th>Couleur</th>
+                    <th>Quantité</th>
+                    <th>Prix unitaire</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.size }}</td>
+                    <td>{{ item.color }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unitPrice }} Dt</td>
+                    <td>{{ item.total }} Dt</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p>
+            <a href="{{ absolute_url(path('admin_orders')) }}">Voir la commande dans l'interface admin</a>
+        </p>
+    </div>
+</body>
+</html>

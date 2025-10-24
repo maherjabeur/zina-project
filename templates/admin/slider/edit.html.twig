@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Image Slider - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i>
+                            Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_slider') }}">
+                            <i class="fas fa-images"></i>
+                            Slider
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Modifier l'image du slider</h1>
+                <a href="{{ path('admin_slider') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+                            
+                            <!-- Image actuelle -->
+                            {% if sliderImage.filename %}
+                                <div class="mb-4 text-center">
+                                    <img src="{{ asset('uploads/slider/' ~ sliderImage.filename) }}" 
+                                         class="img-fluid rounded" alt="{{ sliderImage.title }}"
+                                         style="max-height: 300px;">
+                                    <p class="text-muted small mt-2">Image actuelle</p>
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                {{ form_label(form.file, 'Nouvelle image', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.file, {'attr': {'class': 'form-control'}}) }}
+                                <div class="form-text">Laissez vide pour conserver l'image actuelle</div>
+                                {{ form_errors(form.file) }}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.title, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Titre'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.position, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Position'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            {{ form_row(form.description, {
+                                'attr': {'class': 'form-control', 'rows': 3},
+                                'label': 'Description'
+                            }) }}
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.buttonText, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Texte du bouton'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.buttonUrl, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'URL du bouton'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                {{ form_widget(form.isActive, {
+                                    'attr': {'class': 'form-check-input'}
+                                }) }}
+                                {{ form_label(form.isActive, 'Image active', {
+                                    'label_attr': {'class': 'form-check-label'}
+                                }) }}
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Enregistrer
+                                </button>
+                                <a href="{{ path('admin_slider') }}" class="btn btn-outline-secondary">
+                                    Annuler
+                                </a>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Informations -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Informations</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Créée le:</strong> {{ sliderImage.createdAt|date('d/m/Y à H:i') }}</p>
+                            {% if sliderImage.filename %}
+                                <p><strong>Fichier:</strong> {{ sliderImage.filename }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Aperçu -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Aperçu</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="border rounded p-3 bg-light">
+                                {% if sliderImage.title %}
+                                    <h6>{{ sliderImage.title }}</h6>
+                                {% endif %}
+                                {% if sliderImage.description %}
+                                    <p class="small mb-2">{{ sliderImage.description }}</p>
+                                {% endif %}
+                                {% if sliderImage.buttonText %}
+                                    <button class="btn btn-sm btn-primary">{{ sliderImage.buttonText }}</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

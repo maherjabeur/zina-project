@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Image Slider - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i>
+                            Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_slider') }}">
+                            <i class="fas fa-images"></i>
+                            Slider
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Nouvelle Image pour le Slider</h1>
+                <a href="{{ path('admin_slider') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+                            
+                            <div class="mb-3">
+                                {{ form_label(form.file, 'Image du slider', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.file, {'attr': {'class': 'form-control'}}) }}
+                                <div class="form-text">Formats acceptés: JPG, PNG, WebP. Taille max: 5MB</div>
+                                {{ form_errors(form.file) }}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.title, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Titre'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.position, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Position'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            {{ form_row(form.description, {
+                                'attr': {'class': 'form-control', 'rows': 3},
+                                'label': 'Description'
+                            }) }}
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.buttonText, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Texte du bouton'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.buttonUrl, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'URL du bouton'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                {{ form_widget(form.isActive, {
+                                    'attr': {'class': 'form-check-input'}
+                                }) }}
+                                {{ form_label(form.isActive, 'Image active', {
+                                    'label_attr': {'class': 'form-check-label'}
+                                }) }}
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Créer l'image
+                                </button>
+                                <a href="{{ path('admin_slider') }}" class="btn btn-outline-secondary">
+                                    Annuler
+                                </a>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Conseils</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted">
+                                <strong>Dimensions recommandées:</strong><br>
+                                1920x600 pixels pour un affichage optimal
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Textes:</strong><br>
+                                Gardez les titres et descriptions courts et percutants.
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Boutons:</strong><br>
+                                Utilisez des appels à l'action clairs comme "Découvrir", "Acheter maintenant", etc.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!-- Hero Slider -->
+    <div class="hero-slider">
+        <!-- Hero Slider Dynamique -->
+    <div class="hero-slider">
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for slide in slider_images %}
+                    <div class="carousel-item {{ loop.first ? 'active' : '' }}">
+                        <img src="{{ asset('uploads/slider/' ~ slide.filename) }}" 
+                             class="d-block w-100" alt="{{ slide.title ?? 'Slide ' ~ loop.index }}"
+                             style="height: 500px; object-fit: cover;">
+                        {% if slide.title or slide.description %}
+                            <div class="carousel-caption d-none d-md-block">
+                                {% if slide.title %}
+                                    <h2>{{ slide.title }}</h2>
+                                {% endif %}
+                                {% if slide.description %}
+                                    <p>{{ slide.description }}</p>
+                                {% endif %}
+                                {% if slide.buttonText and slide.buttonUrl %}
+                                    <a href="{{ slide.buttonUrl }}" class="btn btn-primary">
+                                        {{ slide.buttonText }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <!-- Slides par défaut si aucun slide n'est configuré -->
+                    <div class="carousel-item active">
+                        <img src="{{ asset('images/slide1.jpg') }}" class="d-block w-100" alt="Collection Été">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h2>Nouvelle Collection Été</h2>
+                            <p>Découvrez nos nouvelles arrivées</p>
+                            <a href="{{ path('products') }}" class="btn btn-primary">Découvrir</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if slider_images|length > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Produits en vedette -->
+    <section class="container my-5">
+        <h2 class="text-center mb-4">Produits en Vedette</h2>
+        <div class="row">
+            {% for product in featuredProducts %}
+                <div class="col-md-3 mb-4">
+                    <div class="card product-card h-100">
+                        {% if product.images|length > 0 %}
+                            <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" 
+                                 class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
+                        {% else %}
+                            <img src="{{ asset('images/placeholder.jpg') }}" 
+                                 class="card-img-top" alt="Image non disponible" style="height: 250px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.price }} Dt</p>
+                            <p class="card-text">
+                                <small class="text-muted">Taille: {{ product.size }}</small><br>
+                                <small class="text-muted">Couleur: {{ product.color }}</small>
+                            </p>
+                            <a href="{{ path('product_detail', {'id': product.id}) }}" class="btn btn-primary">Voir détails</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    <!-- Section Contact -->
+<section class="bg-light py-5 mt-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="mb-4">Une question ? Contactez-nous !</h2>
+                <p class="lead mb-4">
+                    Notre équipe est à votre écoute pour répondre à toutes vos questions 
+                    et vous accompagner dans vos achats.
+                </p>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-phone text-primary me-3 fa-lg"></i>
+                            <div>
+                                <h6 class="mb-1">Téléphone</h6>
+                                <p class="mb-0">01 23 45 67 89</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-envelope text-primary me-3 fa-lg"></i>
+                            <div>
+                                <h6 class="mb-1">Email</h6>
+                                <p class="mb-0">contact@boutique-femme.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="{{ path('contact') }}" class="btn btn-primary btn-lg mt-3">
+                    <i class="fas fa-paper-plane me-2"></i>Nous contacter
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4">Envoyez-nous un message</h5>
+                        <form action="{{ path('contact') }}" method="GET">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Votre nom" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Votre email" required>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" rows="3" placeholder="Votre message" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Envoyer le message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

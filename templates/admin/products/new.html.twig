@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Produit - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i>
+                            Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Nouveau Produit</h1>
+                <a href="{{ path('admin_products') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            {{ form_start(form) }}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.name, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Nom du produit'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.price, {
+                                        'attr': {'class': 'form-control', 'step': '0.01'},
+                                        'label': 'Prix (Dt)'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    {{ form_row(form.size, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Taille'
+                                    }) }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form_row(form.color, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Couleur'
+                                    }) }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form_row(form.category, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Catégorie'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            {{ form_row(form.quantity, {
+                                'attr': {'class': 'form-control'},
+                                'label': 'Quantité en stock'
+                            }) }}
+
+                            {{ form_row(form.description, {
+                                'attr': {'class': 'form-control', 'rows': 4},
+                                'label': 'Description'
+                            }) }}
+
+                            <div class="form-check mb-3">
+                                {{ form_widget(form.isActive, {
+                                    'attr': {'class': 'form-check-input'}
+                                }) }}
+                                {{ form_label(form.isActive, 'Produit actif', {
+                                    'label_attr': {'class': 'form-check-label'}
+                                }) }}
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Créer le produit
+                                </button>
+                                <a href="{{ path('admin_products') }}" class="btn btn-outline-secondary">
+                                    Annuler
+                                </a>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Informations</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted">
+                                <i class="fas fa-info-circle"></i>
+                                Les produits créés seront immédiatement visibles dans la boutique 
+                                s'ils sont marqués comme "actifs".
+                            </p>
+                            <hr>
+                            <h6>Tailles disponibles:</h6>
+                            <ul class="small">
+                                <li>XS, S, M, L, XL, XXL</li>
+                                <li>34, 36, 38, 40, 42, 44</li>
+                            </ul>
+                            <h6>Catégories suggérées:</h6>
+                            <ul class="small">
+                                <li>Robe, Jupe, Pantalon, Haut</li>
+                                <li>Veste, Chemisier, Jean, Short</li>
+                                <li>Accessoire, Maillot, Sous-vêtement</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
