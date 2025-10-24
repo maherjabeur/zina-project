@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\SliderImage;
 use App\Form\SliderImageType;
+use App\Repository\OrderRepository;
 use App\Repository\SliderImageRepository;
 use App\Service\SliderImageUploader;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,12 +26,14 @@ class AdminSliderController extends AbstractController
     }
 
     #[Route('/', name: 'admin_slider')]
-    public function index(SliderImageRepository $sliderImageRepository): Response
+    public function index(SliderImageRepository $sliderImageRepository,OrderRepository $orderRepository): Response
     {
         $sliderImages = $sliderImageRepository->findBy([], ['position' => 'ASC']);
-        
+        $recentOrders = $orderRepository->findRecentOrders(10);
+
         return $this->render('admin/slider/index.html.twig', [
             'sliderImages' => $sliderImages,
+            'recentOrders' => $recentOrders,
         ]);
     }
 

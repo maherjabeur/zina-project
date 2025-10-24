@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
+use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,12 +19,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 class AdminCategoryController extends AbstractController
 {
     #[Route('/', name: 'admin_categories')]
-    public function index(CategoryRepository $categoryRepository): Response
+    public function index(CategoryRepository $categoryRepository, OrderRepository $orderRepository): Response
     {
         $categories = $categoryRepository->findWithProductCount();
+        $recentOrders = $orderRepository->findRecentOrders(10);
 
+        
         return $this->render('admin/categories/index.html.twig', [
             'categories' => $categories,
+            'recentOrders' => $recentOrders,
         ]);
     }
 

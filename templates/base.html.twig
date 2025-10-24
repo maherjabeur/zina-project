@@ -1,519 +1,694 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Boutique Femme - Mode Féminine Élégante{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #e83e8c;
-            --secondary-color: #6f42c1;
-            --accent-color: #20c997;
-        }
-        
-        .hero-slider {
-            height: 500px;
-            overflow: hidden;
-            position: relative;
-        }
-        .hero-slider img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .product-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}Boutique Femme - Mode Féminine Élégante
+			{% endblock %}
+		</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+		<style>:root
+		{
+			--primary-color: #e83e8c;
+			--secondary-color: #6f42c1;
+			--accent-color: #20c997;
+		}
 
-        /* Navigation améliorée */
-        .navbar {
-            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            padding: 0.8rem 0;
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .nav-link {
-            font-weight: 500;
-            color: #495057 !important;
-            transition: all 0.3s ease;
-            padding: 0.5rem 1rem !important;
-            border-radius: 0.375rem;
-            margin: 0 0.1rem;
-        }
-        
-        .nav-link:hover {
-            color: var(--primary-color) !important;
-            background-color: rgba(232, 62, 140, 0.1);
-            transform: translateY(-1px);
-        }
-        
-        .nav-link.active {
-            color: var(--primary-color) !important;
-            background-color: rgba(232, 62, 140, 0.1);
-        }
-        
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-        }
-        
-        .dropdown-item {
-            border-radius: 0.375rem;
-            padding: 0.5rem 1rem;
-            transition: all 0.2s ease;
-        }
-        
-        .dropdown-item:hover {
-            background-color: rgba(232, 62, 140, 0.1);
-            color: var(--primary-color);
-            transform: translateX(5px);
-        }
-        
-        .cart-icon {
-            position: relative;
-            padding: 0.5rem 0.75rem !important;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        
-        .cart-icon:hover {
-            background-color: rgba(232, 62, 140, 0.1);
-            transform: scale(1.1);
-        }
-        
-        .cart-icon .badge {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            font-size: 0.7rem;
-            min-width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .admin-badge {
-            background: linear-gradient(135deg, #ffd700, #ffa500);
-        }
-        
-        .promo-badge {
-            background: linear-gradient(135deg, #ff6b6b, #c44569);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .search-form {
-            max-width: 300px;
-        }
-        
-        .search-form .form-control {
-            border-radius: 25px;
-            border: 2px solid #e9ecef;
-            padding: 0.5rem 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .search-form .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(232, 62, 140, 0.25);
-        }
-        
-        .user-menu .dropdown-toggle::after {
-            display: none;
-        }
-        
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .navbar-toggler {
-            border: none;
-            padding: 0.25rem 0.5rem;
-        }
-        
-        .navbar-toggler:focus {
-            box-shadow: none;
-        }
-        
-        /* Responsive */
-        @media (max-width: 991.98px) {
-            .navbar-collapse {
-                background: white;
-                margin-top: 1rem;
-                border-radius: 0.5rem;
-                box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-                padding: 1rem;
-            }
-            
-            .search-form {
-                max-width: 100%;
-                margin: 1rem 0;
-            }
-        }
-    </style>
+		.hero-slider {
+			height: 500px;
+			overflow: hidden;
+			position: relative;
+		}
+		.hero-slider img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+		.product-card {
+			transition: transform 0.3s, box-shadow 0.3s;
+		}
+		.product-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+		}
+
+		/* Navigation améliorée */
+		.navbar {
+			background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+			box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+			padding: 0.8rem 0;
+		}
+
+		.navbar-brand {
+			font-weight: 700;
+			font-size: 1.5rem;
+			background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+		}
+
+		.nav-link {
+			font-weight: 500;
+			color: #495057 !important;
+			transition: all 0.3s ease;
+			padding: 0.5rem 1rem !important;
+			border-radius: 0.375rem;
+			margin: 0 0.1rem !important;
+		}
+
+		.nav-link:hover {
+			color: var(--primary-color) !important;
+			background-color: rgba(232, 62, 140, 0.1);
+			transform: translateY(-1px);
+		}
+
+		.nav-link.active {
+			color: var(--primary-color) !important;
+			background-color: rgba(232, 62, 140, 0.1);
+		}
+
+		.dropdown-menu {
+			border: none;
+			box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+			border-radius: 0.5rem;
+			padding: 0.5rem;
+		}
+
+		.dropdown-item {
+			border-radius: 0.375rem;
+			padding: 0.5rem 1rem;
+			transition: all 0.2s ease;
+		}
+
+		.dropdown-item:hover {
+			background-color: rgba(232, 62, 140, 0.1);
+			color: var(--primary-color);
+			transform: translateX(5px);
+		}
+
+		.cart-icon {
+			position: relative;
+			padding: 0.5rem 0.75rem !important;
+			border-radius: 50%;
+			transition: all 0.3s ease;
+		}
+
+		.cart-icon:hover {
+			background-color: rgba(232, 62, 140, 0.1);
+			transform: scale(1.1);
+		}
+
+		.cart-icon .badge {
+			position: absolute;
+			top: 0;
+			right: 0;
+			background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+			font-size: 0.7rem;
+			min-width: 18px;
+			height: 18px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.admin-badge {
+			background: linear-gradient(135deg, #ffd700, #ffa500);
+		}
+
+		.promo-badge {
+			background: linear-gradient(135deg, #ff6b6b, #c44569);
+			animation: pulse 2s infinite;
+		}
+
+		@keyframes pulse {
+			0% {
+				transform: scale(1);
+			}
+			50% {
+				transform: scale(1.05);
+			}
+			100% {
+				transform: scale(1);
+			}
+		}
+
+		.search-form {
+			max-width: 300px;
+		}
+
+		.search-form .form-control {
+			border-radius: 25px;
+			border: 2px solid #e9ecef;
+			padding: 0.5rem 1rem;
+			transition: all 0.3s ease;
+		}
+
+		.search-form .form-control:focus {
+			border-color: var(--primary-color);
+			box-shadow: 0 0 0 0.2rem rgba(232, 62, 140, 0.25);
+		}
+
+		.user-menu .dropdown-toggle::after {
+			display: none;
+		}
+
+		.user-avatar {
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: white;
+			font-size: 0.8rem;
+			font-weight: 600;
+		}
+
+		.navbar-toggler {
+			border: none;
+			padding: 0.25rem 0.5rem;
+		}
+
+		.navbar-toggler:focus {
+			box-shadow: none;
+		}
+
+		/* Responsive */
+		@media(max-width: 991.98px) {
+			.navbar-collapse {
+				background: white;
+				margin-top: 1rem;
+				border-radius: 0.5rem;
+				box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+				padding: 1rem;
+			}
+
+			.search-form {
+				max-width: 100%;
+				margin: 1rem 0;
+			}
+		}
+	</style>
 </head>
 <body>
 
-<!-- Navigation améliorée -->
-<nav class="navbar navbar-expand-lg navbar-light sticky-top">
-    <div class="container">
-        <!-- Logo -->
-        <a class="navbar-brand" href="{{ path('home') }}">
-            <i class="fas fa-crown me-2"></i>
-            Boutique Femme
-        </a>
+	<!-- Navigation améliorée -->
+	<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+		<div
+			class="container">
+			<!-- Logo -->
+			<a class="navbar-brand" href="{{ path('home') }}">
+				<i class="fas fa-crown me-2"></i>
+				Boutique Femme
+			</a>
 
-        <!-- Barre de recherche (visible sur desktop) -->
-        <form class="search-form d-none d-lg-flex me-3">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Rechercher un produit...">
-                <button class="btn btn-outline-primary" type="submit">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </form>
+			<form class="search-form d-none d-lg-flex me-3" method="GET" action="{{ path('search') }}">
+				<div class="input-group">
+					<input type="text" class="form-control" name="q" placeholder="Rechercher un produit..." value="{{ app.request.query.get('q') }}" id="searchInputDesktop">
+					<button class="btn btn-outline-primary" type="submit">
+						<i class="fas fa-search"></i>
+					</button>
+				</div>
+			</form>
+			<!-- Barre de recherche mobile (dans le menu) -->
+			<form class="search-form d-lg-none mb-3" method="GET" action="{{ path('search') }}">
+				<div class="input-group">
+					<input type="text" class="form-control" name="q" placeholder="Rechercher un produit..." value="{{ app.request.query.get('q') }}" id="searchInputMobile">
+					<button class="btn btn-outline-primary" type="submit">
+						<i class="fas fa-search"></i>
+					</button>
+				</div>
+			</form>
+			<!-- Panier toujours visible -->
+			<div class="cart-container order-lg-3">
+				<a class="nav-link cart-icon" href="{{ path('cart') }}">
+					<i class="fas fa-shopping-bag fa-lg"></i>
+					{% set cart_count = app.session.get('cart', [])|length %}
+					{% if cart_count > 0 %}
+						<span class="badge">{{ cart_count }}</span>
+					{% endif %}
+				</a>
+			</div>
 
-        <!-- Panier toujours visible -->
-        <div class="cart-container order-lg-3">
-            <a class="nav-link cart-icon" href="{{ path('cart') }}">
-                <i class="fas fa-shopping-bag fa-lg"></i>
-                {% set cart_count = app.session.get('cart', [])|length %}
-                {% if cart_count > 0 %}
-                    <span class="badge">{{ cart_count }}</span>
-                {% endif %}
-            </a>
-        </div>
+			<!-- Bouton toggler -->
+			<button class="navbar-toggler order-lg-4" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+				<span class="navbar-toggler-icon"></span>
+			</button>
 
-        <!-- Bouton toggler -->
-        <button class="navbar-toggler order-lg-4" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+			<!-- Menu principal -->
+			<div
+				class="collapse navbar-collapse order-lg-2" id="navbarMain">
+				<!-- Barre de recherche (mobile) -->
+				<form class="search-form d-lg-none mb-3">
+					<div class="input-group">
+						<input type="text" class="form-control" placeholder="Rechercher un produit...">
+						<button class="btn btn-outline-primary" type="submit">
+							<i class="fas fa-search"></i>
+						</button>
+					</div>
+				</form>
 
-        <!-- Menu principal -->
-        <div class="collapse navbar-collapse order-lg-2" id="navbarMain">
-            <!-- Barre de recherche (mobile) -->
-            <form class="search-form d-lg-none mb-3">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Rechercher un produit...">
-                    <button class="btn btn-outline-primary" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
-
-            <!-- Navigation principale -->
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link {{ app.request.get('_route') == 'home' ? 'active' : '' }}" 
-                       href="{{ path('home') }}">
-                        <i class="fas fa-home me-1"></i>Accueil
-                    </a>
-                </li>
-                
-              
-                <li class="nav-item ">
-                    <a class="nav-link {{ app.request.get('_route') == 'products' ? 'active' : '' }} "    href="{{ path('products') }}">
-                        <i class="fas fa-tshirt me-1"></i>Boutique
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link {{ app.request.get('_route') == 'contact' ? 'active' : '' }}" 
-                       href="{{ path('contact') }}">
-                        <i class="fas fa-envelope me-1"></i>Contact
-                    </a>
-                </li>
-
-                
-               
-            </ul>
-
-            <!-- Menu utilisateur -->
-            <ul class="navbar-nav align-items-center">
-                {% if is_granted('ROLE_ADMIN') %}
-                    <!-- Menu admin -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle position-relative" href="#" 
-                           id="adminDropdown" role="button" data-bs-toggle="dropdown">
-                            <div class="user-avatar me-2">
-                                <i class="fas fa-cog"></i>
-                            </div>
-                            Admin
-                            {% set pending_orders = count_pending_orders() %}
-                            {% if pending_orders > 0 %}
-                                <span class="badge admin-badge">{{ pending_orders }}</span>
-                            {% endif %}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><h6 class="dropdown-header">Administration</h6></li>
-                            <li><a class="dropdown-item" href="{{ path('admin_dashboard') }}">
-                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ path('admin_products') }}">
-                                <i class="fas fa-tshirt me-2"></i>Produits
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ path('admin_orders') }}">
-                                <i class="fas fa-shopping-cart me-2"></i>Commandes
-                                {% if pending_orders > 0 %}
-                                    <span class="badge bg-danger float-end">{{ pending_orders }}</span>
-                                {% endif %}
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ path('admin_slider') }}">
-                                <i class="fas fa-images me-2"></i>Slider
-                            </a></li>
-                             <li><a class="dropdown-item" href="{{ path('admin_categories') }}">
-                                <i class="fas fa-tags me-2"></i>Catégories
-                            </a></li>
-                                                
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ path('app_logout') }}">
-                                <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
-                            </a></li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <!-- Menu utilisateur normal -->
-                    {% if app.user %}
-                        <li class="nav-item dropdown user-menu">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" 
-                               role="button" data-bs-toggle="dropdown">
-                                <div class="user-avatar me-2">
-                                    {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
-                                </div>
-                                Mon compte
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><h6 class="dropdown-header">Bonjour, {{ app.user.firstName }}</h6></li>
-                                <li><a class="dropdown-item" href="#">
-                                    <i class="fas fa-user me-2"></i>Mon profil
-                                </a></li>
-                                <li><a class="dropdown-item" href="#">
-                                    <i class="fas fa-history me-2"></i>Mes commandes
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ path('app_logout') }}">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
-                                </a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_login') }}">
-                                <i class="fas fa-sign-in-alt me-1"></i>Connexion
-                            </a>
-                        </li>
-                    {% endif %}
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</nav>
-
-{% block body %}{% endblock %}
-
-<!-- Footer (inchangé) -->
-<footer class="bg-dark text-white pt-5 pb-4">
-    <div class="container">
-        <div class="row">
-            <!-- Colonne 1: À propos -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <h5 class="text-uppercase mb-4">Boutique Femme</h5>
-                <p>
-                    Découvrez notre collection exclusive de vêtements féminins. 
-                    Qualité, élégance et style pour toutes les occasions.
-                </p>
-                <div class="mt-4">
-                    <h6>Paiement sécurisé</h6>
-                    <div class="d-flex gap-2">
-                        <i class="fab fa-cc-visa fa-2x text-muted"></i>
-                        <i class="fab fa-cc-mastercard fa-2x text-muted"></i>
-                        <i class="fab fa-cc-paypal fa-2x text-muted"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Colonne 2: Liens rapides -->
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h5 class="text-uppercase mb-4">Navigation</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <a href="{{ path('home') }}" class="text-white text-decoration-none">
-                            <i class="fas fa-home me-2"></i>Accueil
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ path('products') }}" class="text-white text-decoration-none">
-                            <i class="fas fa-tshirt me-2"></i>Produits
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ path('contact') }}" class="text-white text-decoration-none">
-                            <i class="fas fa-envelope me-2"></i>Contact
-                        </a>
-                    </li>
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <li class="mb-2">
-                        <a href="{{ path('admin_dashboard') }}" class="text-white text-decoration-none">
-                            <i class="fas fa-cog me-2"></i>Administration
-                        </a>
-                    </li>
-
-                    {% endif %}
-                </ul>
-            </div>
-
-            <!-- Colonne 3: Catégories -->
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h5 class="text-uppercase mb-4">Catégories</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <a href="{{ path('products', {'category': 'Robe'}) }}" class="text-white text-decoration-none">
-                            Robes
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ path('products', {'category': 'Jupe'}) }}" class="text-white text-decoration-none">
-                            Jupes
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ path('products', {'category': 'Pantalon'}) }}" class="text-white text-decoration-none">
-                            Pantalons
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ path('products', {'category': 'Haut'}) }}" class="text-white text-decoration-none">
-                            Hauts
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Colonne 4: Contact -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <h5 class="text-uppercase mb-4">Contact & Réseaux</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-3">
-                        <i class="fas fa-map-marker-alt me-3 text-primary"></i>
-                        123 Rue de la Mode, 75001 Paris
-                    </li>
-                    <li class="mb-3">
-                        <i class="fas fa-phone me-3 text-primary"></i>
-                        <a href="tel:+33123456789" class="text-white text-decoration-none">01 23 45 67 89</a>
-                    </li>
-                    <li class="mb-3">
-                        <i class="fas fa-envelope me-3 text-primary"></i>
-                        <a href="mailto:contact@boutique-femme.com" class="text-white text-decoration-none">
-                            contact@boutique-femme.com
-                        </a>
-                    </li>
-                </ul>
-                
-                <!-- Réseaux sociaux -->
-                <div class="mt-4">
-                    <h6>Suivez-nous</h6>
-                    <div class="d-flex gap-3">
-                        <a href="#" class="text-white text-decoration-none">
-                            <i class="fab fa-facebook fa-2x"></i>
-                        </a>
-                        <a href="#" class="text-white text-decoration-none">
-                            <i class="fab fa-instagram fa-2x"></i>
-                        </a>
-                        <a href="#" class="text-white text-decoration-none">
-                            <i class="fab fa-tiktok fa-2x"></i>
-                        </a>
-                        <a href="#" class="text-white text-decoration-none">
-                            <i class="fab fa-pinterest fa-2x"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <hr class="bg-white mb-4">
-
-        <!-- Copyright -->
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <p class="mb-0">&copy; 2024 Boutique Femme. Tous droits réservés.</p>
-            </div>
-            <div class="col-md-6 text-md-end">
-                <a href="#" class="text-white text-decoration-none me-3">Mentions légales</a>
-                <a href="#" class="text-white text-decoration-none me-3">CGV</a>
-                <a href="#" class="text-white text-decoration-none">Politique de confidentialité</a>
-            </div>
-        </div>
-    </div>
-</footer>
+				<!-- Navigation principale -->
+				<ul class="navbar-nav me-auto">
+					<li class="nav-item">
+						<a class="nav-link {{ app.request.get('_route') == 'home' ? 'active' : '' }}" href="{{ path('home') }}">
+							<i class="fas fa-home me-1"></i>Accueil
+						</a>
+					</li>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const myCarousel = new bootstrap.Carousel('#heroCarousel', {
-        interval: 5000,
-        wrap: true
-    });
+					<li class="nav-item ">
+						<a class="nav-link {{ app.request.get('_route') == 'products' ? 'active' : '' }} " href="{{ path('products') }}">
+							<i class="fas fa-tshirt me-1"></i>Boutique
+						</a>
+					</li>
 
-    // Animation au scroll pour la navbar
-    const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 100) {
-            navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.15)';
-            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-            navbar.style.backdropFilter = 'blur(10px)';
-        } else {
-            navbar.style.boxShadow = '0 2px 15px rgba(0,0,0,0.1)';
-            navbar.style.background = 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)';
-            navbar.style.backdropFilter = 'none';
-        }
-    });
+					<li class="nav-item">
+						<a class="nav-link {{ app.request.get('_route') == 'contact' ? 'active' : '' }}" href="{{ path('contact') }}">
+							<i class="fas fa-envelope me-1"></i>Contact
+						</a>
+					</li>
 
-    // Recherche (fonctionnalité de base)
-    const searchForms = document.querySelectorAll('.search-form');
-    searchForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const searchTerm = this.querySelector('input').value.trim();
-            if (searchTerm) {
-                window.location.href = '{{ path('products') }}?search=' + encodeURIComponent(searchTerm);
-            }
-        });
-    });
-});
-</script>
-</body>
-</html>
+
+				</ul>
+
+				<!-- Menu utilisateur -->
+				<ul class="navbar-nav align-items-center">
+					{% if is_granted('ROLE_ADMIN') %}
+						<!-- Menu admin -->
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle position-relative" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+								<div class="user-avatar me-2">
+									<i class="fas fa-cog"></i>
+								</div>
+								Admin
+								{% set pending_orders = count_pending_orders() %}
+								{% if pending_orders > 0 %}
+									<span class="badge admin-badge">{{ pending_orders }}</span>
+								{% endif %}
+							</a>
+							<ul class="dropdown-menu dropdown-menu-end">
+								<li>
+									<h6 class="dropdown-header">Administration</h6>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{ path('admin_dashboard') }}">
+										<i class="fas fa-tachometer-alt me-2"></i>Dashboard
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{ path('admin_products') }}">
+										<i class="fas fa-tshirt me-2"></i>Produits
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{ path('admin_orders') }}">
+										<i class="fas fa-shopping-cart me-2"></i>Commandes
+										{% if pending_orders > 0 %}
+											<span class="badge bg-danger float-end">{{ pending_orders }}</span>
+										{% endif %}
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{ path('admin_slider') }}">
+										<i class="fas fa-images me-2"></i>Slider
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{ path('admin_categories') }}">
+										<i class="fas fa-tags me-2"></i>Catégories
+									</a>
+								</li>
+
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<a class="dropdown-item" href="{{ path('app_logout') }}">
+										<i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+									</a>
+								</li>
+							</ul>
+						</li>
+					{% else %}
+						<!-- Menu utilisateur normal -->
+						{% if app.user %}
+							<li class="nav-item dropdown user-menu">
+								<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+									<div class="user-avatar me-2">
+										{{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+									</div>
+									Mon compte
+								</a>
+								<ul class="dropdown-menu dropdown-menu-end">
+									<li>
+										<h6 class="dropdown-header">Bonjour,
+											{{ app.user.firstName }}</h6>
+									</li>
+									<li>
+										<a class="dropdown-item" href="#">
+											<i class="fas fa-user me-2"></i>Mon profil
+										</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="#">
+											<i class="fas fa-history me-2"></i>Mes commandes
+										</a>
+									</li>
+									<li><hr class="dropdown-divider"></li>
+									<li>
+										<a class="dropdown-item" href="{{ path('app_logout') }}">
+											<i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+										</a>
+									</li>
+								</ul>
+							</li>
+						{% else %}
+							<li class="nav-item">
+								<a class="nav-link" href="{{ path('app_login') }}">
+									<i class="fas fa-sign-in-alt me-1"></i>Connexion
+								</a>
+							</li>
+						{% endif %}
+					{% endif %}
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	{% block body %}{% endblock %}
+
+	<!-- Footer (inchangé) -->
+	<footer class="bg-dark text-white pt-5 pb-4">
+		<div class="container">
+			<div
+				class="row">
+				<!-- Colonne 1: À propos -->
+				<div class="col-lg-4 col-md-6 mb-4">
+					<h5 class="text-uppercase mb-4">Boutique Femme</h5>
+					<p>
+						Découvrez notre collection exclusive de vêtements féminins. 
+																		                    Qualité, élégance et style pour toutes les occasions.
+					</p>
+					<div class="mt-4">
+						<h6>Paiement sécurisé</h6>
+						<div class="d-flex gap-2">
+							<i class="fab fa-cc-visa fa-2x text-muted"></i>
+							<i class="fab fa-cc-mastercard fa-2x text-muted"></i>
+							<i class="fab fa-cc-paypal fa-2x text-muted"></i>
+						</div>
+					</div>
+				</div>
+
+				<!-- Colonne 2: Liens rapides -->
+				<div class="col-lg-2 col-md-6 mb-4">
+					<h5 class="text-uppercase mb-4">Navigation</h5>
+					<ul class="list-unstyled">
+						<li class="mb-2">
+							<a href="{{ path('home') }}" class="text-white text-decoration-none">
+								<i class="fas fa-home me-2"></i>Accueil
+							</a>
+						</li>
+						<li class="mb-2">
+							<a href="{{ path('products') }}" class="text-white text-decoration-none">
+								<i class="fas fa-tshirt me-2"></i>Produits
+							</a>
+						</li>
+						<li class="mb-2">
+							<a href="{{ path('contact') }}" class="text-white text-decoration-none">
+								<i class="fas fa-envelope me-2"></i>Contact
+							</a>
+						</li>
+						{% if is_granted('ROLE_ADMIN') %}
+							<li class="mb-2">
+								<a href="{{ path('admin_dashboard') }}" class="text-white text-decoration-none">
+									<i class="fas fa-cog me-2"></i>Administration
+								</a>
+							</li>
+
+						{% endif %}
+					</ul>
+				</div>
+
+				<!-- Colonne 3: Catégories -->
+				<div class="col-lg-2 col-md-6 mb-4">
+					<h5 class="text-uppercase mb-4">Catégories</h5>
+					<ul class="list-unstyled">
+						<li class="mb-2">
+							<a href="{{ path('products', {'category': 'Robe'}) }}" class="text-white text-decoration-none">
+								Robes
+							</a>
+						</li>
+						<li class="mb-2">
+							<a href="{{ path('products', {'category': 'Jupe'}) }}" class="text-white text-decoration-none">
+								Jupes
+							</a>
+						</li>
+						<li class="mb-2">
+							<a href="{{ path('products', {'category': 'Pantalon'}) }}" class="text-white text-decoration-none">
+								Pantalons
+							</a>
+						</li>
+						<li class="mb-2">
+							<a href="{{ path('products', {'category': 'Haut'}) }}" class="text-white text-decoration-none">
+								Hauts
+							</a>
+						</li>
+					</ul>
+				</div>
+
+				<!-- Colonne 4: Contact -->
+				<div class="col-lg-4 col-md-6 mb-4">
+					<h5 class="text-uppercase mb-4">Contact & Réseaux</h5>
+					<ul class="list-unstyled">
+						<li class="mb-3">
+							<i class="fas fa-map-marker-alt me-3 text-primary"></i>
+							123 Rue de la Mode, 75001 Paris
+						</li>
+						<li class="mb-3">
+							<i class="fas fa-phone me-3 text-primary"></i>
+							<a href="tel:+33123456789" class="text-white text-decoration-none">01 23 45 67 89</a>
+						</li>
+						<li class="mb-3">
+							<i class="fas fa-envelope me-3 text-primary"></i>
+							<a href="mailto:contact@boutique-femme.com" class="text-white text-decoration-none">
+								contact@boutique-femme.com
+							</a>
+						</li>
+					</ul>
+
+					<!-- Réseaux sociaux -->
+					<div class="mt-4">
+						<h6>Suivez-nous</h6>
+						<div class="d-flex gap-3">
+							<a href="#" class="text-white text-decoration-none">
+								<i class="fab fa-facebook fa-2x"></i>
+							</a>
+							<a href="#" class="text-white text-decoration-none">
+								<i class="fab fa-instagram fa-2x"></i>
+							</a>
+							<a href="#" class="text-white text-decoration-none">
+								<i class="fab fa-tiktok fa-2x"></i>
+							</a>
+							<a href="#" class="text-white text-decoration-none">
+								<i class="fab fa-pinterest fa-2x"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<hr
+			class="bg-white mb-4">
+
+			<!-- Copyright -->
+			<div class="row align-items-center">
+				<div class="col-md-6">
+					<p class="mb-0">&copy; 2024 Boutique Femme. Tous droits réservés.</p>
+				</div>
+				<div class="col-md-6 text-md-end">
+					<a href="#" class="text-white text-decoration-none me-3">Mentions légales</a>
+					<a href="#" class="text-white text-decoration-none me-3">CGV</a>
+					<a href="#" class="text-white text-decoration-none">Politique de confidentialité</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+
+	 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+ <script>
+		document.addEventListener('DOMContentLoaded', function() {
+		    const myCarousel = new bootstrap.Carousel('#heroCarousel', {
+		        interval: 5000,
+		        wrap: true
+		    });
+		
+		    // Animation au scroll pour la navbar
+		    const navbar = document.querySelector('.navbar');
+		    window.addEventListener('scroll', function() {
+		        if (window.scrollY > 100) {
+		            navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.15)';
+		            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+		            navbar.style.backdropFilter = 'blur(10px)';
+		        } else {
+		            navbar.style.boxShadow = '0 2px 15px rgba(0,0,0,0.1)';
+		            navbar.style.background = 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)';
+		            navbar.style.backdropFilter = 'none';
+		        }
+		    });
+		
+		    // Recherche (fonctionnalité de base)
+		    const searchForms = document.querySelectorAll('.search-form');
+		    searchForms.forEach(form => {
+		        form.addEventListener('submit', function(e) {
+		            e.preventDefault();
+		            const searchTerm = this.querySelector('input').value.trim();
+		            if (searchTerm) {
+		                window.location.href = '{{ path('products') }}?search=' + encodeURIComponent(searchTerm);
+		            }
+		        });
+		    });
+		});
+		</script>
+	 <script>
+	document.addEventListener('DOMContentLoaded', function() {
+	    // Configuration de la recherche
+	    const searchInputs = document.querySelectorAll('#searchInputDesktop, #searchInputMobile');
+	    let searchTimeout;
+	
+	    // Fonction pour les suggestions de recherche
+	    function fetchSuggestions(query) {
+	        if (query.length < 2) return;
+	
+	        fetch(`/search/suggestions?q=${encodeURIComponent(query)}`)
+	            .then(response => response.json())
+	            .then(suggestions => {
+	                showSuggestions(suggestions, query);
+	            })
+	            .catch(error => console.error('Erreur suggestions:', error));
+	    }
+	
+	    // Écouteurs d'événements pour les inputs de recherche
+	    searchInputs.forEach(input => {
+	        // Recherche en temps réel après 500ms de pause
+	        input.addEventListener('input', function() {
+	            clearTimeout(searchTimeout);
+	            searchTimeout = setTimeout(() => {
+	                const query = this.value.trim();
+	                if (query.length >= 2) {
+	                    fetchSuggestions(query);
+	                }
+	            }, 500);
+	        });
+	
+	        // Recherche directe sur Enter
+	        input.addEventListener('keypress', function(e) {
+	            if (e.key === 'Enter') {
+	                const query = this.value.trim();
+	                if (query.length > 0) {
+	                    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+	                }
+	                e.preventDefault();
+	            }
+	        });
+	
+	        // Cacher les suggestions en perdant le focus
+	        input.addEventListener('blur', function() {
+	            setTimeout(() => {
+	                hideSuggestions();
+	            }, 200);
+	        });
+	    });
+	
+	    // Fonctions pour afficher/cacher les suggestions
+	    function showSuggestions(suggestions, query) {
+	        hideSuggestions();
+	
+	        if (suggestions.length === 0) return;
+	
+	        const suggestionsHTML = suggestions.map(suggestion => 
+	            `<div class="suggestion-item" onclick="selectSuggestion('${suggestion.replace(/'/g, "\\'")}')">
+	                <i class="fas fa-search me-2 text-muted"></i>
+	                ${highlightMatch(suggestion, query)}
+	            </div>`
+	        ).join('');
+	
+	        const suggestionsDiv = document.createElement('div');
+	        suggestionsDiv.className = 'search-suggestions';
+	        suggestionsDiv.innerHTML = suggestionsHTML;
+	
+	        searchInputs.forEach(input => {
+	            if (input === document.activeElement) {
+	                input.parentNode.appendChild(suggestionsDiv);
+	            }
+	        });
+	    }
+	
+	    function hideSuggestions() {
+	        const existingSuggestions = document.querySelector('.search-suggestions');
+	        if (existingSuggestions) {
+	            existingSuggestions.remove();
+	        }
+	    }
+	
+	    // Fonction globale pour sélectionner une suggestion
+	    window.selectSuggestion = function(suggestion) {
+	        searchInputs.forEach(input => {
+	            input.value = suggestion;
+	        });
+	        hideSuggestions();
+	        
+	        // Rediriger vers la recherche
+	        window.location.href = `/search?q=${encodeURIComponent(suggestion)}`;
+	    };
+	
+	    // Fonction pour surligner les correspondances
+	    function highlightMatch(text, query) {
+	        const regex = new RegExp(`(${query})`, 'gi');
+	        return text.replace(regex, '<mark>$1</mark>');
+	    }
+	});
+	
+	// Style pour les suggestions
+	const style = document.createElement('style');
+	style.textContent = `
+	    .search-suggestions {
+	        position: absolute;
+	        top: 100%;
+	        left: 0;
+	        right: 0;
+	        background: white;
+	        border: 1px solid #dee2e6;
+	        border-top: none;
+	        border-radius: 0 0 0.375rem 0.375rem;
+	        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+	        z-index: 1000;
+	        max-height: 200px;
+	        overflow-y: auto;
+	    }
+	    .suggestion-item {
+	        padding: 0.75rem 1rem;
+	        cursor: pointer;
+	        border-bottom: 1px solid #f8f9fa;
+	        transition: background-color 0.2s;
+	    }
+	    .suggestion-item:hover {
+	        background-color: #f8f9fa;
+	    }
+	    .suggestion-item:last-child {
+	        border-bottom: none;
+	    }
+	    .suggestion-item mark {
+	        background-color: #fff3cd;
+	        padding: 0;
+	    }
+	    .input-group {
+	        position: relative;
+	    }
+	`;
+	document.head.appendChild(style);
+	</script>
+</body></html>
