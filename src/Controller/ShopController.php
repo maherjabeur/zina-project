@@ -48,7 +48,7 @@ class ShopController extends AbstractController
         $products = $paginator->paginate(
             $query,
             $page,
-            12 // limite par page
+            2 // limite par page
         );
         
         $categories = $categoryRepository->findActiveCategories();

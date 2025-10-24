@@ -16,8 +16,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_products') }}">
+                        <a class="nav-link " href="{{ path('admin_products') }}">
                             <i class="fas fa-tshirt"></i> Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{ path('admin_sizes') }}">
+                            <i class="fas fa-ruler"></i> Tailles
                         </a>
                     </li>
                     <li class="nav-item">
@@ -25,9 +30,19 @@
                             <i class="fas fa-tags"></i> Catégories
                         </a>
                     </li>
-                    <li class="nav-item">
+                      <li class="nav-item">
                         <a class="nav-link" href="{{ path('admin_orders') }}">
-                            <i class="fas fa-shopping-cart"></i> Commandes
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                            {% set pending_orders = count_pending_orders() %}
+                            {% if pending_orders > 0 %}
+                                <span class="badge bg-danger">{{ pending_orders }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_slider') }}">
+                            <i class="fas fa-images"></i> Slider
                         </a>
                     </li>
                 </ul>

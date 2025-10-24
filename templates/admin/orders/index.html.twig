@@ -193,7 +193,7 @@
 									</small>
 								</div>
 								<div>
-									{{ knp_pagination_render(orders, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig') }}
+									{{ knp_pagination_render(orders, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig', {'translation_domain': 'messages'}) }}
 								</div>
 							</div>
 						{% else %}

@@ -23,7 +23,11 @@ class AdminController extends AbstractController
     #[Route('/', name: 'admin_dashboard')]
     public function dashboard(OrderRepository $orderRepository): Response
     {
-        $pendingOrders = $orderRepository->findBy(['status' => 'pending']);
+        $pendingOrders = $orderRepository->findBy(
+            ['status' => 'pending'], // critères
+            ['id' => 'DESC'],         // tri (optionnel)
+            10                       // limite
+        );
         $recentOrders = $orderRepository->findRecentOrders(10);
 
         return $this->render('admin/dashboard.html.twig', [

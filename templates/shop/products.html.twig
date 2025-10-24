@@ -5,7 +5,7 @@
     {% if currentCategory %}
         {{ categories|filter(c => c.slug == currentCategory)|first.name }} - Boutique
     {% else %}
-        Nos Produits - Boutique Femme
+        Nos Produits - Bella Couture
     {% endif %}
 {% endblock %}
 
@@ -148,7 +148,7 @@
 
                 <!-- Pagination -->
                 <div class="d-flex justify-content-center mt-5">
-                    {{ knp_pagination_render(products, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig') }}
+                    {{ knp_pagination_render(products, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig', {'translation_domain': 'messages'}) }}
                 </div>
             {% else %}
                 <div class="text-center py-5">

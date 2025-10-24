@@ -1,0 +1,5 @@
+knp_pagination:
+    previous: « Précédent »
+    next: « Suivant »
+    first: « Premier »
+    last: « Dernier »

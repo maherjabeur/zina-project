@@ -2,6 +2,7 @@
 // src/Service/NotificationService.php
 namespace App\Service;
 
+use App\Entity\Contact;
 use App\Entity\Order;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;

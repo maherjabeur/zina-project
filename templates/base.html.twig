@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>
-			{% block title %}Boutique Femme - Mode Féminine Élégante
+			{% block title %}Bella Couture - Mode Féminine Élégante
 			{% endblock %}
 		</title>
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -203,7 +203,7 @@
 			<!-- Logo -->
 			<a class="navbar-brand" href="{{ path('home') }}">
 				<i class="fas fa-crown me-2"></i>
-				Boutique Femme
+				Bella Couture
 			</a>
 
 			<form class="search-form d-none d-lg-flex me-3" method="GET" action="{{ path('search') }}">
@@ -370,15 +370,22 @@
 									</li>
 								</ul>
 							</li>
-						{% else %}
-							
+							{% else %}
+
 						{% endif %}
 					{% endif %}
 				</ul>
 			</div>
 		</div>
 	</nav>
-
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div class="alert alert-{{ label }} alert-dismissible fade show mx-3 my-2" role="alert">
+				{{ message }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endfor %}
+	{% endfor %}
 	{% block body %}{% endblock %}
 
 	<!-- Footer (inchangé) -->
@@ -388,23 +395,16 @@
 				class="row">
 				<!-- Colonne 1: À propos -->
 				<div class="col-lg-4 col-md-6 mb-4">
-					<h5 class="text-uppercase mb-4">Boutique Femme</h5>
+					<h5 class="text-uppercase mb-4">Bella Couture</h5>
 					<p>
 						Découvrez notre collection exclusive de vêtements féminins. 
-																								                    Qualité, élégance et style pour toutes les occasions.
+																														                    Qualité, élégance et style pour toutes les occasions.
 					</p>
-					<div class="mt-4">
-						<h6>Paiement sécurisé</h6>
-						<div class="d-flex gap-2">
-							<i class="fab fa-cc-visa fa-2x text-muted"></i>
-							<i class="fab fa-cc-mastercard fa-2x text-muted"></i>
-							<i class="fab fa-cc-paypal fa-2x text-muted"></i>
-						</div>
-					</div>
+					
 				</div>
 
 				<!-- Colonne 2: Liens rapides -->
-				<div class="col-lg-2 col-md-6 mb-4">
+				<div class="col-lg-4 col-md-6 mb-4">
 					<h5 class="text-uppercase mb-4">Navigation</h5>
 					<ul class="list-unstyled">
 						<li class="mb-2">
@@ -433,32 +433,7 @@
 					</ul>
 				</div>
 
-				<!-- Colonne 3: Catégories -->
-				<div class="col-lg-2 col-md-6 mb-4">
-					<h5 class="text-uppercase mb-4">Catégories</h5>
-					<ul class="list-unstyled">
-						<li class="mb-2">
-							<a href="{{ path('products', {'category': 'Robe'}) }}" class="text-white text-decoration-none">
-								Robes
-							</a>
-						</li>
-						<li class="mb-2">
-							<a href="{{ path('products', {'category': 'Jupe'}) }}" class="text-white text-decoration-none">
-								Jupes
-							</a>
-						</li>
-						<li class="mb-2">
-							<a href="{{ path('products', {'category': 'Pantalon'}) }}" class="text-white text-decoration-none">
-								Pantalons
-							</a>
-						</li>
-						<li class="mb-2">
-							<a href="{{ path('products', {'category': 'Haut'}) }}" class="text-white text-decoration-none">
-								Hauts
-							</a>
-						</li>
-					</ul>
-				</div>
+			
 
 				<!-- Colonne 4: Contact -->
 				<div class="col-lg-4 col-md-6 mb-4">
@@ -493,9 +468,7 @@
 							<a href="#" class="text-white text-decoration-none">
 								<i class="fab fa-tiktok fa-2x"></i>
 							</a>
-							<a href="#" class="text-white text-decoration-none">
-								<i class="fab fa-pinterest fa-2x"></i>
-							</a>
+							
 						</div>
 					</div>
 				</div>
@@ -507,11 +480,11 @@
 			<!-- Copyright -->
 			<div class="row align-items-center">
 				<div class="col-md-6">
-					<p class="mb-0">&copy; 2025 Boutique Femme. Tous droits réservés.</p>
+					<p class="mb-0">&copy; 2025 Bella Couture. Tous droits réservés.</p>
 				</div>
 				<div class="col-md-6 text-md-end">
 					<a href="#" class="text-white text-decoration-none me-3">Developpé par :</a>
-                    <a href="https://www.linkedin.com/in/maher-jaber-110b14b8/" class="text-white text-decoration-none me-3">Maher Jabeur</a>
+					<a href="https://www.linkedin.com/in/maher-jaber-110b14b8/" class="text-white text-decoration-none me-3">Maher Jabeur</a>
 				</div>
 			</div>
 		</div>
@@ -554,141 +527,141 @@
 		});
 		</script>
 	 <script>
-		document.addEventListener('DOMContentLoaded', function() {
-		    // Configuration de la recherche
-		    const searchInputs = document.querySelectorAll('#searchInputDesktop, #searchInputMobile');
-		    let searchTimeout;
-		
-		    // Fonction pour les suggestions de recherche
-		    function fetchSuggestions(query) {
-		        if (query.length < 2) return;
-		
-		        fetch(`/search/suggestions?q=${encodeURIComponent(query)}`)
-		            .then(response => response.json())
-		            .then(suggestions => {
-		                showSuggestions(suggestions, query);
-		            })
-		            .catch(error => console.error('Erreur suggestions:', error));
-		    }
-		
-		    // Écouteurs d'événements pour les inputs de recherche
-		    searchInputs.forEach(input => {
-		        // Recherche en temps réel après 500ms de pause
-		        input.addEventListener('input', function() {
-		            clearTimeout(searchTimeout);
-		            searchTimeout = setTimeout(() => {
-		                const query = this.value.trim();
-		                if (query.length >= 2) {
-		                    fetchSuggestions(query);
-		                }
-		            }, 500);
-		        });
-		
-		        // Recherche directe sur Enter
-		        input.addEventListener('keypress', function(e) {
-		            if (e.key === 'Enter') {
-		                const query = this.value.trim();
-		                if (query.length > 0) {
-		                    window.location.href = `/search?q=${encodeURIComponent(query)}`;
-		                }
-		                e.preventDefault();
-		            }
-		        });
-		
-		        // Cacher les suggestions en perdant le focus
-		        input.addEventListener('blur', function() {
-		            setTimeout(() => {
-		                hideSuggestions();
-		            }, 200);
-		        });
-		    });
-		
-		    // Fonctions pour afficher/cacher les suggestions
-		    function showSuggestions(suggestions, query) {
-		        hideSuggestions();
-		
-		        if (suggestions.length === 0) return;
-		
-		        const suggestionsHTML = suggestions.map(suggestion => 
-		            `<div class="suggestion-item" onclick="selectSuggestion('${suggestion.replace(/'/g, "\\'")}')">
-		                <i class="fas fa-search me-2 text-muted"></i>
-		                ${highlightMatch(suggestion, query)}
-		            </div>`
-		        ).join('');
-		
-		        const suggestionsDiv = document.createElement('div');
-		        suggestionsDiv.className = 'search-suggestions';
-		        suggestionsDiv.innerHTML = suggestionsHTML;
-		
-		        searchInputs.forEach(input => {
-		            if (input === document.activeElement) {
-		                input.parentNode.appendChild(suggestionsDiv);
-		            }
-		        });
-		    }
-		
-		    function hideSuggestions() {
-		        const existingSuggestions = document.querySelector('.search-suggestions');
-		        if (existingSuggestions) {
-		            existingSuggestions.remove();
-		        }
-		    }
-		
-		    // Fonction globale pour sélectionner une suggestion
-		    window.selectSuggestion = function(suggestion) {
-		        searchInputs.forEach(input => {
-		            input.value = suggestion;
-		        });
-		        hideSuggestions();
-		        
-		        // Rediriger vers la recherche
-		        window.location.href = `/search?q=${encodeURIComponent(suggestion)}`;
-		    };
-		
-		    // Fonction pour surligner les correspondances
-		    function highlightMatch(text, query) {
-		        const regex = new RegExp(`(${query})`, 'gi');
-		        return text.replace(regex, '<mark>$1</mark>');
-		    }
-		});
-		
-		// Style pour les suggestions
-		const style = document.createElement('style');
-		style.textContent = `
-		    .search-suggestions {
-		        position: absolute;
-		        top: 100%;
-		        left: 0;
-		        right: 0;
-		        background: white;
-		        border: 1px solid #dee2e6;
-		        border-top: none;
-		        border-radius: 0 0 0.375rem 0.375rem;
-		        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-		        z-index: 1000;
-		        max-height: 200px;
-		        overflow-y: auto;
-		    }
-		    .suggestion-item {
-		        padding: 0.75rem 1rem;
-		        cursor: pointer;
-		        border-bottom: 1px solid #f8f9fa;
-		        transition: background-color 0.2s;
-		    }
-		    .suggestion-item:hover {
-		        background-color: #f8f9fa;
-		    }
-		    .suggestion-item:last-child {
-		        border-bottom: none;
-		    }
-		    .suggestion-item mark {
-		        background-color: #fff3cd;
-		        padding: 0;
-		    }
-		    .input-group {
-		        position: relative;
-		    }
-		`;
-		document.head.appendChild(style);
-		</script>
+			document.addEventListener('DOMContentLoaded', function() {
+			    // Configuration de la recherche
+			    const searchInputs = document.querySelectorAll('#searchInputDesktop, #searchInputMobile');
+			    let searchTimeout;
+			
+			    // Fonction pour les suggestions de recherche
+			    function fetchSuggestions(query) {
+			        if (query.length < 2) return;
+			
+			        fetch(`/search/suggestions?q=${encodeURIComponent(query)}`)
+			            .then(response => response.json())
+			            .then(suggestions => {
+			                showSuggestions(suggestions, query);
+			            })
+			            .catch(error => console.error('Erreur suggestions:', error));
+			    }
+			
+			    // Écouteurs d'événements pour les inputs de recherche
+			    searchInputs.forEach(input => {
+			        // Recherche en temps réel après 500ms de pause
+			        input.addEventListener('input', function() {
+			            clearTimeout(searchTimeout);
+			            searchTimeout = setTimeout(() => {
+			                const query = this.value.trim();
+			                if (query.length >= 2) {
+			                    fetchSuggestions(query);
+			                }
+			            }, 500);
+			        });
+			
+			        // Recherche directe sur Enter
+			        input.addEventListener('keypress', function(e) {
+			            if (e.key === 'Enter') {
+			                const query = this.value.trim();
+			                if (query.length > 0) {
+			                    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+			                }
+			                e.preventDefault();
+			            }
+			        });
+			
+			        // Cacher les suggestions en perdant le focus
+			        input.addEventListener('blur', function() {
+			            setTimeout(() => {
+			                hideSuggestions();
+			            }, 200);
+			        });
+			    });
+			
+			    // Fonctions pour afficher/cacher les suggestions
+			    function showSuggestions(suggestions, query) {
+			        hideSuggestions();
+			
+			        if (suggestions.length === 0) return;
+			
+			        const suggestionsHTML = suggestions.map(suggestion => 
+			            `<div class="suggestion-item" onclick="selectSuggestion('${suggestion.replace(/'/g, "\\'")}')">
+			                <i class="fas fa-search me-2 text-muted"></i>
+			                ${highlightMatch(suggestion, query)}
+			            </div>`
+			        ).join('');
+			
+			        const suggestionsDiv = document.createElement('div');
+			        suggestionsDiv.className = 'search-suggestions';
+			        suggestionsDiv.innerHTML = suggestionsHTML;
+			
+			        searchInputs.forEach(input => {
+			            if (input === document.activeElement) {
+			                input.parentNode.appendChild(suggestionsDiv);
+			            }
+			        });
+			    }
+			
+			    function hideSuggestions() {
+			        const existingSuggestions = document.querySelector('.search-suggestions');
+			        if (existingSuggestions) {
+			            existingSuggestions.remove();
+			        }
+			    }
+			
+			    // Fonction globale pour sélectionner une suggestion
+			    window.selectSuggestion = function(suggestion) {
+			        searchInputs.forEach(input => {
+			            input.value = suggestion;
+			        });
+			        hideSuggestions();
+			        
+			        // Rediriger vers la recherche
+			        window.location.href = `/search?q=${encodeURIComponent(suggestion)}`;
+			    };
+			
+			    // Fonction pour surligner les correspondances
+			    function highlightMatch(text, query) {
+			        const regex = new RegExp(`(${query})`, 'gi');
+			        return text.replace(regex, '<mark>$1</mark>');
+			    }
+			});
+			
+			// Style pour les suggestions
+			const style = document.createElement('style');
+			style.textContent = `
+			    .search-suggestions {
+			        position: absolute;
+			        top: 100%;
+			        left: 0;
+			        right: 0;
+			        background: white;
+			        border: 1px solid #dee2e6;
+			        border-top: none;
+			        border-radius: 0 0 0.375rem 0.375rem;
+			        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+			        z-index: 1000;
+			        max-height: 200px;
+			        overflow-y: auto;
+			    }
+			    .suggestion-item {
+			        padding: 0.75rem 1rem;
+			        cursor: pointer;
+			        border-bottom: 1px solid #f8f9fa;
+			        transition: background-color 0.2s;
+			    }
+			    .suggestion-item:hover {
+			        background-color: #f8f9fa;
+			    }
+			    .suggestion-item:last-child {
+			        border-bottom: none;
+			    }
+			    .suggestion-item mark {
+			        background-color: #fff3cd;
+			        padding: 0;
+			    }
+			    .input-group {
+			        position: relative;
+			    }
+			`;
+			document.head.appendChild(style);
+			</script>
 </body></html>
