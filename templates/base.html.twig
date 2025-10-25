@@ -207,7 +207,7 @@
 				Bella Couture
 			</a>
 
-			<form class="search-form d-none d-lg-flex me-3" method="GET" action="{{ path('search') }}">
+			<form class="search-form d-none d-sm-none d-lg-flex me-3" method="GET" action="{{ path('search') }}">
 				<div class="input-group">
 					<input type="text" class="form-control" name="q" placeholder="Rechercher un produit..." value="{{ app.request.query.get('q') }}" id="searchInputDesktop">
 					<button class="btn btn-outline-primary" type="submit">
@@ -243,15 +243,7 @@
 			<!-- Menu principal -->
 			<div
 				class="collapse navbar-collapse order-lg-2" id="navbarMain">
-				<!-- Barre de recherche (mobile) -->
-				<form class="search-form d-lg-none mb-3">
-					<div class="input-group">
-						<input type="text" class="form-control" placeholder="Rechercher un produit...">
-						<button class="btn btn-outline-primary" type="submit">
-							<i class="fas fa-search"></i>
-						</button>
-					</div>
-				</form>
+			
 
 				<!-- Navigation principale -->
 				<ul class="navbar-nav me-auto">
