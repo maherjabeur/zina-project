@@ -24,7 +24,11 @@
             <p><strong>Numéro de commande:</strong> {{ order.orderNumber }}</p>
             <p><strong>Client:</strong> {{ order.customerName }}</p>
             <p><strong>Téléphone:</strong> {{ order.customerPhone }}</p>
-            <p><strong>Email:</strong> {{ order.customerEmail }}</p>
+            {% if order.customerEmail %}
+    <p><strong>Email :</strong> {{ order.customerEmail }}</p>
+    {% else %}
+    <p><strong>Email :</strong> <span style="color: #dc3545;">Non fourni</span></p>
+    {% endif %}
             <p><strong>Date:</strong> {{ order.createdAt|date('d/m/Y H:i') }}</p>
             <p><strong>Total:</strong> {{ order.total }} Dt</p>
         </div>

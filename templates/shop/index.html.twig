@@ -73,14 +73,19 @@
                                 </p>
                                 <div class="mt-auto">
                                     <p class="h5 text-primary mb-2">{{ product.price }} Dt</p>
-                                    <p class="card-text small mb-2">
-                                        <span class="badge bg-light text-dark">
-                                            Taille: {{ product.size.name ?? product.size }}
-                                        </span><br>
-                                        <span class="badge bg-light text-dark">
-                                            Couleur: {{ product.color }}
-                                        </span>
-                                    </p>
+                                  <p class="card-text small mb-2">
+    {% if product.sizes|length > 0 %}
+        <span class="badge bg-light text-dark">
+            Tailles: 
+            {% for size in product.sizes %}
+                {{ size.name }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </span><br>
+    {% endif %}
+    <span class="badge bg-light text-dark">
+        Couleur: {{ product.color }}
+    </span>
+</p>
                                     <div class="d-grid gap-2">
                                         <a href="{{ path('product_detail', {'id': product.id}) }}" 
                                            class="btn btn-outline-primary">Voir détails</a>

@@ -3,6 +3,8 @@
 {% block title %}Nouveau Produit - Admin{% endblock %}
 
 {% block body %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
@@ -84,12 +86,12 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-4">
-                                    {{ form_row(form.size, {
-                                        'attr': {'class': 'form-control'},
-                                        'label': 'Taille'
-                                    }) }}
-                                </div>
+                              <div class="col-md-12">
+    {{ form_row(form.sizes, {
+        'attr': {'class': 'form-select'},
+        'label': 'Tailles disponibles'
+    }) }}
+</div>
                                 <div class="col-md-4">
                                     {{ form_row(form.color, {
                                         'attr': {'class': 'form-control'},
@@ -167,4 +169,14 @@
         </main>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.form-select[multiple]').select2({
+        placeholder: "Choisir les tailles",
+        allowClear: true
+    });
+});
+</script>
 {% endblock %}

@@ -28,9 +28,9 @@ class Product
     #[ORM\Column]
     private ?int $quantity = null;
 
-    #[ORM\ManyToOne(targetEntity: Size::class, inversedBy: 'products')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Size $size = null;
+    #[ORM\ManyToMany(targetEntity: Size::class, inversedBy: 'products')]
+    #[ORM\JoinTable(name: 'product_sizes')]
+    private Collection $sizes;
 
     #[ORM\Column(length: 50)]
     private ?string $color = null;
@@ -52,67 +52,170 @@ class Product
     {
         $this->images = new ArrayCollection();
         $this->createdAt = new \DateTime();
+        $this->sizes = new ArrayCollection();
     }
 
     // Getters et Setters complets
-    public function getId(): ?int { return $this->id; }
-    
-    public function getName(): ?string { return $this->name; }
-    public function setName(string $name): self { $this->name = $name; return $this; }
-    
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(string $description): self { $this->description = $description; return $this; }
-    
-    public function getPrice(): ?string { return $this->price; }
-    public function setPrice(string $price): self { $this->price = $price; return $this; }
-    
-    public function getQuantity(): ?int { return $this->quantity; }
-    public function setQuantity(int $quantity): self { $this->quantity = $quantity; return $this; }
-    
-    public function getSize(): ?Size { return $this->size; }
-    public function setSize(?Size $size): self { 
-        $this->size = $size;
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+    public function setName(string $name): self
+    {
+        $this->name = $name;
         return $this;
     }
-    
-    public function getColor(): ?string { return $this->color; }
-    public function setColor(string $color): self { $this->color = $color; return $this; }
-    
-    public function getCategory(): ?Category { return $this->category; }
-    public function setCategory(?Category $category): self { 
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+    public function setPrice(string $price): self
+    {
+        $this->price = $price;
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+    public function setQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
+
+    public function getSizes(): Collection
+    {
+        return $this->sizes;
+    }
+
+    public function addSize(Size $size): self
+    {
+        if (!$this->sizes->contains($size)) {
+            $this->sizes[] = $size;
+            $size->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSize(Size $size): self
+    {
+        if ($this->sizes->removeElement($size)) {
+            $size->removeProduct($this);
+        }
+
+        return $this;
+    }
+
+    // Méthode utilitaire pour vérifier si le produit a une taille spécifique
+    public function hasSize(Size $size): bool
+    {
+        return $this->sizes->contains($size);
+    }
+
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+    public function setColor(string $color): self
+    {
+        $this->color = $color;
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+    public function setCategory(?Category $category): self
+    {
         $this->category = $category;
         return $this;
     }
-    
+
     // Méthodes pour isActive
-    public function getIsActive(): bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): self { $this->isActive = $isActive; return $this; }
-    
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
     // Méthode alternative (convention Symfony)
-    public function isActive(): bool { return $this->isActive; }
-    
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeInterface $createdAt): self { $this->createdAt = $createdAt; return $this; }
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
     /**
      * @return Collection<int, ProductImage>
      */
-    public function getImages(): Collection { return $this->images; }
-    
-    public function addImage(ProductImage $image): self {
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(ProductImage $image): self
+    {
         if (!$this->images->contains($image)) {
             $this->images[] = $image;
             $image->setProduct($this);
         }
         return $this;
     }
-    
-    public function removeImage(ProductImage $image): self {
+
+    public function removeImage(ProductImage $image): self
+    {
         if ($this->images->removeElement($image)) {
             if ($image->getProduct() === $this) {
                 $image->setProduct(null);
             }
         }
         return $this;
+    }
+    public function getSizesAsString(): string
+    {
+        if ($this->sizes->count() === 0) {
+            return 'Aucune taille';
+        }
+
+        $sizeNames = [];
+        foreach ($this->sizes as $size) {
+            $sizeNames[] = $size->getName();
+        }
+
+        return implode(', ', $sizeNames);
     }
 }

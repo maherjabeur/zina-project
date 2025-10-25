@@ -19,7 +19,7 @@ class CheckoutController extends AbstractController
     public function index(SessionInterface $session, ProductRepository $productRepository): Response
     {
         $cart = $session->get('cart', []);
-        
+
         if (empty($cart)) {
             $this->addFlash('warning', 'Votre panier est vide');
             return $this->redirectToRoute('products');
@@ -51,7 +51,7 @@ class CheckoutController extends AbstractController
         ]);
     }
 
-   
+
     #[Route('/checkout/process', name: 'checkout_process', methods: ['POST'])]
     public function process(
         Request $request,
@@ -61,7 +61,7 @@ class CheckoutController extends AbstractController
         NotificationService $notificationService
     ): Response {
         $cart = $session->get('cart', []);
-        
+
         if (empty($cart)) {
             $this->addFlash('error', 'Votre panier est vide');
             return $this->redirectToRoute('products');
@@ -119,7 +119,13 @@ class CheckoutController extends AbstractController
                 $orderItem->setProduct($product);
                 $orderItem->setQuantity($quantity);
                 $orderItem->setUnitPrice($product->getPrice());
-                $orderItem->setSize($product->getSize());
+                if ($product->getSizes()->count() > 0) {
+                    $sizes = [];
+                    foreach ($product->getSizes() as $size) {
+                        $sizes[] = $size->getName();
+                    }
+                    $orderItem->setSize(implode(', ', $sizes));
+                }
                 $orderItem->setColor($product->getColor());
                 $orderItem->setOrder($order);
 
@@ -156,7 +162,7 @@ class CheckoutController extends AbstractController
         // Vider le panier
         $session->remove('cart');
 
-        $this->addFlash('success', 'Votre commande a été passée avec succès !' . 
+        $this->addFlash('success', 'Votre commande a été passée avec succès !' .
             ($customerEmail ? ' Vous recevrez un email de confirmation.' : ' Votre numéro de téléphone a été enregistré.'));
 
         return $this->redirectToRoute('checkout_success', ['id' => $order->getId()]);

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Product;
 use App\Entity\Category;
 use App\Entity\Size;
+use App\Repository\SizeRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -44,12 +45,22 @@ class ProductType extends AbstractType
                 'attr' => ['class' => 'form-select'],
                 'placeholder' => 'Choisir une catégorie...'
             ])
-            ->add('size', EntityType::class, [
-                'label' => 'Taille *',
+            ->add('sizes', EntityType::class, [
                 'class' => Size::class,
                 'choice_label' => 'name',
-                'attr' => ['class' => 'form-select'],
-                'placeholder' => 'Choisir une taille...'
+                'multiple' => true, // Permettre la sélection multiple
+                'expanded' => false, // Ou true pour des checkboxes
+                'query_builder' => function (SizeRepository $sizeRepository) {
+                    return $sizeRepository->createQueryBuilder('s')
+                        ->where('s.isActive = :active')
+                        ->setParameter('active', true)
+                        ->orderBy('s.position', 'ASC');
+                },
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-placeholder' => 'Choisir les tailles'
+                ],
+                'label' => 'Tailles'
             ])
             ->add('color', TextType::class, [
                 'label' => 'Couleur *',

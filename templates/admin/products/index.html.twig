@@ -139,7 +139,15 @@
 														{{ product.quantity }}
 													</span>
 												</td>
-												<td>{{ product.size }}</td>
+<td>
+    {% if product.sizes|length > 0 %}
+        {% for size in product.sizes %}
+            <span class="badge bg-light text-dark me-1">{{ size.name }}</span>
+        {% endfor %}
+    {% else %}
+        <span class="text-muted">Aucune</span>
+    {% endif %}
+</td>
 												<td>
 													<span class="badge bg-light text-dark">{{ product.color }}</span>
 												</td>

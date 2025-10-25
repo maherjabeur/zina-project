@@ -36,7 +36,7 @@ class Size
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $updatedAt;
 
-    #[ORM\OneToMany(mappedBy: 'size', targetEntity: Product::class)]
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'sizes')]
     private Collection $products;
 
     public function __construct()
@@ -93,23 +93,27 @@ class Size
         return $this;
     }
 
-    /**
-     * @return Collection<int, Product>
-     */
-    public function getProducts(): Collection { return $this->products; }
-    public function addProduct(Product $product): self {
+     public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): self
+    {
         if (!$this->products->contains($product)) {
             $this->products[] = $product;
-            $product->setSize($this);
+            $product->addSize($this);
         }
+
         return $this;
     }
-    public function removeProduct(Product $product): self {
+
+    public function removeProduct(Product $product): self
+    {
         if ($this->products->removeElement($product)) {
-            if ($product->getSize() === $this) {
-                $product->setSize(null);
-            }
+            $product->removeSize($this);
         }
+
         return $this;
     }
 

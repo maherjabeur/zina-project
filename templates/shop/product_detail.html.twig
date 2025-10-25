@@ -57,7 +57,16 @@
                 <div class="card-body">
                     <h5 class="card-title">Informations produit</h5>
                     <ul class="list-unstyled">
-                        <li><strong>Taille :</strong> {{ product.size }}</li>
+                        <li>
+    <strong>Tailles :</strong> 
+    {% if product.sizes|length > 0 %}
+        {% for size in product.sizes %}
+            {{ size.name }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        <span class="text-muted">Aucune taille</span>
+    {% endif %}
+</li>
                         <li><strong>Couleur :</strong> {{ product.color }}</li>
                         <li><strong>Catégorie :</strong> {{ product.category }}</li>
                         <li>
