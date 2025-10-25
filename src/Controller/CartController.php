@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\Settings;
 use App\Repository\ProductRepository;
+use App\Repository\SettingRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CartController extends AbstractController
 {
     #[Route('/cart', name: 'cart')]
-    public function index(SessionInterface $session, ProductRepository $productRepository): Response
+    public function index(SettingRepository $settingRepository,SessionInterface $session, ProductRepository $productRepository): Response
     {
         $cart = $session->get('cart', []);
         $cartData = [];
@@ -30,10 +32,13 @@ class CartController extends AbstractController
                 $total += $product->getPrice() * $quantity;
             }
         }
-
+        $settings = $settingRepository->findOneBy([], ['id' => 'DESC']);
+        $shippingFee = $settings ? $settings->getShippingFee() : 0;
         return $this->render('cart/index.html.twig', [
+            'shippingFee' => $shippingFee,
             'cartData' => $cartData,
-            'total' => $total
+            'total' => $total,
+
         ]);
     }
 

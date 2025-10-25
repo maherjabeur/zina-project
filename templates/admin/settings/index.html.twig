@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paramètres de l'administration{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                   <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i> Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{ path('admin_sizes') }}">
+                            <i class="fas fa-ruler"></i> Tailles
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{ path('admin_categories') }}">
+                            <i class="fas fa-tags"></i> Catégories
+                        </a>
+                    </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                            {% set pending_orders = count_pending_orders() %}
+                            {% if pending_orders > 0 %}
+                                <span class="badge bg-danger">{{ pending_orders }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link " href="{{ path('admin_slider') }}">
+                            <i class="fas fa-images"></i> Slider
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_settings') }}">
+                            <i class="fas fa-dollar-sign"></i> Frais livraison
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Modifier les frais de livraison</h1>
+                
+            </div>
+             {{ form_start(form) }}
+<div class="row">
+                               
+                                <div class="col-md-12">
+                                    {{ form_row(form.shippingFee, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Frais livraison '
+                                    }) }}
+                                </div>
+                            </div>
+   
+        
+        <button class="btn btn-primary">Sauvegarder</button>
+    {{ form_end(form) }}
+    
+   
+         </main>
+    </div>
+</div>
+{% endblock %}

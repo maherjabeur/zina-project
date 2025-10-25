@@ -7,7 +7,7 @@
     <h1 class="mb-4">Mon Panier</h1>
 
     {% if cartData|length > 0 %}
-        {% set shipping = 8 %}
+        {% set shipping = shippingFee %}
         {% set totalWithShipping = total + shipping %}
 
         <div class="row">

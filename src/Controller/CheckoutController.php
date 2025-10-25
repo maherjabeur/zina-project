@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Repository\ProductRepository;
+use App\Repository\SettingRepository;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CheckoutController extends AbstractController
 {
     #[Route('/checkout', name: 'checkout')]
-    public function index(SessionInterface $session, ProductRepository $productRepository): Response
+    public function index(SettingRepository $settingRepository ,SessionInterface $session, ProductRepository $productRepository): Response
     {
         $cart = $session->get('cart', []);
 
@@ -44,8 +45,10 @@ class CheckoutController extends AbstractController
                 $total += $product->getPrice() * $quantity;
             }
         }
-
+        $settings = $settingRepository->findOneBy([], ['id' => 'DESC']);
+        $shippingFee = $settings ? $settings->getShippingFee() : 0;
         return $this->render('checkout/index.html.twig', [
+            'shippingFee' =>$shippingFee,
             'cartData' => $cartData,
             'total' => $total
         ]);
