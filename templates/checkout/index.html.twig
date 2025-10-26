@@ -1,9 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Commande - Bella Couture{% endblock %}
+{% block title %}Commande - Bella Couture
+{% endblock %}
 
 {% block body %}
-<div class="container my-5">
+<div class="container my-5" style="position: relative; z-index: 1;">
     <h1 class="mb-4">Finaliser ma commande</h1>
 
     <div class="row">
@@ -18,27 +19,24 @@
                         <div class="row align-items-center mb-3 pb-3 border-bottom">
                             <div class="col-2">
                                 {% if item.product.images|length > 0 %}
-                                    <img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" 
-                                         class="img-fluid rounded" alt="{{ item.product.name }}"
-                                         style="height: 60px; object-fit: cover;">
+                                    <img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" class="img-fluid rounded" alt="{{ item.product.name }}" style="height: 60px; object-fit: cover;">
                                 {% else %}
-                                    <img src="{{ asset('images/placeholder.jpg') }}" 
-                                         class="img-fluid rounded" alt="Image non disponible"
-                                         style="height: 60px; object-fit: cover;">
+                                    <img src="{{ asset('images/placeholder.jpg') }}" class="img-fluid rounded" alt="Image non disponible" style="height: 60px; object-fit: cover;">
                                 {% endif %}
                             </div>
                             <div class="col-6">
                                 <h6 class="mb-1">{{ item.product.name }}</h6>
                                 <p class="text-muted small mb-0">
-    {% if item.product.sizes|length > 0 %}
-        Tailles: 
-        {% for size in item.product.sizes %}
-            {{ size.name }}{% if not loop.last %}, {% endif %}
-        {% endfor %}
-        | 
-    {% endif %}
-    Couleur: {{ item.product.color }}
-</p>
+                                    {% if item.product.sizes|length > 0 %}
+                                        Tailles:
+                                        {% for size in item.product.sizes %}
+                                            {{ size.name }}
+                                            {% if not loop.last %},{% endif %}
+                                        {% endfor %}
+                                        |
+                                    {% endif %}
+                                    Couleur: {{ item.product.color }}
+                                </p>
                             </div>
                             <div class="col-2 text-center">
                                 <span class="text-muted">x{{ item.quantity }}</span>
@@ -48,7 +46,7 @@
                             </div>
                         </div>
                     {% endfor %}
-                    
+
                     {% set shipping = shippingFee %}
                     {% set totalWithShipping = total + shipping %}
 
@@ -68,43 +66,31 @@
                     <h5 class="mb-0">Informations de livraison</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ path('checkout_process') }}">
+                    <form method="POST" action="{{ path('checkout_process') }}" id="checkoutForm">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="customer_name" class="form-label">Nom complet *</label>
-                                <input type="text" class="form-control" id="customer_name" name="customer_name" 
-                                       value="" 
-                                       required>
+                                <input type="text" class="form-control" id="customer_name" name="customer_name" value="" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="customer_phone" class="form-label">Téléphone *</label>
-                                <input type="tel" class="form-control" id="customer_phone" name="customer_phone" 
-                                       value="" 
-                                       pattern="[0-9]{8}" 
-                                       title="Veuillez entrer un numéro de téléphone valide (8 chiffres)"
-                                       required>
+                                <input type="tel" class="form-control" id="customer_phone" name="customer_phone" value="" pattern="[0-9]{8}" title="Veuillez entrer un numéro de téléphone valide (8 chiffres)" required>
                                 <div class="form-text">Format: 12345678</div>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="customer_email" class="form-label">Email (optionnel)</label>
-                            <input type="email" class="form-control" id="customer_email" name="customer_email" 
-                                   value=""
-                                   placeholder="email@exemple.com">
+                            <input type="email" class="form-control" id="customer_email" name="customer_email" value="" placeholder="email@exemple.com">
                             <div class="form-text">Pour recevoir la confirmation de commande</div>
                         </div>
 
                         <div class="mb-3">
                             <label for="shipping_address" class="form-label">Adresse de livraison *</label>
-                            <textarea class="form-control" id="shipping_address" name="shipping_address" 
-                                      rows="3" placeholder="Numéro, rue, code postal, ville..." required></textarea>
+                            <textarea class="form-control" id="shipping_address" name="shipping_address" rows="3" placeholder="Numéro, rue, code postal, ville..." required></textarea>
                         </div>
 
-
                         <input type="hidden" name="shipping_cost" value="{{ shipping }}">
-
-                       
 
                         <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="terms" required>
@@ -115,10 +101,12 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg" id="payButton">
-                                <i class="fas fa-credit-card"></i> Confirmer et payer {{ totalWithShipping|number_format(2) }} DT
+                                <i class="fas fa-credit-card"></i>
+                                Confirmer et payer {{ totalWithShipping|number_format(2) }} DT
                             </button>
                             <a href="{{ path('cart') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Retour au panier
+                                <i class="fas fa-arrow-left"></i>
+                                Retour au panier
                             </a>
                         </div>
                     </form>
@@ -128,7 +116,7 @@
 
         <!-- Résumé de la commande -->
         <div class="col-md-4">
-            <div class="card sticky-top" style="top: 20px;">
+            <div class="card" style="position: sticky; top: 100px; z-index: 5;">
                 <div class="card-header">
                     <h5 class="mb-0">Votre commande</h5>
                 </div>
@@ -137,6 +125,16 @@
                         <span>Sous-total:</span>
                         <span>{{ total|number_format(2) }} DT</span>
                     </div>
+                    {% if totalDiscount > 0 %}
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>Réduction:</span>
+                            <span>-{{ totalDiscount|number_format(2) }} DT</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Sous-total après réduction:</span>
+                            <span>{{ totalWithDiscount|number_format(2) }} DT</span>
+                        </div>
+                    {% endif %}
                     <div class="d-flex justify-content-between mb-2">
                         <span>Livraison:</span>
                         <span>{{ shipping|number_format(2) }} DT</span>
@@ -171,75 +169,76 @@
 </div>
 
 <style>
-.sticky-top {
-    position: sticky;
-    top: 20px;
-    z-index: 1020;
-}
+    /* Correction du sticky */
+    .navbar.sticky-top {
+        z-index: 1020 !important;
+    }
+    
+    .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .card[style*="sticky"] {
+        z-index: 5 !important;
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    const submitButton = document.getElementById('payButton');
-    const totalDisplay = document.getElementById('totalDisplay');
-    const totalSidebar = document.getElementById('totalSidebar');
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('checkoutForm');
+        const submitButton = document.getElementById('payButton');
+        const totalDisplay = document.getElementById('totalDisplay');
+        const totalSidebar = document.getElementById('totalSidebar');
 
-    const baseTotal = {{ total }};
-    const shipping = 7;
-    const totalWithShipping = baseTotal + shipping;
+        const baseTotal = {{ total }};
+        const shipping = {{ shippingFee }};
+        const totalWithShipping = baseTotal + shipping;
 
-    totalDisplay.textContent = totalWithShipping.toFixed(2) + ' DT';
-    totalSidebar.textContent = totalWithShipping.toFixed(2) + ' DT';
-    submitButton.innerHTML = `<i class="fas fa-credit-card"></i> Confirmer et payer ${totalWithShipping.toFixed(2)} DT`;
+        // Mise à jour des totaux
+        totalDisplay.textContent = totalWithShipping.toFixed(2) + ' DT';
+        totalSidebar.textContent = totalWithShipping.toFixed(2) + ' DT';
+        
+        submitButton.innerHTML = `<i class="fas fa-credit-card"></i> Confirmer et payer ${totalWithShipping.toFixed(2)} DT`;
 
-    form.addEventListener('submit', function(e) {
-        if (!form.checkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        form.classList.add('was-validated');
+        // Validation du téléphone
+        document.getElementById('customer_phone').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 8) {
+                this.value = this.value.slice(0, 8);
+            }
+        });
 
-        if (form.checkValidity()) {
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement en cours...';
+        // Soumission du formulaire
+        form.addEventListener('submit', function (e) {
+            const phone = document.getElementById('customer_phone').value;
+            const email = document.getElementById('customer_email').value;
+
+            // Validation téléphone
+            if (phone.length !== 8) {
+                e.preventDefault();
+                alert('Veuillez entrer un numéro de téléphone valide (8 chiffres)');
+                return;
+            }
+
+            // Validation email optionnel
+            if (email && !isValidEmail(email)) {
+                e.preventDefault();
+                alert('Veuillez entrer un email valide ou laisser le champ vide');
+                return;
+            }
+
+            // Désactivation du bouton pendant le traitement
+            if (form.checkValidity()) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement en cours...';
+            }
+        });
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
         }
     });
-});
-// Validation du téléphone
-document.getElementById('customer_phone').addEventListener('input', function(e) {
-    // Supprimer tous les caractères non numériques
-    this.value = this.value.replace(/[^0-9]/g, '');
-    
-    // Limiter à 10 chiffres
-    if (this.value.length > 8) {
-        this.value = this.value.slice(0, 8);
-    }
-});
-
-// Validation du formulaire
-document.querySelector('form').addEventListener('submit', function(e) {
-    const phone = document.getElementById('customer_phone').value;
-    const email = document.getElementById('customer_email').value;
-    
-    // Validation téléphone
-    if (phone.length !== 8) {
-        e.preventDefault();
-        alert('Veuillez entrer un numéro de téléphone valide (10 chiffres)');
-        return;
-    }
-    
-    // Validation email optionnel mais si rempli doit être valide
-    if (email && !isValidEmail(email)) {
-        e.preventDefault();
-        alert('Veuillez entrer un email valide ou laisser le champ vide');
-        return;
-    }
-});
-
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
 </script>
 {% endblock %}

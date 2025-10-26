@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Repository\ProductRepository;
+use App\Repository\PromotionRepository;
 use App\Repository\SettingRepository;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,8 +18,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class CheckoutController extends AbstractController
 {
     #[Route('/checkout', name: 'checkout')]
-    public function index(SettingRepository $settingRepository ,SessionInterface $session, ProductRepository $productRepository): Response
-    {
+    public function index(
+        SettingRepository $settingRepository,
+        SessionInterface $session,
+        ProductRepository $productRepository,
+        PromotionRepository $promotionRepository
+    ): Response {
         $cart = $session->get('cart', []);
 
         if (empty($cart)) {
@@ -28,6 +33,8 @@ class CheckoutController extends AbstractController
 
         $cartData = [];
         $total = 0;
+        $totalDiscount = 0;
+        $totalWithDiscount = 0;
 
         foreach ($cart as $id => $quantity) {
             $product = $productRepository->find($id);
@@ -38,28 +45,50 @@ class CheckoutController extends AbstractController
                     return $this->redirectToRoute('cart');
                 }
 
+                // Trouver la meilleure promotion active pour ce produit
+                $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
+                $discount = 0;
+                $discountedPrice = $product->getPrice();
+
+                if ($bestPromotion && $bestPromotion->isValid()) {
+                    $discount = $bestPromotion->getDiscount();
+                    $discountedPrice = $bestPromotion->calculateDiscountedPrice($product->getPrice());
+                }
+
                 $cartData[] = [
                     'product' => $product,
-                    'quantity' => $quantity
+                    'quantity' => $quantity,
+                    'discount' => $discount,
+                    'discountedPrice' => $discountedPrice,
+                    'promotion' => $bestPromotion
                 ];
+
                 $total += $product->getPrice() * $quantity;
+                $totalDiscount += ($product->getPrice() - $discountedPrice) * $quantity;
+                $totalWithDiscount += $discountedPrice * $quantity;
             }
         }
+
         $settings = $settingRepository->findOneBy([], ['id' => 'DESC']);
         $shippingFee = $settings ? $settings->getShippingFee() : 0;
+        $finalTotal = $totalWithDiscount + $shippingFee;
+
         return $this->render('checkout/index.html.twig', [
-            'shippingFee' =>$shippingFee,
+            'shippingFee' => $shippingFee,
             'cartData' => $cartData,
-            'total' => $total
+            'total' => $total,
+            'totalDiscount' => $totalDiscount,
+            'totalWithDiscount' => $totalWithDiscount,
+            'finalTotal' => $finalTotal,
         ]);
     }
-
 
     #[Route('/checkout/process', name: 'checkout_process', methods: ['POST'])]
     public function process(
         Request $request,
         SessionInterface $session,
         ProductRepository $productRepository,
+        PromotionRepository $promotionRepository,
         EntityManagerInterface $entityManager,
         NotificationService $notificationService
     ): Response {
@@ -106,7 +135,7 @@ class CheckoutController extends AbstractController
         $order = new Order();
         $order->setCustomerName($customerName);
         $order->setCustomerPhone($customerPhone);
-        $order->setCustomerEmail($customerEmail ?: null); // null si vide
+        $order->setCustomerEmail($customerEmail ?: null);
         $order->setShippingAddress($shippingAddress);
 
         if ($this->getUser()) {
@@ -114,14 +143,28 @@ class CheckoutController extends AbstractController
         }
 
         $total = 0;
+        $totalDiscount = 0;
 
         foreach ($cart as $productId => $quantity) {
             $product = $productRepository->find($productId);
             if ($product && $product->getQuantity() >= $quantity) {
+                // Trouver la meilleure promotion active pour ce produit
+                $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
+                $unitPrice = $product->getPrice();
+                $discount = 0;
+
+                if ($bestPromotion && $bestPromotion->isValid()) {
+                    $discount = $bestPromotion->getDiscount();
+                    $unitPrice = $bestPromotion->calculateDiscountedPrice($product->getPrice());
+                }
+
                 $orderItem = new OrderItem();
                 $orderItem->setProduct($product);
                 $orderItem->setQuantity($quantity);
-                $orderItem->setUnitPrice($product->getPrice());
+                $orderItem->setUnitPrice($unitPrice);
+                $orderItem->setOriginalPrice($product->getPrice());
+                $orderItem->setDiscount($discount);
+
                 if ($product->getSizes()->count() > 0) {
                     $sizes = [];
                     foreach ($product->getSizes() as $size) {
@@ -133,7 +176,8 @@ class CheckoutController extends AbstractController
                 $orderItem->setOrder($order);
 
                 $entityManager->persist($orderItem);
-                $total += $product->getPrice() * $quantity;
+                $total += $unitPrice * $quantity;
+                $totalDiscount += ($product->getPrice() - $unitPrice) * $quantity;
 
                 // Mettre à jour le stock
                 $product->setQuantity($product->getQuantity() - $quantity);
@@ -141,6 +185,7 @@ class CheckoutController extends AbstractController
         }
 
         $order->setTotal($total);
+        $order->setDiscount($totalDiscount);
         $entityManager->persist($order);
         $entityManager->flush();
 
@@ -149,7 +194,6 @@ class CheckoutController extends AbstractController
             try {
                 $notificationService->sendOrderNotification($order);
             } catch (\Exception $e) {
-                // Log l'erreur mais ne bloque pas la commande
                 error_log('Erreur envoi email: ' . $e->getMessage());
                 $this->addFlash('warning', 'Votre commande a été passée mais l\'email de confirmation n\'a pas pu être envoyé');
             }

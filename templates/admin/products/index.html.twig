@@ -51,11 +51,18 @@
 								Slider
 							</a>
 						</li>
-						  <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_settings') }}">
-                            <i class="fas fa-dollar-sign"></i> Frais livraison
-                        </a>
-                    </li>
+						<li class="nav-item">
+							<a class="nav-link " href="{{ path('admin_settings') }}">
+								<i class="fas fa-dollar-sign"></i>
+								Frais livraison
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('admin_promotion_index') }}">
+								<i class="fas fa-gift"></i>
+								Promotions
+							</a>
+						</li>
 
 					</ul>
 				</div>
@@ -144,15 +151,15 @@
 														{{ product.quantity }}
 													</span>
 												</td>
-<td>
-    {% if product.sizes|length > 0 %}
-        {% for size in product.sizes %}
-            <span class="badge bg-light text-dark me-1">{{ size.name }}</span>
-        {% endfor %}
-    {% else %}
-        <span class="text-muted">Aucune</span>
-    {% endif %}
-</td>
+												<td>
+													{% if product.sizes|length > 0 %}
+														{% for size in product.sizes %}
+															<span class="badge bg-light text-dark me-1">{{ size.name }}</span>
+														{% endfor %}
+													{% else %}
+														<span class="text-muted">Aucune</span>
+													{% endif %}
+												</td>
 												<td>
 													<span class="badge bg-light text-dark">{{ product.color }}</span>
 												</td>

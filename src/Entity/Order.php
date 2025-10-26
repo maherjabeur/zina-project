@@ -66,6 +66,13 @@ class Order
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
+    private ?float $discount = null;
+
+
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
+    private ?float $originalTotal = null;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -80,6 +87,57 @@ class Order
         return $this->id;
     }
 
+    public function getDiscount(): ?float
+    {
+        return $this->discount;
+    }
+
+    public function setDiscount(?float $discount): static
+    {
+        $this->discount = $discount;
+        return $this;
+    }
+
+    public function getOriginalTotal(): ?float
+    {
+        return $this->originalTotal;
+    }
+
+    public function setOriginalTotal(?float $originalTotal): static
+    {
+        $this->originalTotal = $originalTotal;
+        return $this;
+    }
+
+    /**
+     * Calcule le montant total des économies
+     */
+    public function getTotalSavings(): float
+    {
+        if ($this->originalTotal && $this->total) {
+            return $this->originalTotal - $this->total;
+        }
+        return 0;
+    }
+
+    /**
+     * Vérifie si la commande a des réductions
+     */
+    public function hasDiscount(): bool
+    {
+        return $this->discount > 0;
+    }
+
+    /**
+     * Calcule le pourcentage total de réduction
+     */
+    public function getDiscountPercentage(): float
+    {
+        if ($this->originalTotal && $this->originalTotal > 0) {
+            return (($this->originalTotal - $this->total) / $this->originalTotal) * 100;
+        }
+        return 0;
+    }
     public function getOrderNumber(): ?string
     {
         return $this->orderNumber;
@@ -102,7 +160,7 @@ class Order
         return $this;
     }
 
-  
+
 
     public function getCustomerName(): ?string
     {
@@ -168,7 +226,7 @@ class Order
 
         $this->status = $status;
         $this->updatedAt = new \DateTime();
-        
+
         return $this;
     }
 

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Entity\Settings;
 use App\Repository\ProductRepository;
+use App\Repository\PromotionRepository;
 use App\Repository\SettingRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,31 +17,59 @@ use Symfony\Component\Routing\Annotation\Route;
 class CartController extends AbstractController
 {
     #[Route('/cart', name: 'cart')]
-    public function index(SettingRepository $settingRepository,SessionInterface $session, ProductRepository $productRepository): Response
-    {
+    public function index(
+        SettingRepository $settingRepository,
+        SessionInterface $session,
+        ProductRepository $productRepository,
+        PromotionRepository $promotionRepository
+    ): Response {
         $cart = $session->get('cart', []);
         $cartData = [];
         $total = 0;
+        $totalDiscount = 0;
+        $totalWithDiscount = 0;
 
         foreach ($cart as $id => $quantity) {
             $product = $productRepository->find($id);
             if ($product) {
+                // Trouver la meilleure promotion active pour ce produit
+                $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
+                $discount = 0;
+                $discountedPrice = $product->getPrice();
+
+                if ($bestPromotion && $bestPromotion->isValid()) {
+                    $discount = $bestPromotion->getDiscount();
+                    $discountedPrice = $bestPromotion->calculateDiscountedPrice($product->getPrice());
+                }
+
                 $cartData[] = [
                     'product' => $product,
-                    'quantity' => $quantity
+                    'quantity' => $quantity,
+                    'discount' => $discount,
+                    'discountedPrice' => $discountedPrice,
+                    'promotion' => $bestPromotion
                 ];
+
                 $total += $product->getPrice() * $quantity;
+                $totalDiscount += ($product->getPrice() - $discountedPrice) * $quantity;
+                $totalWithDiscount += $discountedPrice * $quantity;
             }
         }
+
         $settings = $settingRepository->findOneBy([], ['id' => 'DESC']);
         $shippingFee = $settings ? $settings->getShippingFee() : 0;
+        $finalTotal = $totalWithDiscount + $shippingFee;
+
         return $this->render('cart/index.html.twig', [
             'shippingFee' => $shippingFee,
             'cartData' => $cartData,
             'total' => $total,
-
+            'totalDiscount' => $totalDiscount,
+            'totalWithDiscount' => $totalWithDiscount,
+            'finalTotal' => $finalTotal,
         ]);
     }
+
 
     #[Route('/cart/add/{id}', name: 'cart_add')]
     public function add(Product $product, Request $request, SessionInterface $session): Response

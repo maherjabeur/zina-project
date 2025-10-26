@@ -1,0 +1,170 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Promotion - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i>
+                            Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_sizes') }}">
+                            <i class="fas fa-ruler"></i>
+                            Tailles
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_categories') }}">
+                            <i class="fas fa-tags"></i>
+                            Catégories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                            {% set pending_orders = count_pending_orders() %}
+                            {% if pending_orders > 0 %}
+                                <span class="badge bg-danger">{{ pending_orders }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_slider') }}">
+                            <i class="fas fa-images"></i>
+                            Slider
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_settings') }}">
+                            <i class="fas fa-dollar-sign"></i>
+                            Frais livraison
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_promotion_index') }}">
+                            <i class="fas fa-gift"></i>
+                            Promotions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Modifier la Promotion: {{ promotion.title }}</h1>
+                <div>
+                    <a href="{{ path('admin_promotion_index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            {{ form_start(form) }}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.title, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Titre de la promotion'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.discount, {
+                                        'attr': {'class': 'form-control', 'min': '1', 'max': '100'},
+                                        'label': 'Réduction (%)'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            {{ form_row(form.description, {
+                                'attr': {'class': 'form-control', 'rows': 4},
+                                'label': 'Description'
+                            }) }}
+
+                            {{ form_row(form.product, {
+                                'attr': {'class': 'form-control'},
+                                'label': 'Produit associé'
+                            }) }}
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-save"></i> Mettre à jour la promotion
+                                </button>
+                                <a href="{{ path('admin_promotion_index') }}" class="btn btn-outline-secondary">
+                                    Annuler
+                                </a>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Informations de la promotion -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Informations de la promotion</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Créée le:</strong> {{ promotion.createdAt|date('d/m/Y à H:i') }}</p>
+                            <p><strong>Produit:</strong> {{ promotion.product.name }}</p>
+                            <p><strong>Réduction:</strong> {{ promotion.discount }}%</p>
+                            <p><strong>Prix original:</strong> {{ promotion.product.price }} Dt</p>
+                            <p><strong>Prix promos:</strong> 
+                                <span class="text-success fw-bold">
+                                    {{ (promotion.product.price * (1 - promotion.discount / 100))|number_format(2) }} Dt
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Actions rapides -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{{ path('product_detail', {'id': promotion.product.id}) }}" 
+                                   class="btn btn-outline-primary" target="_blank">
+                                    <i class="fas fa-eye"></i> Voir le produit en boutique
+                                </a>
+                                
+                                <form method="POST" action="{{ path('admin_promotion_delete', {'id': promotion.id}) }}" 
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette promotion ?')"
+                                      class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger w-100">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

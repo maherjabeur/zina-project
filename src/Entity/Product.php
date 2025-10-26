@@ -48,11 +48,21 @@ class Product
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
 
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Promotion::class)]
+    private Collection $promotions;
+
+    private ?Promotion $currentPromotion = null;
+    /**
+     * @ORM\OneToMany(targetEntity=Promotion::class, mappedBy="product")
+     */
+    
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->sizes = new ArrayCollection();
+        $this->promotions = new ArrayCollection();
     }
 
     // Getters et Setters complets
@@ -68,6 +78,13 @@ class Product
     public function setName(string $name): self
     {
         $this->name = $name;
+        return $this;
+    }
+  
+
+    public function setPromotions(array $promotions): self
+    {
+        $this->promotions = new ArrayCollection($promotions);
         return $this;
     }
 
@@ -217,5 +234,61 @@ class Product
         }
 
         return implode(', ', $sizeNames);
+    }
+      /**
+     * @return Collection<int, Promotion>
+     */
+    public function getPromotions(): Collection
+    {
+        return $this->promotions;
+    }
+
+    public function addPromotion(Promotion $promotion): static
+    {
+        if (!$this->promotions->contains($promotion)) {
+            $this->promotions->add($promotion);
+            $promotion->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removePromotion(Promotion $promotion): static
+    {
+        if ($this->promotions->removeElement($promotion)) {
+            // set the owning side to null (unless already changed)
+            if ($promotion->getProduct() === $this) {
+                $promotion->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCurrentPromotion(): ?Promotion
+    {
+        return $this->currentPromotion;
+    }
+
+    public function setCurrentPromotion(?Promotion $currentPromotion): static
+    {
+        $this->currentPromotion = $currentPromotion;
+        return $this;
+    }
+
+    /**
+     * Méthode utilitaire pour obtenir la promotion active
+     */
+    public function getActivePromotion(): ?Promotion
+    {
+        $now = new \DateTime();
+        
+        foreach ($this->promotions as $promotion) {
+            if ($promotion->isActive() && $promotion->isValid()) {
+                return $promotion;
+            }
+        }
+        
+        return null;
     }
 }

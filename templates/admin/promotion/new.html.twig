@@ -1,0 +1,202 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Promotion - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_products') }}">
+                            <i class="fas fa-tshirt"></i>
+                            Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_sizes') }}">
+                            <i class="fas fa-ruler"></i>
+                            Tailles
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_categories') }}">
+                            <i class="fas fa-tags"></i>
+                            Catégories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_orders') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Commandes
+                            {% set pending_orders = count_pending_orders() %}
+                            {% if pending_orders > 0 %}
+                                <span class="badge bg-danger">{{ pending_orders }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_slider') }}">
+                            <i class="fas fa-images"></i>
+                            Slider
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_settings') }}">
+                            <i class="fas fa-dollar-sign"></i>
+                            Frais livraison
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_promotion_index') }}">
+                            <i class="fas fa-gift"></i>
+                            Promotions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Créer une Nouvelle Promotion</h1>
+                <a href="{{ path('admin_promotion_index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            {{ form_start(form) }}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.title, {
+                                        'attr': {'class': 'form-control'},
+                                        'label': 'Titre de la promotion'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.discount, {
+                                        'attr': {'class': 'form-control', 'min': '1', 'max': '100'},
+                                        'label': 'Réduction (%)'
+                                    }) }}
+                                </div>
+                            </div>
+
+                            {{ form_row(form.description, {
+                                'attr': {'class': 'form-control', 'rows': 4},
+                                'label': 'Description'
+                            }) }}
+
+                            {{ form_row(form.product, {
+                                'attr': {'class': 'form-control'},
+                                'label': 'Produit associé'
+                            }) }}
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Créer la promotion
+                                </button>
+                                <a href="{{ path('admin_promotion_index') }}" class="btn btn-outline-secondary">
+                                    Annuler
+                                </a>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Informations</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted">
+                                <i class="fas fa-info-circle"></i>
+                                Les promotions créées seront immédiatement appliquées aux produits sélectionnés.
+                            </p>
+                            <hr>
+                            <h6>Conseils pour les promotions:</h6>
+                            <ul class="small">
+                                <li>Choisissez un titre attractif</li>
+                                <li>Une réduction entre 10% et 50% est généralement efficace</li>
+                                <li>Assurez-vous que le produit est en stock</li>
+                                <li>Vérifiez le prix après réduction</li>
+                            </ul>
+                            <h6>Exemples de promotions:</h6>
+                            <ul class="small">
+                                <li>"Soldes d'été -30%"</li>
+                                <li>"Offre spéciale -25%"</li>
+                                <li>"Promo flash -50%"</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Aperçu calcul -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Calculateur de promotion</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label small">Prix original</label>
+                                <input type="number" class="form-control form-control-sm" id="originalPrice" placeholder="Prix du produit" step="0.01">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Pourcentage de réduction</label>
+                                <input type="number" class="form-control form-control-sm" id="discountPercent" placeholder="%" min="1" max="100">
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm w-100" onclick="calculatePromo()">
+                                Calculer
+                            </button>
+                            <div class="mt-3 text-center">
+                                <small class="text-muted">Prix final:</small>
+                                <div id="finalPrice" class="fw-bold text-success fs-5">-- Dt</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+function calculatePromo() {
+    const originalPrice = parseFloat(document.getElementById('originalPrice').value);
+    const discountPercent = parseFloat(document.getElementById('discountPercent').value);
+    
+    if (originalPrice && discountPercent) {
+        const finalPrice = originalPrice * (1 - discountPercent / 100);
+        document.getElementById('finalPrice').textContent = finalPrice.toFixed(2) + ' Dt';
+        
+        const savings = originalPrice - finalPrice;
+        const savingsElement = document.createElement('div');
+        savingsElement.className = 'text-info small';
+        savingsElement.textContent = `Économie: ${savings.toFixed(2)} Dt`;
+        
+        // Remove existing savings info if any
+        const existingSavings = document.querySelector('.text-info.small');
+        if (existingSavings) {
+            existingSavings.remove();
+        }
+        
+        document.getElementById('finalPrice').after(savingsElement);
+    }
+}
+</script>
+{% endblock %}

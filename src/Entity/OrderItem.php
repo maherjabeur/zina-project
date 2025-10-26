@@ -36,11 +36,83 @@ class OrderItem
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $color = null;
 
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
+    private ?float $originalPrice = null;
+
+    #[ORM\Column(type: "decimal", precision: 5, scale: 2, nullable: true)]
+    private ?float $discount = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $promotionTitle = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    public function getOriginalPrice(): ?float
+    {
+        return $this->originalPrice;
+    }
+
+    public function setOriginalPrice(?float $originalPrice): static
+    {
+        $this->originalPrice = $originalPrice;
+        return $this;
+    }
+
+    public function getDiscount(): ?float
+    {
+        return $this->discount;
+    }
+
+    public function setDiscount(?float $discount): static
+    {
+        $this->discount = $discount;
+        return $this;
+    }
+
+    public function getPromotionTitle(): ?string
+    {
+        return $this->promotionTitle;
+    }
+
+    public function setPromotionTitle(?string $promotionTitle): static
+    {
+        $this->promotionTitle = $promotionTitle;
+        return $this;
+    }
+
+    /**
+     * Calcule le montant de la réduction
+     */
+    public function getDiscountAmount(): float
+    {
+        if ($this->originalPrice && $this->unitPrice) {
+            return $this->originalPrice - $this->unitPrice;
+        }
+        return 0;
+    }
+
+    /**
+     * Vérifie si cet item a une promotion
+     */
+    public function hasDiscount(): bool
+    {
+        return $this->discount > 0 && $this->originalPrice > $this->unitPrice;
+    }
+
+    /**
+     * Calcule le sous-total avant réduction
+     */
+    public function getOriginalSubtotal(): float
+    {
+        if ($this->originalPrice) {
+            return $this->originalPrice * $this->quantity;
+        }
+        return $this->unitPrice * $this->quantity;
+    }
+    
     public function getOrder(): ?Order
     {
         return $this->order;
