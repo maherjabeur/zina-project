@@ -72,7 +72,7 @@ class NotificationService
     // Email à l'admin
     $email = (new TemplatedEmail())
         ->from('noreply@boutique-femme.com')
-        ->to('contact@boutique-femme.com')
+        ->to('mjbali833@gmail.com')
         ->subject('Nouveau message de contact - ' . $contact->getName())
         ->htmlTemplate('emails/contact_notification.html.twig')
         ->context([

@@ -297,39 +297,41 @@
         }
     </style>
 
-    <script>
-        // Animation pour les cartes de produits
-        document.addEventListener('DOMContentLoaded', function() {
-            const productCards = document.querySelectorAll('.product-card');
-            
-            productCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
-                    this.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.15)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-                });
+   <script>
+    // Animation pour les cartes de produits
+    document.addEventListener('DOMContentLoaded', function() {
+        const productCards = document.querySelectorAll('.product-card');
+        
+        productCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.15)';
+                this.style.transition = 'all 0.3s ease';
             });
-
-            // Animation pour le compteur de promotions
-            const promotionBadges = document.querySelectorAll('.badge.bg-danger');
-            promotionBadges.forEach(badge => {
-                badge.style.animation = 'pulse 2s infinite';
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
             });
         });
 
+        // Animation pour le compteur de promotions
+        const promotionBadges = document.querySelectorAll('.badge.bg-danger');
+        promotionBadges.forEach(badge => {
+            badge.style.animation = 'pulse 2s infinite';
+        });
+
         // Ajout d'une animation CSS pour les badges promotion
-        const style = document.createElement('style');
-        style.textContent = `
+        const animationStyle = document.createElement('style');
+        animationStyle.textContent = `
             @keyframes pulse {
                 0% { transform: scale(1); }
                 50% { transform: scale(1.1); }
                 100% { transform: scale(1); }
             }
         `;
-        document.head.appendChild(style);
-    </script>
+        document.head.appendChild(animationStyle);
+    });
+</script>
+
 {% endblock %}

@@ -33,7 +33,7 @@
 						{% endif %}
 						<img id="mainImage" src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-fluid rounded" alt="{{ product.name }}" style="max-height: 500px; object-fit: cover;">
 					</div>
-					
+
 					<!-- Miniatures -->
 					{% if product.images|length > 1 %}
 						<div class="row">
@@ -52,16 +52,18 @@
 			<!-- Détails du produit -->
 			<div class="col-md-6">
 				<h1 class="h2">{{ product.name }}</h1>
-				
+
 				<!-- Section prix avec promotion -->
 				<div class="price-section mb-4">
 					{% if bestPromotion and bestPromotion.isValid() %}
 						<div class="d-flex align-items-center mb-2">
 							<span class="text-muted text-decoration-line-through me-3 h4">
-								{{ product.price }} DT
+								{{ product.price }}
+								DT
 							</span>
 							<span class="h2 text-primary mb-0">
-								{{ bestPromotion.calculateDiscountedPrice(product.price)|number_format(2) }} DT
+								{{ bestPromotion.calculateDiscountedPrice(product.price)|number_format(2) }}
+								DT
 							</span>
 						</div>
 						<div class="alert alert-success border-0">
@@ -75,10 +77,13 @@
 						</div>
 						<p class="text-success small mb-0">
 							<i class="fas fa-clock me-1"></i>
-							Économisez {{ bestPromotion.getDiscountAmount(product.price)|number_format(2) }} DT
+							Économisez
+							{{ bestPromotion.getDiscountAmount(product.price)|number_format(2) }}
+							DT
 						</p>
 					{% else %}
-						<p class="h2 text-primary mb-0">{{ product.price }} DT</p>
+						<p class="h2 text-primary mb-0">{{ product.price }}
+							DT</p>
 					{% endif %}
 				</div>
 
@@ -114,7 +119,8 @@
 								{% if product.quantity > 0 %}
 									<span class="text-success">
 										<i class="fas fa-check-circle me-1"></i>
-										En stock ({{ product.quantity }} disponibles)
+										En stock ({{ product.quantity }}
+										disponibles)
 									</span>
 								{% else %}
 									<span class="text-danger">
@@ -151,25 +157,38 @@
 						Produit indisponible
 					</button>
 				{% endif %}
-
 				<!-- Partage -->
 				<div class="mt-4 pt-4 border-top">
 					<p class="text-muted mb-2">Partager ce produit :</p>
-					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-outline-primary btn-sm">
+					<div
+						class="btn-group" role="group">
+
+						{# Récupère l'URL absolue de la page actuelle (utile pour le partage) #}
+						{% set currentUrl = app.request.schemeAndHttpHost ~ app.request.requestUri %}
+						{% set productTitle = product.nom ?? 'Produit' %}
+
+						<!-- Facebook -->
+						<a href="https://www.facebook.com/sharer/sharer.php?u={{ currentUrl|url_encode }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Partager sur Facebook">
 							<i class="fab fa-facebook-f"></i>
-						</button>
-						<button type="button" class="btn btn-outline-info btn-sm">
+						</a>
+
+						<!-- Twitter -->
+						<a href="https://twitter.com/intent/tweet?url={{ currentUrl|url_encode }}&text={{ productTitle|url_encode }}" target="_blank" class="btn btn-outline-info btn-sm" title="Partager sur Twitter">
 							<i class="fab fa-twitter"></i>
-						</button>
-						<button type="button" class="btn btn-outline-danger btn-sm">
+						</a>
+
+						<!-- Pinterest -->
+						<a href="https://pinterest.com/pin/create/button/?url={{ currentUrl|url_encode }}&description={{ productTitle|url_encode }}" target="_blank" class="btn btn-outline-danger btn-sm" title="Partager sur Pinterest">
 							<i class="fab fa-pinterest"></i>
-						</button>
-						<button type="button" class="btn btn-outline-success btn-sm">
+						</a>
+
+						<!-- WhatsApp -->
+						<a href="https://api.whatsapp.com/send?text={{ productTitle|url_encode }}%20{{ currentUrl|url_encode }}" target="_blank" class="btn btn-outline-success btn-sm" title="Partager sur WhatsApp">
 							<i class="fab fa-whatsapp"></i>
-						</button>
+						</a>
 					</div>
 				</div>
+
 			</div>
 		</div>
 
@@ -201,13 +220,15 @@
 															{% if promotion.startDate %}
 																<div>
 																	<i class="fas fa-play-circle me-1"></i>
-																	Début: {{ promotion.startDate|date('d/m/Y') }}
+																	Début:
+																	{{ promotion.startDate|date('d/m/Y') }}
 																</div>
 															{% endif %}
 															{% if promotion.endDate %}
 																<div>
 																	<i class="fas fa-stop-circle me-1"></i>
-																	Fin: {{ promotion.endDate|date('d/m/Y') }}
+																	Fin:
+																	{{ promotion.endDate|date('d/m/Y') }}
 																</div>
 															{% endif %}
 														</div>
@@ -225,36 +246,36 @@
 		{% endif %}
 	</div>
 
-	<script>
-		function changeMainImage(thumbnail) {
-			// Changer l'image principale
-			document.getElementById('mainImage').src = thumbnail.src;
-
-			// Mettre à jour les miniatures actives
-			document.querySelectorAll('.thumbnail-image').forEach(img => {
-				img.classList.remove('active');
-				img.style.opacity = '0.7';
-				img.style.borderColor = '#dee2e6';
-			});
-
-			thumbnail.classList.add('active');
-			thumbnail.style.opacity = '1';
-			thumbnail.style.borderColor = '#0d6efd';
-		}
-
-		// Initialiser les miniatures
-		document.addEventListener('DOMContentLoaded', function () {
-			document.querySelectorAll('.thumbnail-image').forEach(img => {
-				if (img.classList.contains('active')) {
-					img.style.opacity = '1';
-					img.style.borderColor = '#0d6efd';
-				} else {
+	 <script>
+			function changeMainImage(thumbnail) {
+				// Changer l'image principale
+				document.getElementById('mainImage').src = thumbnail.src;
+	
+				// Mettre à jour les miniatures actives
+				document.querySelectorAll('.thumbnail-image').forEach(img => {
+					img.classList.remove('active');
 					img.style.opacity = '0.7';
 					img.style.borderColor = '#dee2e6';
-				}
+				});
+	
+				thumbnail.classList.add('active');
+				thumbnail.style.opacity = '1';
+				thumbnail.style.borderColor = '#0d6efd';
+			}
+	
+			// Initialiser les miniatures
+			document.addEventListener('DOMContentLoaded', function () {
+				document.querySelectorAll('.thumbnail-image').forEach(img => {
+					if (img.classList.contains('active')) {
+						img.style.opacity = '1';
+						img.style.borderColor = '#0d6efd';
+					} else {
+						img.style.opacity = '0.7';
+						img.style.borderColor = '#dee2e6';
+					}
+				});
 			});
-		});
-	</script>
+		</script>
 
 	<style>
 		.thumbnail-image {
