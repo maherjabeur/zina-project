@@ -13,7 +13,7 @@ class Settings
     private ?int $id = null;
     
     #[ORM\Column(type: "decimal", scale: 2)]
-    private $shippingFee;
+    private $shippingFee = 0;
 
     // Getter et Setter
     public function getShippingFee(): ?float
