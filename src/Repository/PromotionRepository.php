@@ -16,6 +16,7 @@ class PromotionRepository extends ServiceEntityRepository
     // Fetch active promotions for a specific product
     public function findActivePromotionsForProduct(int $productId): array
     {
+        
         return $this->createQueryBuilder('p')
             ->where('p.product = :productId')
             ->andWhere('p.isActive = :isActive')

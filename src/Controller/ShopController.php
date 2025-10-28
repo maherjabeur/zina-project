@@ -23,7 +23,7 @@ class ShopController extends AbstractController
  #[Route('/', name: 'home')]
     public function index(ProductRepository $productRepository, SliderImageRepository $sliderImageRepository, PromotionRepository $promotionRepository): Response
     {
-        $featuredProducts = $productRepository->findFeaturedHome(4);
+        $featuredProducts = $productRepository->findFeaturedHome(12);
         $sliderImages = $sliderImageRepository->findActiveSlides();
 
         // Préparer les données avec les promotions
