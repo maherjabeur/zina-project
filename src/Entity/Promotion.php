@@ -23,7 +23,7 @@ class Promotion
     private float $discount;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "promotions")]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
     private Product $product;
 
     #[ORM\Column(type: "boolean")]

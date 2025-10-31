@@ -74,9 +74,9 @@ class CheckoutController extends AbstractController
         $finalTotal = $totalWithDiscount + $shippingFee;
 
         return $this->render('checkout/index.html.twig', [
-            'shippingFee' => $shippingFee,
+            'shippingFee' => (float)$shippingFee,
             'cartData' => $cartData,
-            'total' => $total,
+            'total' => (float)$total,
             'totalDiscount' => $totalDiscount,
             'totalWithDiscount' => $totalWithDiscount,
             'finalTotal' => $finalTotal,

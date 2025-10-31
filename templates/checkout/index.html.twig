@@ -47,12 +47,20 @@
                         </div>
                     {% endfor %}
 
+                    {# CORRECTION : Utiliser totalWithDiscount si disponible, sinon utiliser total #}
+                    {% set baseAmount = totalWithDiscount ?? total %}
                     {% set shipping = shippingFee %}
-                    {% set totalWithShipping = total + shipping %}
+                    {% set totalWithShipping = baseAmount + shipping %}
 
                     <div class="row mt-3">
                         <div class="col-12 text-end">
-                            <h6 class="mb-1">Sous-total: {{ total|number_format(2) }} DT</h6>
+                            {% if totalDiscount > 0 %}
+                                <h6 class="mb-1">Sous-total original: <span style="text-decoration: line-through;">{{ total|number_format(2) }} DT</span></h6>
+                                <h6 class="mb-1 text-success">Réduction: -{{ totalDiscount|number_format(2) }} DT</h6>
+                                <h6 class="mb-1">Sous-total après réduction: {{ baseAmount|number_format(2) }} DT</h6>
+                            {% else %}
+                                <h6 class="mb-1">Sous-total: {{ baseAmount|number_format(2) }} DT</h6>
+                            {% endif %}
                             <h6 class="mb-1">Livraison: {{ shipping|number_format(2) }} DT</h6>
                             <h5>Total: <strong id="totalDisplay">{{ totalWithShipping|number_format(2) }} DT</strong></h5>
                         </div>
@@ -191,7 +199,8 @@
         const totalDisplay = document.getElementById('totalDisplay');
         const totalSidebar = document.getElementById('totalSidebar');
 
-        const baseTotal = {{ total }};
+        // CORRECTION : Utiliser le montant après réduction
+        const baseTotal = {{ totalWithDiscount ?? total }};
         const shipping = {{ shippingFee }};
         const totalWithShipping = baseTotal + shipping;
 

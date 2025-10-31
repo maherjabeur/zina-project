@@ -19,7 +19,7 @@ class ProductImage
     private ?string $filename = null;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'images')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
     private ?Product $product = null;
 
     #[ORM\Column(type: 'integer')]
