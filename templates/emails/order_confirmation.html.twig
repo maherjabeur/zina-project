@@ -30,7 +30,12 @@
                 <p><strong>Numéro de commande :</strong> {{ order.orderNumber }}</p>
                 <p><strong>Date :</strong> {{ order.createdAt|date('d/m/Y à H:i') }}</p>
                 <p><strong>Statut :</strong> <span class="badge">{{ order.statusLabel }}</span></p>
-                <p><strong>Total :</strong> {{ order.total }} DT</p>
+                <p><strong>Sous-total articles :</strong> {{ order.itemsTotal|number_format(2) }} DT</p>
+                {% if order.discount and order.discount > 0 %}
+                <p><strong>Remise :</strong> -{{ order.discount|number_format(2) }} DT</p>
+                {% endif %}
+                <p><strong>Livraison :</strong> {{ (order.shippingFee ?? 0)|number_format(2) }} DT</p>
+                <p><strong>Total final :</strong> {{ order.total|number_format(2) }} DT</p>
             </div>
 
             <div class="order-details">
@@ -49,8 +54,8 @@
                         {% for item in order.items %}
                         <tr>
                             <td>{{ item.product.name }}</td>
-                            <td>{{ item.size ?? 'Non spécifié' }}</td>
-                            <td>{{ item.color ?? 'Non spécifié' }}</td>
+                            <td>{{ item.size ?? 'Non specifie' }}</td>
+                            <td>{{ item.color ?? 'Non specifie' }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>{{ item.total }} DT</td>
                         </tr>

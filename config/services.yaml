@@ -4,6 +4,16 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.mail_from_email: '%env(MAIL_FROM_EMAIL)%'
+    app.mail_from_name: '%env(MAIL_FROM_NAME)%'
+    app.mail_admin_email: '%env(MAIL_ADMIN_EMAIL)%'
+    app.phpmailer_host: '%env(PHPMAILER_HOST)%'
+    app.phpmailer_port: '%env(int:PHPMAILER_PORT)%'
+    app.phpmailer_username: '%env(PHPMAILER_USERNAME)%'
+    app.phpmailer_password: '%env(PHPMAILER_PASSWORD)%'
+    app.phpmailer_encryption: '%env(PHPMAILER_ENCRYPTION)%'
+    app.phpmailer_auth: '%env(bool:PHPMAILER_AUTH)%'
+    app.phpmailer_dry_run: '%env(bool:PHPMAILER_DRY_RUN)%'
 
 services:
     # default configuration for services in *this* file
@@ -30,6 +40,20 @@ services:
         arguments:
             $targetDirectory: '%kernel.project_dir%/public/uploads/slider'
             $slugger: '@Symfony\Component\String\Slugger\SluggerInterface'
+
+    App\Service\PhpMailerService:
+        arguments:
+            $host: '%app.phpmailer_host%'
+            $port: '%app.phpmailer_port%'
+            $username: '%app.phpmailer_username%'
+            $password: '%app.phpmailer_password%'
+            $encryption: '%app.phpmailer_encryption%'
+            $smtpAuth: '%app.phpmailer_auth%'
+            $fromEmail: '%app.mail_from_email%'
+            $fromName: '%app.mail_from_name%'
+            $adminEmail: '%app.mail_admin_email%'
+            $dryRun: '%app.phpmailer_dry_run%'
+            $projectDir: '%kernel.project_dir%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

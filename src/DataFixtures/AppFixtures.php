@@ -242,7 +242,7 @@ class AppFixtures extends Fixture
                 'description' => 'Robe midi en crêpe avec encolure en V. Coupe fluide et tombante, parfaite pour les occasions spéciales.',
                 'price' => '89.99',
                 'quantity' => 25,
-                'color' => 'Noir',
+                'color' => 'Noir, Bordeaux, Vert emeraude',
                 'category' => 'category_robes',
                 'sizes' => ['size_clothing_36', 'size_clothing_38', 'size_clothing_40', 'size_clothing_42'],
                 'images' => ['robe-midi-noir-1.jpg', 'robe-midi-noir-2.jpg']
@@ -252,7 +252,7 @@ class AppFixtures extends Fixture
                 'description' => 'Robe légère à imprimé floral, manches ballon et ceinture nouée. Idéale pour les journées ensoleillées.',
                 'price' => '49.99',
                 'quantity' => 35,
-                'color' => 'Multicolore',
+                'color' => 'Multicolore, Rose, Bleu ciel',
                 'category' => 'category_robes',
                 'sizes' => ['size_clothing_34', 'size_clothing_36', 'size_clothing_38', 'size_clothing_40'],
                 'images' => ['robe-florale-1.jpg', 'robe-florale-2.jpg']
@@ -262,7 +262,7 @@ class AppFixtures extends Fixture
                 'description' => 'Robe courte en satin avec dos nu. Élégante et sophistiquée pour vos soirées.',
                 'price' => '75.99',
                 'quantity' => 20,
-                'color' => 'Bordeaux',
+                'color' => 'Bordeaux, Noir, Champagne',
                 'category' => 'category_robes',
                 'sizes' => ['size_clothing_36', 'size_clothing_38', 'size_clothing_40'],
                 'images' => ['robe-cocktail-1.jpg', 'robe-cocktail-2.jpg']
@@ -274,7 +274,7 @@ class AppFixtures extends Fixture
                 'description' => 'Chemisier luxueux en soie naturelle, col chemisier et manches longues. Élégant et intemporel.',
                 'price' => '69.99',
                 'quantity' => 30,
-                'color' => 'Blanc',
+                'color' => 'Blanc, Ivoire, Rose poudre',
                 'category' => 'category_hauts-tshirts',
                 'sizes' => ['size_clothing_36', 'size_clothing_38', 'size_clothing_40', 'size_clothing_42'],
                 'images' => ['chemisier-soie-1.jpg', 'chemisier-soie-2.jpg']
@@ -284,7 +284,7 @@ class AppFixtures extends Fixture
                 'description' => 'T-shirt en coton bio, col V et coupe ajustée. Essentiel de toute garde-robe.',
                 'price' => '19.99',
                 'quantity' => 50,
-                'color' => 'Gris',
+                'color' => 'Gris, Blanc, Noir',
                 'category' => 'category_hauts-tshirts',
                 'sizes' => ['size_clothing_34', 'size_clothing_36', 'size_clothing_38', 'size_clothing_40', 'size_clothing_42'],
                 'images' => ['tshirt-colv-1.jpg', 'tshirt-colv-2.jpg']
@@ -294,7 +294,7 @@ class AppFixtures extends Fixture
                 'description' => 'Top tendance avec manches ballon et encolure carrée. Parfait pour un look moderne.',
                 'price' => '34.99',
                 'quantity' => 40,
-                'color' => 'Rose poudré',
+                'color' => 'Rose poudre, Lilas, Beige',
                 'category' => 'category_hauts-tshirts',
                 'sizes' => ['size_clothing_34', 'size_clothing_36', 'size_clothing_38'],
                 'images' => ['top-balloon-1.jpg', 'top-balloon-2.jpg']
@@ -306,7 +306,7 @@ class AppFixtures extends Fixture
                 'description' => 'Jean slim stretch taille haute, coupe flatteuse et confortable. Délavage moyen.',
                 'price' => '59.99',
                 'quantity' => 45,
-                'color' => 'Bleu',
+                'color' => 'Bleu, Noir, Beige',
                 'category' => 'category_bas',
                 'sizes' => ['size_clothing_36', 'size_clothing_38', 'size_clothing_40', 'size_clothing_42'],
                 'images' => ['jean-slim-1.jpg', 'jean-slim-2.jpg']
@@ -316,7 +316,7 @@ class AppFixtures extends Fixture
                 'description' => 'Jupe midi plissée en tissu fluide. Élégante et facile à porter au quotidien.',
                 'price' => '45.99',
                 'quantity' => 28,
-                'color' => 'Beige',
+                'color' => 'Beige, Camel, Noir',
                 'category' => 'category_bas',
                 'sizes' => ['size_clothing_36', 'size_clothing_38', 'size_clothing_40'],
                 'images' => ['jupe-plissee-1.jpg', 'jupe-plissee-2.jpg']

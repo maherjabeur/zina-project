@@ -1,150 +1,63 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Paramètres - Administration{% endblock %}
+{% block title %}Parametres & SEO - Administration{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
-                            <i class="fas fa-tachometer-alt"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_products') }}">
-                            <i class="fas fa-tshirt"></i>
-                            Produits
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_sizes') }}">
-                            <i class="fas fa-ruler"></i>
-                            Tailles
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_categories') }}">
-                            <i class="fas fa-tags"></i>
-                            Catégories
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_orders') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            Commandes
-                            {% set pending_orders = count_pending_orders() %}
-                            {% if pending_orders > 0 %}
-                                <span class="badge bg-danger">{{ pending_orders }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_slider') }}">
-                            <i class="fas fa-images"></i>
-                            Slider
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ path('admin_settings') }}">
-                            <i class="fas fa-dollar-sign"></i>
-                            Frais livraison
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_promotion_index') }}">
-                            <i class="fas fa-gift"></i>
-                            Promotions
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        {% include 'admin/_sidebar.html.twig' %}
 
-        <!-- Main content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestion des Frais de Livraison</h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
-                            <i class="fas fa-cog"></i> Paramètres
-                        </button>
-                    </div>
+                <div>
+                    <span class="admin-kicker">Configuration</span>
+                    <h1 class="h2 mb-0">Parametres boutique & SEO</h1>
                 </div>
+                <a href="{{ path('home') }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                    <i class="fas fa-external-link-alt me-1"></i> Voir la boutique
+                </a>
             </div>
 
-            <!-- Cartes d'information -->
-            <div class="row mb-4">
+            <div class="row g-3 mb-4">
                 <div class="col-md-4">
-                    <div class="card text-white bg-primary">
+                    <div class="card stat-card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 class="card-title">{{ form.vars.value.shippingFee|default(0) }} DT</h4>
-                                    <p class="card-text mb-0">Frais actuels</p>
-                                </div>
-                                <div class="align-self-center">
-                                    <i class="fas fa-shipping-fast fa-2x"></i>
-                                </div>
-                            </div>
+                            <span class="text-muted small">Frais actuels</span>
+                            <h4 class="mb-0">{{ form.vars.value.shippingFee|default(0) }} DT</h4>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card text-white bg-success">
+                    <div class="card stat-card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 class="card-title">Gratuit</h4>
-                                    <p class="card-text mb-0">Seuil suggéré</p>
-                                </div>
-                                <div class="align-self-center">
-                                    <i class="fas fa-truck fa-2x"></i>
-                                </div>
-                            </div>
+                            <span class="text-muted small">Indexation</span>
+                            <h4 class="mb-0">
+                                {{ form.vars.value.seoIndexingEnabled ? 'Active' : 'Bloquee' }}
+                            </h4>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card text-white bg-info">
+                    <div class="card stat-card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 class="card-title">Tunisie</h4>
-                                    <p class="card-text mb-0">Zone de livraison</p>
-                                </div>
-                                <div class="align-self-center">
-                                    <i class="fas fa-map-marker-alt fa-2x"></i>
-                                </div>
-                            </div>
+                            <span class="text-muted small">Image sociale</span>
+                            <h4 class="mb-0 text-truncate">{{ form.vars.value.seoImage|default('logo/logo.png') }}</h4>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-edit me-2"></i>
-                                Modifier les frais de livraison
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            {{ form_start(form) }}
-                            
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="mb-3">
-                                        {{ form_label(form.shippingFee, 'Frais de livraison (DT)', {
-                                            'label_attr': {'class': 'form-label fw-bold'}
-                                        }) }}
+            {{ form_start(form) }}
+                <div class="row g-4 align-items-start">
+                    <div class="col-xl-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-truck me-2"></i> Livraison</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-8">
+                                        {{ form_label(form.shippingFee, 'Frais de livraison (DT)', {'label_attr': {'class': 'form-label fw-bold'}}) }}
                                         <div class="input-group">
                                             {{ form_widget(form.shippingFee, {
                                                 'attr': {
@@ -156,184 +69,111 @@
                                             }) }}
                                             <span class="input-group-text">DT</span>
                                         </div>
-                                        <div class="form-text">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Les frais de livraison s'appliqueront à toutes les commandes.
-                                        </div>
+                                        <div class="form-text">Ces frais sont ajoutes au total de chaque commande.</div>
                                         {{ form_errors(form.shippingFee) }}
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card bg-light">
-                                        <div class="card-body text-center">
-                                            <h6 class="card-title">Exemples</h6>
-                                            <div class="btn-group-vertical w-100" role="group">
-                                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setShippingFee(5)">
-                                                    5.000 DT
-                                                </button>
-                                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setShippingFee(7)">
-                                                    7.000 DT
-                                                </button>
-                                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setShippingFee(10)">
-                                                    10.000 DT
-                                                </button>
-                                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setShippingFee(0)">
-                                                    Gratuit
-                                                </button>
-                                            </div>
+                                    <div class="col-md-4">
+                                        <div class="d-grid gap-2">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-shipping-fee="5">5.000 DT</button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-shipping-fee="7">7.000 DT</button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-shipping-fee="10">10.000 DT</button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-shipping-fee="0">Gratuit</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="alert alert-info">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-lightbulb me-3 fa-lg"></i>
-                                    <div>
-                                        <h6 class="alert-heading mb-2">Conseil</h6>
-                                        <p class="mb-0">
-                                            Des frais de livraison raisonnables (entre 5 et 10 DT) encouragent les achats 
-                                            tout en couvrant vos coûts logistiques.
-                                        </p>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-magnifying-glass-chart me-2"></i> Referencement naturel</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form_row(form.seoTitle) }}
+                                    <div class="form-text">Idealement entre 50 et 60 caracteres.</div>
+                                </div>
+                                <div class="mb-3">
+                                    {{ form_row(form.seoDescription) }}
+                                    <div class="form-text">Description recommandee: environ 150 a 160 caracteres.</div>
+                                </div>
+                                <div class="mb-3">
+                                    {{ form_row(form.seoKeywords) }}
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-7">
+                                        {{ form_row(form.seoImage) }}
+                                        <div class="form-text">Chemin public comme <code>logo/logo.png</code> ou URL complete.</div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        {{ form_row(form.seoAuthor) }}
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-left me-2"></i>
-                                        Retour au dashboard
-                                    </a>
-                                </div>
-                                <div>
-                                    <button type="submit" class="btn btn-primary btn-lg">
-                                        <i class="fas fa-save me-2"></i>
-                                        Sauvegarder les modifications
-                                    </button>
+                                <div class="mt-3">
+                                    {{ form_row(form.seoIndexingEnabled) }}
                                 </div>
                             </div>
+                        </div>
 
-                            {{ form_end(form) }}
+                        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-5">
+                            <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Retour au dashboard
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i> Enregistrer
+                            </button>
                         </div>
                     </div>
+
+                    <aside class="col-xl-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fab fa-google me-2"></i> Apercu Google</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="small text-success mb-1">{{ app.request.schemeAndHttpHost }}</p>
+                                <h6 class="text-primary mb-2" id="seoPreviewTitle">{{ form.vars.value.seoTitle|default('Bella Couture - Mode feminine elegante') }}</h6>
+                                <p class="small text-muted mb-0" id="seoPreviewDescription">{{ form.vars.value.seoDescription|default('Boutique de mode feminine a Sousse.') }}</p>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">Bonnes pratiques</h6>
+                            <p class="mb-2">Gardez le titre clair, la description attractive, et utilisez une image de partage nette.</p>
+                            <p class="mb-0">Les pages panier, commande et recherche sont protegees automatiquement avec <code>noindex</code>.</p>
+                        </div>
+                    </aside>
                 </div>
-
-                <div class="col-md-4">
-                    <!-- Informations -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-info-circle me-2"></i>
-                                Informations
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <h6>Impact des frais de livraison :</h6>
-                            <ul class="small mb-3">
-                                <li>Affecte le taux de conversion</li>
-                                <li>Influence le montant moyen des commandes</li>
-                                <li>Impacte la satisfaction client</li>
-                            </ul>
-                            
-                            <h6>Bonnes pratiques :</h6>
-                            <ul class="small">
-                                <li>Offrir la livraison gratuite au-dessus d'un certain montant</li>
-                                <li>Communiquer clairement les frais</li>
-                                <li>Proposer différentes options de livraison</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Statistiques -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-chart-bar me-2"></i>
-                                Statistiques
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <i class="fas fa-shopping-cart fa-2x text-primary mb-2"></i>
-                                    <h4>Commandes moyennes</h4>
-                                    <p class="text-muted small">
-                                        Les frais de livraison représentent environ 
-                                        <strong>15-20%</strong> du prix d'achat moyen.
-                                    </p>
-                                </div>
-                                <hr>
-                                <div class="small text-muted">
-                                    <i class="fas fa-clock me-1"></i>
-                                    Dernière mise à jour : {{ "now"|date("d/m/Y à H:i") }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {{ form_end(form) }}
         </main>
     </div>
 </div>
+{% endblock %}
 
-<script>
-function setShippingFee(amount) {
-    document.getElementById('{{ form.shippingFee.vars.id }}').value = amount;
-    
-    // Animation de feedback
-    const input = document.getElementById('{{ form.shippingFee.vars.id }}');
-    input.focus();
-    input.style.backgroundColor = '#e8f5e8';
-    setTimeout(() => {
-        input.style.backgroundColor = '';
-    }, 1000);
-}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const shippingFeeInput = document.getElementById('{{ form.shippingFee.vars.id }}');
+            document.querySelectorAll('[data-shipping-fee]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    shippingFeeInput.value = button.dataset.shippingFee;
+                    shippingFeeInput.focus();
+                });
+            });
 
-// Validation en temps réel
-document.addEventListener('DOMContentLoaded', function() {
-    const shippingFeeInput = document.getElementById('{{ form.shippingFee.vars.id }}');
-    
-    shippingFeeInput.addEventListener('input', function() {
-        const value = parseFloat(this.value);
-        
-        if (value < 0) {
-            this.value = 0;
-        }
-        
-        if (value > 50) {
-            this.style.borderColor = '#dc3545';
-        } else if (value > 20) {
-            this.style.borderColor = '#ffc107';
-        } else {
-            this.style.borderColor = '#198754';
-        }
-    });
-});
-</script>
+            const titleInput = document.getElementById('{{ form.seoTitle.vars.id }}');
+            const descriptionInput = document.getElementById('{{ form.seoDescription.vars.id }}');
+            const titlePreview = document.getElementById('seoPreviewTitle');
+            const descriptionPreview = document.getElementById('seoPreviewDescription');
 
-<style>
-.card {
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease-in-out;
-}
+            function refreshPreview() {
+                titlePreview.textContent = titleInput.value || 'Bella Couture - Mode feminine elegante';
+                descriptionPreview.textContent = descriptionInput.value || 'Boutique de mode feminine a Sousse.';
+            }
 
-.card:hover {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.btn-group-vertical .btn {
-    margin-bottom: 0.25rem;
-}
-
-.alert-info {
-    border-left: 4px solid #0dcaf0;
-}
-
-.form-control-lg {
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-</style>
+            titleInput.addEventListener('input', refreshPreview);
+            descriptionInput.addEventListener('input', refreshPreview);
+        });
+    </script>
 {% endblock %}

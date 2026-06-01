@@ -1,0 +1,60 @@
+{% set current_route = app.request.attributes.get('_route')|default('') %}
+{% set pending_orders = count_pending_orders() %}
+
+<nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {{ current_route == 'admin_dashboard' ? 'active' : '' }}" href="{{ path('admin_dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Tableau de bord
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ current_route == 'admin_products' or current_route starts with 'admin_product_' ? 'active' : '' }}" href="{{ path('admin_products') }}">
+                    <i class="fas fa-tshirt"></i>
+                    Produits
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ current_route == 'admin_sizes' or current_route starts with 'admin_size_' ? 'active' : '' }}" href="{{ path('admin_sizes') }}">
+                    <i class="fas fa-ruler"></i>
+                    Tailles
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ current_route == 'admin_categories' or current_route starts with 'admin_category_' ? 'active' : '' }}" href="{{ path('admin_categories') }}">
+                    <i class="fas fa-tags"></i>
+                    Categories
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ current_route == 'admin_orders' or current_route starts with 'admin_order_' ? 'active' : '' }}" href="{{ path('admin_orders') }}">
+                    <i class="fas fa-shopping-cart"></i>
+                    Commandes
+                    {% if pending_orders > 0 %}
+                        <span class="badge bg-danger">{{ pending_orders }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ current_route == 'admin_slider' or current_route starts with 'admin_slider_' ? 'active' : '' }}" href="{{ path('admin_slider') }}">
+                    <i class="fas fa-images"></i>
+                    Diaporama
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ current_route == 'admin_settings' ? 'active' : '' }}" href="{{ path('admin_settings') }}">
+                    <i class="fas fa-cog"></i>
+                    Parametres & SEO
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ current_route starts with 'admin_promotion_' ? 'active' : '' }}" href="{{ path('admin_promotion_index') }}">
+                    <i class="fas fa-gift"></i>
+                    Promotions
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

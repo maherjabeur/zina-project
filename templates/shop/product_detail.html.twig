@@ -1,301 +1,247 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-	{{ product.name }}
-	- Bella Couture
+{% block title %}{{ product.name }} - Bella Couture{% endblock %}
+{% block meta_description %}{{ product.description|striptags|slice(0, 155) }}{% if product.description|striptags|length > 155 %}...{% endif %}{% endblock %}
+{% block meta_keywords %}{{ product.name }}, {{ product.category ? product.category.name ~ ', ' : '' }}mode femme, Bella Couture{% endblock %}
+{% block og_type %}product{% endblock %}
+{% block canonical_url %}{{ app.request.schemeAndHttpHost ~ path('product_detail', {'id': product.id}) }}{% endblock %}
+{% block meta_image %}
+    {% if product.images|length > 0 %}
+        uploads/products/{{ product.images.first.filename }}
+    {% else %}
+        images/placeholder.svg
+    {% endif %}
+{% endblock %}
+{% block structured_data %}
+    <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name,
+            description: product.description|striptags,
+            image: product.images|length > 0 ? absolute_url(asset('uploads/products/' ~ product.images.first.filename)) : absolute_url(asset('images/placeholder.svg')),
+            brand: {
+                '@type': 'Brand',
+                name: 'Bella Couture'
+            },
+            category: product.category ? product.category.name : 'Mode femme',
+            offers: {
+                '@type': 'Offer',
+                url: app.request.schemeAndHttpHost ~ path('product_detail', {'id': product.id}),
+                priceCurrency: 'TND',
+                price: product.price,
+                availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                itemCondition: 'https://schema.org/NewCondition'
+            }
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }}
+    </script>
 {% endblock %}
 
 {% block body %}
-	<div class="container my-5">
-		<nav aria-label="breadcrumb">
-			<ol class="breadcrumb">
-				<li class="breadcrumb-item">
-					<a href="{{ path('home') }}">Accueil</a>
-				</li>
-				<li class="breadcrumb-item">
-					<a href="{{ path('products') }}">Produits</a>
-				</li>
-				<li class="breadcrumb-item active">{{ product.name }}</li>
-			</ol>
-		</nav>
+    <div class="container my-5">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('products') }}">Boutique</a></li>
+                <li class="breadcrumb-item active">{{ product.name }}</li>
+            </ol>
+        </nav>
 
-		<div
-			class="row">
-			<!-- Images du produit -->
-			<div class="col-md-6">
-				{% if product.images|length > 0 %}
-					<!-- Image principale -->
-					<div class="mb-4 position-relative">
-						{% if bestPromotion and bestPromotion.isValid() %}
-							<div class="position-absolute top-0 start-0 m-3">
-								<span class="badge bg-danger fs-5 p-2">-{{ bestPromotion.discount }}%</span>
-							</div>
-						{% endif %}
-						<img id="mainImage" src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-fluid rounded" alt="{{ product.name }}" style="max-height: 500px; object-fit: cover;">
-					</div>
+        <div class="row g-5 align-items-start">
+            <div class="col-lg-6">
+                {% if product.images|length > 0 %}
+                    <div class="position-relative mb-3">
+                        {% if bestPromotion and bestPromotion.isValid() %}
+                            <div class="position-absolute top-0 start-0 m-3" style="z-index: 2;">
+                                <span class="badge bg-danger fs-6 px-3 py-2">-{{ bestPromotion.discount }}%</span>
+                            </div>
+                        {% endif %}
+                        <img id="mainImage" src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-fluid product-gallery-main" alt="{{ product.name }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
+                    </div>
 
-					<!-- Miniatures -->
-					{% if product.images|length > 1 %}
-						<div class="row">
-							{% for image in product.images %}
-								<div class="col-3">
-									<img src="{{ asset('uploads/products/' ~ image.filename) }}" class="img-thumbnail thumbnail-image {% if loop.first %}active{% endif %}" alt="{{ product.name }} - vue {{ loop.index }}" style="cursor: pointer; height: 100px; object-fit: cover;" onclick="changeMainImage(this)">
-								</div>
-							{% endfor %}
-						</div>
-					{% endif %}
-				{% else %}
-					<img src="{{ asset('images/placeholder.jpg') }}" class="img-fluid rounded" alt="Image non disponible" style="max-height: 500px; object-fit: cover;">
-				{% endif %}
-			</div>
+                    {% if product.images|length > 1 %}
+                        <div class="row g-3">
+                            {% for image in product.images %}
+                                <div class="col-3">
+                                    <img src="{{ asset('uploads/products/' ~ image.filename) }}" class="img-thumbnail thumbnail-image {% if loop.first %}active{% endif %}" alt="{{ product.name }} - vue {{ loop.index }}" onclick="changeMainImage(this)" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <img src="{{ asset('images/placeholder.svg') }}" class="img-fluid product-gallery-main" alt="Image non disponible">
+                {% endif %}
+            </div>
 
-			<!-- Détails du produit -->
-			<div class="col-md-6">
-				<h1 class="h2">{{ product.name }}</h1>
+            <div class="col-lg-6">
+                {% if product.category %}
+                    <span class="badge bg-info mb-3">{{ product.category.name }}</span>
+                {% endif %}
+                <h1 class="display-6 section-title mb-3">{{ product.name }}</h1>
 
-				<!-- Section prix avec promotion -->
-				<div class="price-section mb-4">
-					{% if bestPromotion and bestPromotion.isValid() %}
-						<div class="d-flex align-items-center mb-2">
-							<span class="text-muted text-decoration-line-through me-3 h4">
-								{{ product.price }}
-								DT
-							</span>
-							<span class="h2 text-primary mb-0">
-								{{ bestPromotion.calculateDiscountedPrice(product.price)|number_format(2) }}
-								DT
-							</span>
-						</div>
-						<div class="alert alert-success border-0">
-							<div class="d-flex align-items-center">
-								<i class="fas fa-tag me-2"></i>
-								<div>
-									<strong class="d-block">{{ bestPromotion.title }}</strong>
-									<small class="d-block">{{ bestPromotion.description }}</small>
-								</div>
-							</div>
-						</div>
-						<p class="text-success small mb-0">
-							<i class="fas fa-clock me-1"></i>
-							Économisez
-							{{ bestPromotion.getDiscountAmount(product.price)|number_format(2) }}
-							DT
-						</p>
-					{% else %}
-						<p class="h2 text-primary mb-0">{{ product.price }}
-							DT</p>
-					{% endif %}
-				</div>
+                <div class="price-section mb-4">
+                    {% if bestPromotion and bestPromotion.isValid() %}
+                        <div class="d-flex align-items-end flex-wrap gap-2 mb-2">
+                            <span class="text-muted text-decoration-line-through h4 mb-1">{{ product.price }} DT</span>
+                            <span class="h2 text-primary mb-0">{{ bestPromotion.calculateDiscountedPrice(product.price)|number_format(2) }} DT</span>
+                        </div>
+                        <div class="alert alert-success border-0 rounded-3">
+                            <div class="d-flex gap-3">
+                                <i class="fas fa-tag mt-1"></i>
+                                <div>
+                                    <strong class="d-block">{{ bestPromotion.title }}</strong>
+                                    <small>{{ bestPromotion.description }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-success small fw-bold">
+                            Vous economisez {{ bestPromotion.getDiscountAmount(product.price)|number_format(2) }} DT.
+                        </p>
+                    {% else %}
+                        <p class="h2 text-primary mb-0">{{ product.price }} DT</p>
+                    {% endif %}
+                </div>
 
-				<div class="mb-4">
-					<p class="text-muted">{{ product.description }}</p>
-				</div>
+                <p class="lead text-muted mb-4">{{ product.description }}</p>
 
-				<!-- Informations produit -->
-				<div class="card mb-4">
-					<div class="card-body">
-						<h5 class="card-title">Informations produit</h5>
-						<ul class="list-unstyled">
-							<li class="mb-2">
-								<strong>Tailles :</strong>
-								{% if product.sizes|length > 0 %}
-									{% for size in product.sizes %}
-										<span class="badge bg-light text-dark">{{ size.name }}</span>
-									{% endfor %}
-								{% else %}
-									<span class="text-muted">Aucune taille</span>
-								{% endif %}
-							</li>
-							<li class="mb-2">
-								<strong>Couleur :</strong>
-								<span class="badge bg-light text-dark">{{ product.color }}</span>
-							</li>
-							<li class="mb-2">
-								<strong>Catégorie :</strong>
-								<span class="badge bg-info">{{ product.category }}</span>
-							</li>
-							<li class="mb-0">
-								<strong>Disponibilité :</strong>
-								{% if product.quantity > 0 %}
-									<span class="text-success">
-										<i class="fas fa-check-circle me-1"></i>
-										En stock ({{ product.quantity }}
-										disponibles)
-									</span>
-								{% else %}
-									<span class="text-danger">
-										<i class="fas fa-times-circle me-1"></i>
-										Rupture de stock
-									</span>
-								{% endif %}
-							</li>
-						</ul>
-					</div>
-				</div>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">Details du produit</h5>
+                        <ul class="list-unstyled mb-0 bc-info-list">
+                            <li class="d-flex justify-content-between gap-3">
+                                <strong>Tailles</strong>
+                                <span class="text-end">
+                                    {% if product.sizes|length > 0 %}
+                                        {% for size in product.sizes %}
+                                            <span class="badge bg-light text-dark">{{ size.name }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">Non precise</span>
+                                    {% endif %}
+                                </span>
+                            </li>
+                            <li class="d-flex justify-content-between gap-3">
+                                <strong>Couleurs</strong>
+                                <span class="text-end">
+                                    {% for color in product.colors %}
+                                        <span class="badge bg-light text-dark">{{ color }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Non precise</span>
+                                    {% endfor %}
+                                </span>
+                            </li>
+                            <li class="d-flex justify-content-between gap-3">
+                                <strong>Disponibilite</strong>
+                                {% if product.quantity > 0 %}
+                                    <span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i> En stock</span>
+                                {% else %}
+                                    <span class="text-danger fw-bold"><i class="fas fa-times-circle me-1"></i> Rupture</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-				<!-- Formulaire d'ajout au panier -->
-				{% if product.quantity > 0 %}
-					<form action="{{ path('cart_add', {'id': product.id}) }}" method="POST" class="mb-4">
-						<div class="row g-3 align-items-center">
-							<div class="col-auto">
-								<label for="quantity" class="col-form-label fw-bold">Quantité :</label>
-							</div>
-							<div class="col-auto">
-								<input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" max="{{ product.quantity }}" style="width: 80px;">
-							</div>
-							<div class="col-auto">
-								<button type="submit" class="btn btn-primary btn-lg">
-									<i class="fas fa-shopping-cart"></i>
-									Ajouter au panier
-								</button>
-							</div>
-						</div>
-					</form>
-				{% else %}
-					<button class="btn btn-secondary btn-lg" disabled>
-						<i class="fas fa-ban me-2"></i>
-						Produit indisponible
-					</button>
-				{% endif %}
-				<!-- Partage -->
-				<div class="mt-4 pt-4 border-top">
-					<p class="text-muted mb-2">Partager ce produit :</p>
-					<div
-						class="btn-group" role="group">
+                {% if product.quantity > 0 %}
+                    <form action="{{ path('cart_add', {'id': product.id}) }}" method="POST" class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="mb-3">Choisir mes options</h5>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label for="size" class="form-label fw-bold">Taille *</label>
+                                    {% if product.sizes|length > 0 %}
+                                        <select id="size" name="size" class="form-select" required>
+                                            <option value="">Selectionner une taille</option>
+                                            {% for size in product.sizes %}
+                                                <option value="{{ size.name }}">{{ size.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    {% else %}
+                                        <input type="hidden" name="size" value="Taille unique">
+                                        <div class="form-control bg-light">Taille unique</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="color" class="form-label fw-bold">Couleur *</label>
+                                    <select id="color" name="color" class="form-select" required>
+                                        <option value="">Selectionner une couleur</option>
+                                        {% for color in product.colors %}
+                                            <option value="{{ color }}">{{ color }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="quantity" class="form-label fw-bold">Quantite</label>
+                                    <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" max="{{ product.quantity }}">
+                                </div>
+                                <div class="col-sm-8 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-shopping-bag me-2"></i> Ajouter au panier
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-3 text-muted small mt-3">
+                                <span><i class="fas fa-truck me-1 text-primary"></i> Livraison disponible</span>
+                                <span><i class="fas fa-phone me-1 text-primary"></i> Assistance avant achat</span>
+                            </div>
+                        </div>
+                    </form>
+                {% else %}
+                    <button class="btn btn-outline-secondary btn-lg w-100 mb-4" disabled>
+                        <i class="fas fa-ban me-2"></i> Produit indisponible
+                    </button>
+                {% endif %}
 
-						{# Récupère l'URL absolue de la page actuelle (utile pour le partage) #}
-						{% set currentUrl = app.request.schemeAndHttpHost ~ app.request.requestUri %}
-						{% set productTitle = product.nom ?? 'Produit' %}
+                <div class="pt-3 border-top">
+                    <p class="text-muted mb-2">Partager ce produit</p>
+                    {% set currentUrl = app.request.schemeAndHttpHost ~ app.request.requestUri %}
+                    {% set productTitle = product.name ?? 'Produit' %}
+                    <div class="btn-group" role="group">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ currentUrl|url_encode }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com/intent/tweet?url={{ currentUrl|url_encode }}&text={{ productTitle|url_encode }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://pinterest.com/pin/create/button/?url={{ currentUrl|url_encode }}&description={{ productTitle|url_encode }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Pinterest"><i class="fab fa-pinterest"></i></a>
+                        <a href="https://api.whatsapp.com/send?text={{ productTitle|url_encode }}%20{{ currentUrl|url_encode }}" target="_blank" class="btn btn-outline-primary btn-sm" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-						<!-- Facebook -->
-						<a href="https://www.facebook.com/sharer/sharer.php?u={{ currentUrl|url_encode }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Partager sur Facebook">
-							<i class="fab fa-facebook-f"></i>
-						</a>
+        {% if allPromotions|length > 0 %}
+            <section class="mt-5">
+                <div class="d-flex justify-content-between align-items-end gap-3 flex-wrap mb-3">
+                    <div>
+                        <span class="page-kicker">Avantages</span>
+                        <h2 class="h4 section-title mb-0">Promotions disponibles</h2>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    {% for promotion in allPromotions %}
+                        {% if promotion.isValid() %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-0">{{ promotion.title }}</h6>
+                                            <span class="badge bg-danger">-{{ promotion.discount }}%</span>
+                                        </div>
+                                        <p class="text-muted small mb-0">{{ promotion.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    </div>
 
-						<!-- Twitter -->
-						<a href="https://twitter.com/intent/tweet?url={{ currentUrl|url_encode }}&text={{ productTitle|url_encode }}" target="_blank" class="btn btn-outline-info btn-sm" title="Partager sur Twitter">
-							<i class="fab fa-twitter"></i>
-						</a>
-
-						<!-- Pinterest -->
-						<a href="https://pinterest.com/pin/create/button/?url={{ currentUrl|url_encode }}&description={{ productTitle|url_encode }}" target="_blank" class="btn btn-outline-danger btn-sm" title="Partager sur Pinterest">
-							<i class="fab fa-pinterest"></i>
-						</a>
-
-						<!-- WhatsApp -->
-						<a href="https://api.whatsapp.com/send?text={{ productTitle|url_encode }}%20{{ currentUrl|url_encode }}" target="_blank" class="btn btn-outline-success btn-sm" title="Partager sur WhatsApp">
-							<i class="fab fa-whatsapp"></i>
-						</a>
-					</div>
-				</div>
-
-			</div>
-		</div>
-
-		<!-- Promotions disponibles -->
-		{% if allPromotions|length > 0 %}
-			<div class="row mt-5">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-header bg-light">
-							<h4 class="mb-0">
-								<i class="fas fa-percentage me-2 text-primary"></i>
-								Promotions disponibles
-							</h4>
-						</div>
-						<div class="card-body">
-							<div class="row">
-								{% for promotion in allPromotions %}
-									{% if promotion.isValid() %}
-										<div class="col-md-6 col-lg-4 mb-3">
-											<div class="card border-0 bg-light h-100">
-												<div class="card-body">
-													<div class="d-flex justify-content-between align-items-start mb-2">
-														<h6 class="card-title mb-0">{{ promotion.title }}</h6>
-														<span class="badge bg-danger">-{{ promotion.discount }}%</span>
-													</div>
-													<p class="card-text small text-muted mb-2">{{ promotion.description }}</p>
-													{% if promotion.startDate or promotion.endDate %}
-														<div class="small text-muted">
-															{% if promotion.startDate %}
-																<div>
-																	<i class="fas fa-play-circle me-1"></i>
-																	Début:
-																	{{ promotion.startDate|date('d/m/Y') }}
-																</div>
-															{% endif %}
-															{% if promotion.endDate %}
-																<div>
-																	<i class="fas fa-stop-circle me-1"></i>
-																	Fin:
-																	{{ promotion.endDate|date('d/m/Y') }}
-																</div>
-															{% endif %}
-														</div>
-													{% endif %}
-												</div>
-											</div>
-										</div>
-									{% endif %}
-								{% endfor %}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		{% endif %}
-	</div>
-
-	 <script>
-			function changeMainImage(thumbnail) {
-				// Changer l'image principale
-				document.getElementById('mainImage').src = thumbnail.src;
-	
-				// Mettre à jour les miniatures actives
-				document.querySelectorAll('.thumbnail-image').forEach(img => {
-					img.classList.remove('active');
-					img.style.opacity = '0.7';
-					img.style.borderColor = '#dee2e6';
-				});
-	
-				thumbnail.classList.add('active');
-				thumbnail.style.opacity = '1';
-				thumbnail.style.borderColor = '#0d6efd';
-			}
-	
-			// Initialiser les miniatures
-			document.addEventListener('DOMContentLoaded', function () {
-				document.querySelectorAll('.thumbnail-image').forEach(img => {
-					if (img.classList.contains('active')) {
-						img.style.opacity = '1';
-						img.style.borderColor = '#0d6efd';
-					} else {
-						img.style.opacity = '0.7';
-						img.style.borderColor = '#dee2e6';
-					}
-				});
-			});
-		</script>
-
-	<style>
-		.thumbnail-image {
-			transition: all 0.3s ease;
-			border: 2px solid #dee2e6;
-		}
-		.thumbnail-image:hover {
-			opacity: 1 !important;
-			border-color: #0d6efd !important;
-			transform: scale(1.05);
-		}
-		.thumbnail-image.active {
-			border-color: #0d6efd !important;
-		}
-		.price-section .alert-success {
-			background-color: #d1f7e6;
-			border-left: 4px solid #198754;
-		}
-		.position-absolute .badge {
-			box-shadow: 0 2px 10px rgba(220, 53, 69, 0.3);
-		}
-	</style>
+    <script>
+        function changeMainImage(thumbnail) {
+            document.getElementById('mainImage').src = thumbnail.src;
+            document.querySelectorAll('.thumbnail-image').forEach(function (img) {
+                img.classList.remove('active');
+            });
+            thumbnail.classList.add('active');
+        }
+    </script>
 {% endblock %}

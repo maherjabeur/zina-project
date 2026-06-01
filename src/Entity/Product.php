@@ -32,7 +32,7 @@ class Product
     #[ORM\JoinTable(name: 'product_sizes')]
     private Collection $sizes;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 255)]
     private ?string $color = null;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
@@ -155,8 +155,29 @@ class Product
     }
     public function setColor(string $color): self
     {
-        $this->color = $color;
+        $colors = array_filter(array_map('trim', preg_split('/[,;\n]+/', $color)));
+        $this->color = implode(', ', array_unique($colors));
         return $this;
+    }
+
+    public function getColors(): array
+    {
+        if (!$this->color) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map('trim', preg_split('/[,;\n]+/', $this->color))));
+    }
+
+    public function hasColor(string $color): bool
+    {
+        foreach ($this->getColors() as $availableColor) {
+            if (strcasecmp($availableColor, trim($color)) === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getCategory(): ?Category

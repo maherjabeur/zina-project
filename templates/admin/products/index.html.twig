@@ -1,77 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion des Produits - Admin
+{% block title %}Gestion des produits - Admin
 {% endblock %}
 
 {% block body %}
 	<div class="container-fluid">
 		<div
 			class="row">
-			<!-- Sidebar -->
-			<nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-				<div class="position-sticky pt-3">
-					<ul class="nav flex-column">
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_dashboard') }}">
-								<i class="fas fa-tachometer-alt"></i>
-								Dashboard
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" href="{{ path('admin_products') }}">
-								<i class="fas fa-tshirt"></i>
-								Produits
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link " href="{{ path('admin_sizes') }}">
-								<i class="fas fa-ruler"></i>
-								Tailles
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link " href="{{ path('admin_categories') }}">
-								<i class="fas fa-tags"></i>
-								Catégories
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_orders') }}">
-								<i class="fas fa-shopping-cart"></i>
-								Commandes
-								{% set pending_orders = count_pending_orders() %}
-								{% if pending_orders > 0 %}
-									<span class="badge bg-danger">{{ pending_orders }}</span>
-								{% endif %}
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_slider') }}">
-								<i class="fas fa-images"></i>
-								Slider
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link " href="{{ path('admin_settings') }}">
-								<i class="fas fa-dollar-sign"></i>
-								Frais livraison
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_promotion_index') }}">
-								<i class="fas fa-gift"></i>
-								Promotions
-							</a>
-						</li>
+        {% include 'admin/_sidebar.html.twig' %}
 
-					</ul>
-				</div>
-			</nav>
-
-			<!-- Main content -->
+<!-- Main content -->
 			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-					<h1 class="h2">Gestion des Produits</h1>
+					<h1 class="h2">Gestion des produits</h1>
 					<a href="{{ path('admin_product_new') }}" class="btn btn-primary">
 						<i class="fas fa-plus"></i>
 						Nouveau produit
@@ -134,9 +75,9 @@
 											<tr>
 												<td>
 													{% if product.images|length > 0 %}
-														<img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-thumbnail" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover;">
+														<img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-thumbnail" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
 													{% else %}
-														<img src="{{ asset('images/placeholder.jpg') }}" class="img-thumbnail" alt="Aucune image" style="width: 50px; height: 50px; object-fit: cover;">
+														<img src="{{ asset('images/placeholder.svg') }}" class="img-thumbnail" alt="Aucune image" style="width: 50px; height: 50px; object-fit: cover;">
 													{% endif %}
 												</td>
 												<td>
@@ -161,7 +102,11 @@
 													{% endif %}
 												</td>
 												<td>
-													<span class="badge bg-light text-dark">{{ product.color }}</span>
+													{% for color in product.colors %}
+														<span class="badge bg-light text-dark me-1">{{ color }}</span>
+													{% else %}
+														<span class="text-muted">Aucune</span>
+													{% endfor %}
 												</td>
 												<td>
 													<span class="badge bg-info">{{ product.category }}</span>

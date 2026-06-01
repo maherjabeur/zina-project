@@ -67,11 +67,14 @@ class Order
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
-    private ?float $discount = null;
+    private ?string $discount = null;
 
 
     #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
-    private ?float $originalTotal = null;
+    private ?string $originalTotal = null;
+
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
+    private ?string $shippingFee = '0.00';
 
     public function __construct()
     {
@@ -94,7 +97,7 @@ class Order
 
     public function setDiscount(?float $discount): static
     {
-        $this->discount = $discount;
+        $this->discount = $discount !== null ? number_format($discount, 2, '.', '') : null;
         return $this;
     }
 
@@ -105,8 +108,29 @@ class Order
 
     public function setOriginalTotal(?float $originalTotal): static
     {
-        $this->originalTotal = $originalTotal;
+        $this->originalTotal = $originalTotal !== null ? number_format($originalTotal, 2, '.', '') : null;
         return $this;
+    }
+
+    public function getShippingFee(): ?float
+    {
+        return $this->shippingFee;
+    }
+
+    public function setShippingFee(?float $shippingFee): static
+    {
+        $this->shippingFee = $shippingFee !== null ? number_format($shippingFee, 2, '.', '') : null;
+        return $this;
+    }
+
+    public function getItemsTotal(): string
+    {
+        $total = '0';
+        foreach ($this->items as $item) {
+            $total = bcadd($total, $item->getTotal() ?? '0', 2);
+        }
+
+        return $total;
     }
 
     /**

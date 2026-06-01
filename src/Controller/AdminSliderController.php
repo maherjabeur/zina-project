@@ -55,7 +55,7 @@ class AdminSliderController extends AbstractController
                 $entityManager->persist($sliderImage);
                 $entityManager->flush();
                 
-                $this->addFlash('success', 'Image du slider ajoutée avec succès!');
+                $this->addFlash('success', 'Image du diaporama ajoutée avec succès!');
                 return $this->redirectToRoute('admin_slider');
             } else {
                 $this->addFlash('error', 'Veuillez sélectionner une image.');
@@ -92,7 +92,7 @@ class AdminSliderController extends AbstractController
             
             $entityManager->flush();
             
-            $this->addFlash('success', 'Image du slider modifiée avec succès!');
+            $this->addFlash('success', 'Image du diaporama modifiée avec succès!');
             return $this->redirectToRoute('admin_slider');
         }
 
@@ -114,7 +114,7 @@ class AdminSliderController extends AbstractController
         $entityManager->remove($sliderImage);
         $entityManager->flush();
         
-        $this->addFlash('success', 'Image du slider supprimée avec succès!');
+        $this->addFlash('success', 'Image du diaporama supprimée avec succès!');
         
         return $this->redirectToRoute('admin_slider');
     }

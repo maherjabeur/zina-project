@@ -23,15 +23,32 @@ class AdminController extends AbstractController
     #[Route('/', name: 'admin_dashboard')]
     public function dashboard(OrderRepository $orderRepository): Response
     {
-        $pendingOrders = $orderRepository->findBy(
-            ['status' => 'pending'], // critères
-            ['id' => 'DESC'],         // tri (optionnel)
-            10                       // limite
-        );
+        $validatedStatuses = [
+            Order::STATUS_CONFIRMED,
+            Order::STATUS_SHIPPED,
+            Order::STATUS_DELIVERED,
+        ];
+
+        $todayStart = new \DateTimeImmutable('today');
+        $tomorrowStart = $todayStart->modify('+1 day');
+        $monthStart = $todayStart->modify('first day of this month')->setTime(0, 0);
+        $nextMonthStart = $monthStart->modify('+1 month');
+
+        $financialStats = [
+            'all' => $orderRepository->getFinancialSummary($validatedStatuses),
+            'month' => $orderRepository->getFinancialSummary($validatedStatuses, $monthStart, $nextMonthStart),
+            'today' => $orderRepository->getFinancialSummary($validatedStatuses, $todayStart, $tomorrowStart),
+            'pending' => $orderRepository->getFinancialSummary([Order::STATUS_PENDING]),
+        ];
+
+        $statusCounts = $orderRepository->countByStatus();
+        $topProducts = $orderRepository->findTopProductsByRevenue($validatedStatuses, 5);
         $recentOrders = $orderRepository->findRecentOrders(10);
 
         return $this->render('admin/dashboard.html.twig', [
-            'pendingOrders' => $pendingOrders,
+            'financialStats' => $financialStats,
+            'statusCounts' => $statusCounts,
+            'topProducts' => $topProducts,
             'recentOrders' => $recentOrders,
         ]);
     }

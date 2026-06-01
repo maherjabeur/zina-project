@@ -3,58 +3,12 @@
 {% block title %}Modifier {{ product.name }} - Admin{% endblock %}
 
 {% block body %}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                 <li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_dashboard') }}">
-								<i class="fas fa-tachometer-alt"></i>
-								Dashboard
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" href="{{ path('admin_products') }}">
-								<i class="fas fa-tshirt"></i>
-								Produits
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link " href="{{ path('admin_sizes') }}">
-								<i class="fas fa-ruler"></i>
-								Tailles
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link " href="{{ path('admin_categories') }}">
-								<i class="fas fa-tags"></i>
-								Catégories
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_orders') }}">
-								<i class="fas fa-shopping-cart"></i>
-								Commandes
-								{% set pending_orders = count_pending_orders() %}
-								{% if pending_orders > 0 %}
-									<span class="badge bg-danger">{{ pending_orders }}</span>
-								{% endif %}
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_slider') }}">
-								<i class="fas fa-images"></i>
-								Slider
-							</a>
-						</li>
-                </ul>
-            </div>
-        </nav>
+        {% include 'admin/_sidebar.html.twig' %}
 
-        <!-- Main content -->
+<!-- Main content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Modifier "{{ product.name }}"</h1>
@@ -89,14 +43,22 @@
                             <div class="row">
                          <div class="col-md-12">
     {{ form_row(form.sizes, {
-        'attr': {'class': 'form-select'},
+        'attr': {'class': 'form-select product-size-select', 'data-placeholder': 'Rechercher et choisir plusieurs tailles'},
         'label': 'Tailles disponibles'
     }) }}
+    <div class="d-flex flex-wrap gap-2 mt-2 mb-3">
+        <button type="button" class="btn btn-sm btn-outline-primary js-select-all-sizes">
+            <i class="fas fa-check-double me-1"></i> Tout selectionner
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary js-clear-sizes">
+            <i class="fas fa-xmark me-1"></i> Vider
+        </button>
+    </div>
 </div>
                                 <div class="col-md-4">
                                     {{ form_row(form.color, {
-                                        'attr': {'class': 'form-control'},
-                                        'label': 'Couleur'
+                                        'attr': {'class': 'form-control', 'rows': 2, 'placeholder': 'Noir, Blanc, Rose poudre'},
+                                        'label': 'Couleurs disponibles'
                                     }) }}
                                 </div>
                                 <div class="col-md-4">
@@ -189,14 +151,34 @@
         </main>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{% endblock %}
 
-<script>
-$(document).ready(function() {
-    $('.form-select[multiple]').select2({
-        placeholder: "Choisir les tailles",
-        allowClear: true
-    });
-});
-</script>
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/select2.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const $sizeSelect = $('.product-size-select');
+
+            $sizeSelect.select2({
+                width: '100%',
+                closeOnSelect: false,
+                placeholder: $sizeSelect.data('placeholder') || 'Rechercher et choisir plusieurs tailles',
+                allowClear: true,
+                language: {
+                    noResults: function () { return 'Aucune taille trouvee'; },
+                    searching: function () { return 'Recherche...'; }
+                }
+            });
+
+            $('.js-select-all-sizes').on('click', function () {
+                $sizeSelect.find('option').prop('selected', true);
+                $sizeSelect.trigger('change');
+            });
+
+            $('.js-clear-sizes').on('click', function () {
+                $sizeSelect.val(null).trigger('change');
+            });
+        });
+    </script>
 {% endblock %}

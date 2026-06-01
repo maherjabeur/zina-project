@@ -20,7 +20,7 @@ class Promotion
     private string $description;
 
     #[ORM\Column(type: "decimal", precision: 5, scale: 2)]
-    private float $discount;
+    private string $discount;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "promotions")]
     #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
@@ -80,7 +80,7 @@ class Promotion
 
     public function setDiscount(float $discount): self
     {
-        $this->discount = $discount;
+        $this->discount = number_format($discount, 2, '.', '');
         return $this;
     }
 

@@ -1,224 +1,176 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Panier - Bella Couture
-{% endblock %}
+{% block title %}Mon panier - Bella Couture{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+{% block canonical_url %}{{ app.request.schemeAndHttpHost ~ path('cart') }}{% endblock %}
 
 {% block body %}
-	<div class="container my-5">
-		<h1 class="mb-4">Mon Panier</h1>
+    <section class="bc-page-hero pb-3">
+        <div class="container">
+            <span class="page-kicker">Votre selection</span>
+            <h1 class="display-6 mb-2">Mon panier</h1>
+            <p class="section-subtitle mb-0">Verifiez vos articles avant de passer commande. Les promotions appliquees sont deja calculees.</p>
+        </div>
+    </section>
 
-		{% if cartData|length > 0 %}
-			{% set shipping = shippingFee %}
-			{% set totalDiscount = 0 %}
-			
-			{# Calculer la remise totale #}
-			{% for item in cartData %}
-				{% if item.promotion and item.promotion.isValid() %}
-					{% set originalPrice = item.product.price * item.quantity %}
-					{% set discountedPrice = item.discountedPrice * item.quantity %}
-					{% set itemDiscount = originalPrice - discountedPrice %}
-					{% set totalDiscount = totalDiscount + itemDiscount %}
-				{% endif %}
-			{% endfor %}
-			
-			{% set totalWithDiscount = total - totalDiscount %}
-			{% set totalWithShipping = totalWithDiscount + shipping %}
+    <div class="container mb-5">
+        {% if cartData|length > 0 %}
+            {% set shipping = shippingFee %}
+            {% set totalDiscount = 0 %}
+            {% for item in cartData %}
+                {% if item.promotion and item.promotion.isValid() %}
+                    {% set originalPrice = item.product.price * item.quantity %}
+                    {% set discountedPrice = item.discountedPrice * item.quantity %}
+                    {% set itemDiscount = originalPrice - discountedPrice %}
+                    {% set totalDiscount = totalDiscount + itemDiscount %}
+                {% endif %}
+            {% endfor %}
+            {% set totalWithDiscount = total - totalDiscount %}
+            {% set totalWithShipping = totalWithDiscount + shipping %}
 
-			<div class="row">
-				<div class="col-md-8">
-					<div class="card">
-						<div class="card-header">
-							<h5 class="mb-0">Articles dans votre panier</h5>
-						</div>
-						<div class="card-body">
-							{% for item in cartData %}
-								<div class="row align-items-center mb-4 pb-4 border-bottom">
-									<div class="col-md-2">
-										{% if item.product.images|length > 0 %}
-											<img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" class="img-fluid rounded" alt="{{ item.product.name }}" style="height: 80px; object-fit: cover;">
-										{% else %}
-											<img src="{{ asset('images/placeholder.jpg') }}" class="img-fluid rounded" alt="Image non disponible" style="height: 80px; object-fit: cover;">
-										{% endif %}
-									</div>
-									<div class="col-md-4">
-										<h6 class="mb-1">{{ item.product.name }}</h6>
-										<p class="text-muted small mb-0">
-											{% if item.product.sizes|length > 0 %}
-												Tailles:
-												{% for size in item.product.sizes %}
-													{{ size.name }}
-													{% if not loop.last %},
-													{% endif %}
-												{% endfor %}
-												<br>
-											{% endif %}
-											Couleur:
-											{{ item.product.color }}
-										</p>
-									</div>
-									<div class="col-md-2">
-										{% if item.promotion and item.promotion.isValid() %}
-											<div class="price-comparison">
-												<span class="text-muted text-decoration-line-through small">
-													{{ item.product.price|number_format(2) }} DT
-												</span>
-												<br>
-												<span class="h6 text-success">
-													{{ item.discountedPrice|number_format(2) }} DT
-												</span>
-											</div>
-										{% else %}
-											<span class="h6">{{ item.product.price|number_format(2) }} DT</span>
-										{% endif %}
-									</div>
-									<div class="col-md-2">
-										<div class="input-group input-group-sm">
-											<input type="number" class="form-control" value="{{ item.quantity }}" min="1" onchange="updateQuantity({{ item.product.id }}, this.value)">
-										</div>
-										{% if item.promotion and item.promotion.isValid() %}
-											<div class="mt-1">
-												<span class="badge bg-danger">-{{ item.discount }}%</span>
-												<small class="text-muted">{{ item.promotion.title }}</small>
-											</div>
-										{% endif %}
-									</div>
-									<div class="col-md-2 text-end">
-										{% if item.promotion and item.promotion.isValid() %}
-											<div class="price-comparison">
-												<span class="text-muted text-decoration-line-through small d-block">
-													{{ (item.product.price * item.quantity)|number_format(2) }} DT
-												</span>
-												<span class="h6 text-success">
-													{{ (item.discountedPrice * item.quantity)|number_format(2) }} DT
-												</span>
-											</div>
-										{% else %}
-											<span class="h6">{{ (item.product.price * item.quantity)|number_format(2) }} DT</span>
-										{% endif %}
-										<br>
-										<a href="{{ path('cart_remove', {'id': item.product.id}) }}" class="btn btn-sm btn-outline-danger mt-1" onclick="return confirm('Êtes-vous sûr de vouloir retirer ce produit ?')">
-											<i class="fas fa-trash"></i>
-										</a>
-									</div>
-								</div>
-							{% endfor %}
-						</div>
-					</div>
-				</div>
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="d-flex flex-column gap-3">
+                        {% for item in cartData %}
+                            <div class="cart-line">
+                                <div class="row align-items-center g-3">
+                                    <div class="col-md-2">
+                                        {% if item.product.images|length > 0 %}
+                                            <img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" class="img-fluid" alt="{{ item.product.name }}">
+                                        {% else %}
+                                            <img src="{{ asset('images/placeholder.svg') }}" class="img-fluid" alt="Image non disponible">
+                                        {% endif %}
+                                    </div>
 
-				<!-- Récapitulatif -->
-				<div class="col-md-4">
-					<div class="card">
-						<div class="card-header">
-							<h5 class="mb-0">Récapitulatif</h5>
-						</div>
-						<div class="card-body">
-							<div class="d-flex justify-content-between mb-2">
-								<span>Sous-total:</span>
-								<span>{{ total|number_format(2) }} DT</span>
-							</div>
-							
-							{# Affichage de la remise #}
-							{% if totalDiscount > 0 %}
-								<div class="d-flex justify-content-between mb-2 text-success">
-									<span>Remise:</span>
-									<span>-{{ totalDiscount|number_format(2) }} DT</span>
-								</div>
-								<div class="d-flex justify-content-between mb-2">
-									<span>Sous-total après remise:</span>
-									<span>{{ totalWithDiscount|number_format(2) }} DT</span>
-								</div>
-							{% endif %}
-							
-							<div class="d-flex justify-content-between mb-2">
-								<span>Livraison:</span>
-								<span>{{ shipping|number_format(2) }} DT</span>
-							</div>
-							<hr>
-							<div class="d-flex justify-content-between mb-3">
-								<strong>Total:</strong>
-								<strong>{{ totalWithShipping|number_format(2) }} DT</strong>
-							</div>
+                                    <div class="col-md-4">
+                                        <h5 class="mb-1">{{ item.product.name }}</h5>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <span class="badge bg-primary">Taille: {{ item.size ?? 'A choisir' }}</span>
+                                            <span class="badge bg-info text-dark">Couleur: {{ item.color ?? 'A choisir' }}</span>
+                                            {% if item.size is empty or item.color is empty %}
+                                                <a href="{{ path('product_detail', {'id': item.product.id}) }}" class="badge bg-warning text-dark text-decoration-none">Completer</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
 
-							{# Badge d'économie si remise #}
-							{% if totalDiscount > 0 %}
-								<div class="alert alert-success text-center py-2 mb-3">
-									<small>
-										<i class="fas fa-piggy-bank me-1"></i>
-										Vous économisez <strong>{{ totalDiscount|number_format(2) }} DT</strong> avec nos promotions !
-									</small>
-								</div>
-							{% endif %}
+                                    <div class="col-md-2">
+                                        {% if item.promotion and item.promotion.isValid() %}
+                                            <span class="text-muted text-decoration-line-through small d-block">{{ item.product.price|number_format(2) }} DT</span>
+                                            <span class="fw-bold text-success">{{ item.discountedPrice|number_format(2) }} DT</span>
+                                            <span class="badge bg-danger d-inline-block mt-1">-{{ item.discount }}%</span>
+                                        {% else %}
+                                            <span class="fw-bold">{{ item.product.price|number_format(2) }} DT</span>
+                                        {% endif %}
+                                    </div>
 
-							<div class="d-grid gap-2">
-								<a href="{{ path('checkout') }}" class="btn btn-primary btn-lg">
-									<i class="fas fa-credit-card"></i>
-									Commander ({{ totalWithShipping|number_format(2) }} DT)
-								</a>
-								<a href="{{ path('products') }}" class="btn btn-outline-primary">
-									<i class="fas fa-shopping-bag"></i>
-									Continuer mes achats
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		{% else %}
-			<div class="text-center py-5">
-				<i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
-				<h3>Votre panier est vide</h3>
-				<p class="text-muted mb-4">Découvrez nos produits et ajoutez-les à votre panier.</p>
-				<a href="{{ path('products') }}" class="btn btn-primary btn-lg">
-					<i class="fas fa-bag-shopping"></i>
-					Découvrir nos produits
-				</a>
-			</div>
-		{% endif %}
-	</div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small text-muted mb-1">Quantite</label>
+                                        <input type="number" class="form-control form-control-sm text-center" value="{{ item.quantity }}" min="1" onchange="updateQuantity({{ item.key|json_encode|raw }}, this.value)">
+                                    </div>
 
-	<script>
-		function updateQuantity(productId, quantity) {
-			if (quantity < 1) {
-				if (confirm('Êtes-vous sûr de vouloir retirer ce produit ?')) {
-					window.location.href = '{{ path('cart_remove', {'id': 'PRODUCT_ID'}) }}'.replace('PRODUCT_ID', productId);
-				}
-				return;
-			}
+                                    <div class="col-md-2 text-md-end">
+                                        {% if item.promotion and item.promotion.isValid() %}
+                                            <span class="text-muted text-decoration-line-through small d-block">{{ (item.product.price * item.quantity)|number_format(2) }} DT</span>
+                                            <span class="fw-bold text-success">{{ (item.discountedPrice * item.quantity)|number_format(2) }} DT</span>
+                                        {% else %}
+                                            <span class="fw-bold">{{ (item.product.price * item.quantity)|number_format(2) }} DT</span>
+                                        {% endif %}
+                                        <a href="{{ path('cart_remove', {'key': item.key}) }}" class="btn btn-sm btn-outline-danger mt-2" onclick="return confirm('Retirer ce produit du panier ?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
 
-			// Envoyer une requête pour mettre à jour la quantité
-			fetch('{{ path('cart_update') }}', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-Requested-With': 'XMLHttpRequest'
-				},
-				body: JSON.stringify({
-					productId: productId,
-					quantity: quantity
-				})
-			}).then(response => response.json()).then(data => {
-				if (data.success) {
-					window.location.reload();
-				}
-			}).catch(error => {
-				console.error('Error:', error);
-				alert('Une erreur est survenue lors de la mise à jour du panier');
-			});
-		}
-	</script>
+                <div class="col-lg-4">
+                    <div class="card summary-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recapitulatif</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Sous-total</span>
+                                <span>{{ total|number_format(2) }} DT</span>
+                            </div>
+                            {% if totalDiscount > 0 %}
+                                <div class="d-flex justify-content-between mb-2 text-success">
+                                    <span>Remise</span>
+                                    <span>-{{ totalDiscount|number_format(2) }} DT</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Apres remise</span>
+                                    <span>{{ totalWithDiscount|number_format(2) }} DT</span>
+                                </div>
+                            {% endif %}
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Livraison</span>
+                                <span>{{ shipping|number_format(2) }} DT</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <strong>Total</strong>
+                                <strong class="summary-total">{{ totalWithShipping|number_format(2) }} DT</strong>
+                            </div>
 
-	<style>
-		.price-comparison .text-decoration-line-through {
-			font-size: 0.8rem;
-		}
-		.promotion-badge {
-			text-align: center;
-		}
-		.alert-success {
-			background-color: #d1f7e4;
-			border-color: #b1ebd1;
-			color: #0f5132;
-		}
-	</style>
+                            {% if totalDiscount > 0 %}
+                                <div class="alert alert-success border-0 rounded-3 small">
+                                    <i class="fas fa-gift me-1"></i>
+                                    Vous economisez <strong>{{ totalDiscount|number_format(2) }} DT</strong>.
+                                </div>
+                            {% endif %}
+
+                            <div class="d-grid gap-2">
+                                <a href="{{ path('checkout') }}" class="btn btn-primary btn-lg">
+                                    Commander
+                                </a>
+                                <a href="{{ path('products') }}" class="btn btn-outline-primary">
+                                    Continuer mes achats
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="bc-empty-state text-center py-5 px-3">
+                <i class="fas fa-shopping-bag fa-4x text-primary mb-4"></i>
+                <h3>Votre panier est vide</h3>
+                <p class="text-muted mb-4">Decouvrez la collection et ajoutez vos coups de coeur.</p>
+                <a href="{{ path('products') }}" class="btn btn-primary btn-lg">Decouvrir les produits</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function updateQuantity(cartKey, quantity) {
+            if (quantity < 1) {
+                if (confirm('Retirer ce produit du panier ?')) {
+                    window.location.href = '{{ path('cart_remove', {'key': 'CART_KEY'}) }}'.replace('CART_KEY', encodeURIComponent(cartKey));
+                }
+                return;
+            }
+
+            fetch('{{ path('cart_update') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ cartKey: cartKey, quantity: quantity })
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                if (data.success) {
+                    window.location.reload();
+                    return;
+                }
+                alert(data.message || 'Une erreur est survenue lors de la mise a jour du panier.');
+            }).catch(function () {
+                alert('Une erreur est survenue lors de la mise a jour du panier.');
+            });
+        }
+    </script>
 {% endblock %}

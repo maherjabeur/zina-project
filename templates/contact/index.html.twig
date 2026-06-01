@@ -1,72 +1,93 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Contact - Bella Couture{% endblock %}
+{% block meta_description %}Contactez Bella Couture a Sousse pour une question sur une commande, une taille, une couleur ou un conseil mode femme.{% endblock %}
+{% block canonical_url %}{{ app.request.schemeAndHttpHost ~ path('contact') }}{% endblock %}
 
 {% block body %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="text-center mb-0">Contactez-nous</h2>
-                </div>
-                <div class="card-body p-4">
-                    <p class="text-center text-muted mb-4">
-                        Une question ? Une demande particulière ? N'hésitez pas à nous contacter, 
-                        nous vous répondrons dans les plus brefs délais.
+    <section class="bc-page-hero pb-3">
+        <div class="container">
+            <div class="row align-items-end g-4">
+                <div class="col-lg-7">
+                    <span class="page-kicker">Contact</span>
+                    <h1 class="display-6 mb-3">Besoin d'un conseil ?</h1>
+                    <p class="section-subtitle mb-0">
+                        Une question sur une taille, une commande ou une piece de la collection ? Envoyez-nous un message, nous vous repondrons rapidement.
                     </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                    {{ form_start(form) }}
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form_row(form.name) }}
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            {{ form_row(form.email) }}
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        {{ form_row(form.phone) }}
-                    </div>
-                    
-                    <div class="mb-4">
-                        {{ form_row(form.message) }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        {{ form_row(form.submit) }}
-                    </div>
-                    {{ form_end(form) }}
+    <div class="container mb-5">
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-7">
+                <div class="card contact-card">
+                    <div class="card-body p-4 p-lg-5">
+                        {{ form_start(form) }}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form_row(form.name) }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form_row(form.email) }}
+                                </div>
+                            </div>
 
-                    <div class="mt-4 pt-4 border-top">
-                        <div class="row text-center">
-                            <div class="col-md-4 mb-3">
-                                <div class="text-primary">
-                                    <i class="fas fa-phone fa-2x mb-2"></i>
-                                    <h5>Téléphone</h5>
-                                    <p class="mb-0">+216 21 201 092</p>
-                                </div>
+                            <div class="mb-3">
+                                {{ form_row(form.phone) }}
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="text-primary">
-                                    <i class="fas fa-envelope fa-2x mb-2"></i>
-                                    <h5>Email</h5>
-                                    <p class="mb-0">mjbali833@gmail.com</p>
-                                </div>
+
+                            <div class="mb-4">
+                                {{ form_row(form.message) }}
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="text-primary">
-                                    <i class="fas fa-clock fa-2x mb-2"></i>
-                                    <h5>Horaires</h5>
-                                    <p class="mb-0">Lun-Sam: 9h-19h</p>
-                                </div>
+
+                            <div>
+                                {{ form_row(form.submit) }}
                             </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card contact-card mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="section-title mb-4">Informations boutique</h5>
+                        <div class="row g-3 text-center">
+                            <div class="col-sm-4 col-lg-12">
+                                <span class="contact-icon"><i class="fas fa-phone"></i></span>
+                                <h6>Telephone</h6>
+                                <p class="mb-0 text-muted">+216 21 201 092</p>
+                            </div>
+                            <div class="col-sm-4 col-lg-12">
+                                <span class="contact-icon"><i class="fas fa-envelope"></i></span>
+                                <h6>Email</h6>
+                                <p class="mb-0 text-muted">mjbali833@gmail.com</p>
+                            </div>
+                            <div class="col-sm-4 col-lg-12">
+                                <span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span>
+                                <h6>Adresse</h6>
+                                <p class="mb-0 text-muted">Sousse, Tunisia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card contact-card">
+                    <div class="card-body p-4">
+                        <h5 class="section-title mb-3">Horaires</h5>
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span>Lundi - Samedi</span>
+                            <strong>9h - 19h</strong>
+                        </div>
+                        <div class="d-flex justify-content-between py-2">
+                            <span>Dimanche</span>
+                            <strong>Sur demande</strong>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

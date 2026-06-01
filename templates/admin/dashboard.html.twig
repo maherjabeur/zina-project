@@ -1,121 +1,215 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tableau de Bord Admin{% endblock %}
+{% block title %}Tableau de bord - Admin{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ path('admin_dashboard') }}">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_products') }}">
-                            <i class="fas fa-tshirt"></i> Produits
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_sizes') }}">
-                            <i class="fas fa-ruler"></i> Tailles
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_categories') }}">
-                            <i class="fas fa-tags"></i> Catégories
-                        </a>
-                    </li>
-                      <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_orders') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            Commandes
-                            {% set pending_orders = count_pending_orders() %}
-                            {% if pending_orders > 0 %}
-                                <span class="badge bg-danger">{{ pending_orders }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link " href="{{ path('admin_slider') }}">
-                            <i class="fas fa-images"></i> Slider
-                        </a>
-                    </li>
-                   <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_settings') }}">
-                            <i class="fas fa-dollar-sign"></i> Frais livraison
-                        </a>
-                    </li>
-                    <li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_promotion_index') }}">
-								<i class="fas fa-gift"></i>
-								Promotions
-							</a>
-						</li>
-                </ul>
-            </div>
-        </nav>
+        {% include 'admin/_sidebar.html.twig' %}
 
-        <!-- Main content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Tableau de Bord</h1>
+                <div>
+                    <h1 class="h2 mb-1">Tableau de bord</h1>
+                    <p class="text-muted mb-0">Suivi des gains et des commandes qui impactent le chiffre d'affaires.</p>
+                </div>
+                <a href="{{ path('admin_orders') }}" class="btn btn-primary">
+                    <i class="fas fa-receipt me-1"></i> Voir les commandes
+                </a>
             </div>
 
-            <!-- Statistiques -->
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="card text-white bg-primary mb-3">
+            <div class="row g-3 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card text-white bg-success h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Commandes en attente</h5>
-                            <h2 class="card-text">{{ pendingOrders|length }}</h2>
+                            <h5 class="card-title">Gains valides</h5>
+                            <h2 class="card-text">{{ financialStats.all.revenue|number_format(2) }} DT</h2>
+                            <p class="mb-0 small">{{ financialStats.all.ordersCount }} commande(s) confirmees, expediees ou livrees</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card text-white bg-primary h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Gains du mois</h5>
+                            <h2 class="card-text">{{ financialStats.month.revenue|number_format(2) }} DT</h2>
+                            <p class="mb-0 small">{{ financialStats.month.ordersCount }} commande(s) valide(s) ce mois</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card text-white bg-info h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Aujourd'hui</h5>
+                            <h2 class="card-text">{{ financialStats.today.revenue|number_format(2) }} DT</h2>
+                            <p class="mb-0 small">{{ financialStats.today.ordersCount }} commande(s) valide(s)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card text-white bg-warning h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Potentiel en attente</h5>
+                            <h2 class="card-text">{{ financialStats.pending.revenue|number_format(2) }} DT</h2>
+                            <p class="mb-0 small">{{ financialStats.pending.ordersCount }} commande(s) a confirmer</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Commandes récentes -->
-            <div class="row">
-                <div class="col-12">
-                    <h3>Commandes Récentes</h3>
+            <div class="row g-3 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <div>
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Ventes articles</p>
+                                    <h3 class="mb-0">{{ financialStats.all.itemsRevenue|number_format(2) }} DT</h3>
+                                </div>
+                                <i class="fas fa-bag-shopping fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <div>
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Livraison collectee</p>
+                                    <h3 class="mb-0">{{ financialStats.all.shipping|number_format(2) }} DT</h3>
+                                </div>
+                                <i class="fas fa-truck fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <div>
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Remises accordees</p>
+                                    <h3 class="mb-0">{{ financialStats.all.discount|number_format(2) }} DT</h3>
+                                </div>
+                                <i class="fas fa-tags fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <div>
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Panier moyen</p>
+                                    <h3 class="mb-0">{{ financialStats.all.averageOrder|number_format(2) }} DT</h3>
+                                </div>
+                                <i class="fas fa-chart-line fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-xl-7">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Top produits par gains</h5>
+                            <span class="badge bg-light text-dark">Commandes validees</span>
+                        </div>
+                        <div class="card-body">
+                            {% if topProducts|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Produit</th>
+                                                <th class="text-center">Quantite vendue</th>
+                                                <th class="text-end">Gains</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for product in topProducts %}
+                                                <tr>
+                                                    <td><strong>{{ product.productName }}</strong></td>
+                                                    <td class="text-center">{{ product.soldQuantity }}</td>
+                                                    <td class="text-end fw-bold">{{ product.revenue|number_format(2) }} DT</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4 text-muted">
+                                    <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                                    <p class="mb-0">Aucun gain valide pour le moment.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-5">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">Etat des commandes</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for statusValue, statusLabel in constant('App\\Entity\\Order::STATUSES') %}
+                                {% set count = statusCounts[statusValue]|default(0) %}
+                                <div class="d-flex justify-content-between align-items-center py-2 {% if not loop.last %}border-bottom{% endif %}">
+                                    <span>{{ statusLabel }}</span>
+                                    <span class="badge bg-{{ statusValue == 'cancelled' ? 'danger' : (statusValue == 'pending' ? 'warning text-dark' : 'success') }}">
+                                        {{ count }}
+                                    </span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Dernieres commandes</h5>
+                    <a href="{{ path('admin_orders') }}" class="btn btn-sm btn-outline-primary">Tout voir</a>
+                </div>
+                <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped align-middle">
                             <thead>
                                 <tr>
-                                    <th>N° Commande</th>
+                                    <th>N° commande</th>
                                     <th>Client</th>
                                     <th>Total</th>
                                     <th>Statut</th>
                                     <th>Date</th>
-                                    <th>Actions</th>
+                                    <th class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for order in recentOrders %}
                                     <tr>
-                                        <td>{{ order.orderNumber }}</td>
+                                        <td><strong>{{ order.orderNumber }}</strong></td>
                                         <td>{{ order.customerName }}</td>
-                                        <td>{{ order.total }} Dt</td>
+                                        <td>{{ order.total|number_format(2) }} DT</td>
                                         <td>
-                                            <span class="badge bg-{{ order.status == 'pending' ? 'warning' : 'success' }}">
-                                                {{ order.status }}
+                                            <span class="badge bg-{{ order.status == 'cancelled' ? 'danger' : (order.status == 'pending' ? 'warning text-dark' : 'success') }}">
+                                                {{ order.statusLabel }}
                                             </span>
                                         </td>
                                         <td>{{ order.createdAt|date('d/m/Y H:i') }}</td>
-                                        <td>
-                                              <form method="POST" action="{{ path('admin_order_update_status', {'id': order.id}) }}" class="d-inline">
-        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
-            {% for statusValue, statusLabel in constant('App\\Entity\\Order::STATUSES') %}
-                <option value="{{ statusValue }}" {{ order.status == statusValue ? 'selected' : '' }}>
-                    {{ statusLabel }}
-                </option>
-            {% endfor %}
-        </select>
-    </form>
+                                        <td class="text-end">
+                                            <a href="{{ path('admin_order_show', {'id': order.id}) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                         </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">Aucune commande pour le moment.</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

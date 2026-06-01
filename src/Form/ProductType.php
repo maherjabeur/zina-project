@@ -10,11 +10,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class ProductType extends AbstractType
 {
@@ -57,14 +57,20 @@ class ProductType extends AbstractType
                         ->orderBy('s.position', 'ASC');
                 },
                 'attr' => [
-                    'class' => 'form-select',
-                    'data-placeholder' => 'Choisir les tailles'
+                    'class' => 'form-select product-size-select',
+                    'data-placeholder' => 'Rechercher et choisir plusieurs tailles',
+                    'data-allow-clear' => 'true'
                 ],
-                'label' => 'Tailles'
+                'label' => 'Tailles disponibles'
             ])
-            ->add('color', TextType::class, [
-                'label' => 'Couleur *',
-                'attr' => ['class' => 'form-control']
+            ->add('color', TextareaType::class, [
+                'label' => 'Couleurs disponibles *',
+                'help' => 'Separez les couleurs par des virgules : Noir, Blanc, Rose poudre',
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 2,
+                    'placeholder' => 'Noir, Blanc, Rose poudre'
+                ]
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'Produit actif',

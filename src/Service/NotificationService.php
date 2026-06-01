@@ -4,81 +4,60 @@ namespace App\Service;
 
 use App\Entity\Contact;
 use App\Entity\Order;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 class NotificationService
 {
-    private MailerInterface $mailer;
-
-    public function __construct(MailerInterface $mailer)
+    public function __construct(private readonly PhpMailerService $mailer)
     {
-        $this->mailer = $mailer;
     }
 
     public function sendOrderNotification(Order $order): void
     {
-        // Email à l'admin
         $this->sendAdminNotification($order);
 
-        // Email de confirmation au client seulement si email valide
         if ($order->getCustomerEmail()) {
-            $customerEmail = (new TemplatedEmail())
-                ->from('noreply@boutique-femme.com')
-                ->to($order->getCustomerEmail())
-                ->subject('Confirmation de votre commande - ' . $order->getOrderNumber())
-                ->htmlTemplate('emails/order_confirmation.html.twig')
-                ->context([
-                    'order' => $order,
-                ]);
-
-            $this->mailer->send($customerEmail);
+            $this->mailer->sendTemplate(
+                $order->getCustomerEmail(),
+                'Confirmation de votre commande - ' . $order->getOrderNumber(),
+                'emails/order_confirmation.html.twig',
+                ['order' => $order]
+            );
         }
     }
 
     public function sendAdminNotification(Order $order): void
     {
-        // Email à l'admin seulement
-        $adminEmail = (new TemplatedEmail())
-            ->from('noreply@boutique-femme.com')
-            ->to('admin@boutique-femme.com')
-            ->subject('Nouvelle commande - ' . $order->getOrderNumber())
-            ->htmlTemplate('emails/new_order_admin.html.twig')
-            ->context([
-                'order' => $order,
-            ]);
-
-        $this->mailer->send($adminEmail);
+        $this->mailer->sendTemplate(
+            $this->mailer->getAdminEmail(),
+            'Nouvelle commande - ' . $order->getOrderNumber(),
+            'emails/new_order_admin.html.twig',
+            ['order' => $order],
+            $order->getCustomerEmail()
+        );
     }
 
     public function sendStatusUpdateNotification(Order $order): void
     {
-        // Envoyer la mise à jour seulement si l'email est disponible
-        if ($order->getCustomerEmail()) {
-            $email = (new TemplatedEmail())
-                ->from('noreply@boutique-femme.com')
-                ->to($order->getCustomerEmail())
-                ->subject('Mise à jour de votre commande - ' . $order->getOrderNumber())
-                ->htmlTemplate('emails/status_update.html.twig')
-                ->context([
-                    'order' => $order,
-                ]);
-
-            $this->mailer->send($email);
+        if (!$order->getCustomerEmail()) {
+            return;
         }
-    }
-    public function sendContactNotification(Contact $contact): void
-{
-    // Email à l'admin
-    $email = (new TemplatedEmail())
-        ->from('noreply@boutique-femme.com')
-        ->to('mjbali833@gmail.com')
-        ->subject('Nouveau message de contact - ' . $contact->getName())
-        ->htmlTemplate('emails/contact_notification.html.twig')
-        ->context([
-            'contact' => $contact,
-        ]);
 
-    $this->mailer->send($email);
-}
+        $this->mailer->sendTemplate(
+            $order->getCustomerEmail(),
+            'Mise a jour de votre commande - ' . $order->getOrderNumber(),
+            'emails/status_update.html.twig',
+            ['order' => $order]
+        );
+    }
+
+    public function sendContactNotification(Contact $contact): void
+    {
+        $this->mailer->sendTemplate(
+            $this->mailer->getAdminEmail(),
+            'Nouveau message de contact - ' . $contact->getName(),
+            'emails/contact_notification.html.twig',
+            ['contact' => $contact],
+            $contact->getEmail()
+        );
+    }
 }

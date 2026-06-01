@@ -11,10 +11,12 @@
 						</div>
 						<div class="flex-grow-1 ms-3">
 							<h6 class="mb-0 small">{{ item.product.name }}</h6>
-							<small class="text-muted">{{ item.quantity }}
-								x
-								{{ item.product.price }}
-								Dt</small>
+							<small class="text-muted d-block">
+								{{ item.quantity }} x {{ item.product.price }} Dt
+							</small>
+							<small class="text-muted d-block">
+								{{ item.size ?? 'Taille a choisir' }} - {{ item.color ?? 'Couleur a choisir' }}
+							</small>
 						</div>
 					</div>
 				</div>

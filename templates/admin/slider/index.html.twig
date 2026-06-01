@@ -1,68 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion du Slider - Admin{% endblock %}
+{% block title %}Gestion du diaporama - Admin{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                   <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_products') }}">
-                            <i class="fas fa-tshirt"></i> Produits
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_sizes') }}">
-                            <i class="fas fa-ruler"></i> Tailles
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_categories') }}">
-                            <i class="fas fa-tags"></i> Catégories
-                        </a>
-                    </li>
-                      <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_orders') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            Commandes
-                            {% set pending_orders = count_pending_orders() %}
-                            {% if pending_orders > 0 %}
-                                <span class="badge bg-danger">{{ pending_orders }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link active" href="{{ path('admin_slider') }}">
-                            <i class="fas fa-images"></i> Slider
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ path('admin_settings') }}">
-                            <i class="fas fa-dollar-sign"></i> Frais livraison
-                        </a>
-                    </li>
-                    <li class="nav-item">
-							<a class="nav-link" href="{{ path('admin_promotion_index') }}">
-								<i class="fas fa-gift"></i>
-								Promotions
-							</a>
-						</li>
-                </ul>
-            </div>
-        </nav>
+        {% include 'admin/_sidebar.html.twig' %}
 
-        <!-- Main content -->
+<!-- Main content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestion du Slider</h1>
+                <h1 class="h2">Gestion du diaporama</h1>
                 <a href="{{ path('admin_slider_new') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Nouvelle image
                 </a>
@@ -96,7 +44,7 @@
                 </div>
             </div>
 
-            <!-- Liste des images du slider -->
+            <!-- Liste des images du diaporama -->
             <div class="card">
                 <div class="card-body">
                     {% if sliderImages|length > 0 %}
@@ -162,7 +110,7 @@
                                                         </button>
                                                     </form>
                                                     <form method="POST" action="{{ path('admin_slider_delete', {'id': sliderImage.id}) }}" 
-                                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette image du slider ?')"
+                                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette image du diaporama ?')"
                                                           class="d-inline">
                                                         <button type="submit" class="btn btn-outline-danger" title="Supprimer">
                                                             <i class="fas fa-trash"></i>
@@ -178,8 +126,8 @@
                     {% else %}
                         <div class="text-center py-5">
                             <i class="fas fa-images fa-3x text-muted mb-3"></i>
-                            <h3>Aucune image dans le slider</h3>
-                            <p class="text-muted">Commencez par ajouter des images pour votre slider.</p>
+                            <h3>Aucune image dans le diaporama</h3>
+                            <p class="text-muted">Commencez par ajouter des images pour votre diaporama.</p>
                             <a href="{{ path('admin_slider_new') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Ajouter une image
                             </a>

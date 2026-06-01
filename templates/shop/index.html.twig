@@ -1,43 +1,37 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <!-- Hero Slider -->
     <div class="hero-slider">
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 {% for slide in slider_images %}
                     <div class="carousel-item {{ loop.first ? 'active' : '' }}">
-                        <img src="{{ asset('uploads/slider/' ~ slide.filename) }}" 
-                             class="d-block w-100" alt="{{ slide.title ?? 'Slide ' ~ loop.index }}"
-                             style="height: 500px; object-fit: cover;">
-                        {% if slide.title or slide.description %}
-                            <div class="carousel-caption d-none d-md-block">
-                                {% if slide.title %}
-                                    <h2>{{ slide.title }}</h2>
-                                {% endif %}
-                                {% if slide.description %}
-                                    <p>{{ slide.description }}</p>
-                                {% endif %}
-                                {% if slide.buttonText and slide.buttonUrl %}
-                                    <a href="{{ slide.buttonUrl }}" class="btn btn-primary">
-                                        {{ slide.buttonText }}
-                                    </a>
-                                {% endif %}
+                        <img src="{{ asset('uploads/slider/' ~ slide.filename) }}" class="d-block w-100" alt="{{ slide.title ?? 'Collection Bella Couture' }}">
+                        <div class="carousel-caption">
+                            <span class="page-kicker text-white">Bella Couture</span>
+                            <h2>{{ slide.title|default('Mode feminine elegante') }}</h2>
+                            <p>{{ slide.description|default('Des pieces choisies pour composer une allure douce, moderne et assuree.') }}</p>
+                            <div class="d-flex gap-2 flex-wrap mt-4">
+                                <a href="{{ slide.buttonUrl|default(path('products')) }}" class="btn btn-primary btn-lg">
+                                    {{ slide.buttonText|default('Decouvrir la boutique') }}
+                                </a>
+                                <a href="{{ path('contact') }}" class="btn btn-outline-light btn-lg">Nous contacter</a>
                             </div>
-                        {% endif %}
+                        </div>
                     </div>
                 {% else %}
-                    <!-- Slides par défaut si aucun slide n'est configuré -->
                     <div class="carousel-item active">
-                        <img src="{{ asset('images/slide1.jpg') }}" class="d-block w-100" alt="Collection Été">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h2>Nouvelle Collection Été</h2>
-                            <p>Découvrez nos nouvelles arrivées</p>
-                            <a href="{{ path('products') }}" class="btn btn-primary">Découvrir</a>
+                        <img src="{{ asset('uploads/slider/Soldes-6911b4f6aa588.jpg') }}" class="d-block w-100" alt="Collection Bella Couture">
+                        <div class="carousel-caption">
+                            <span class="page-kicker text-white">Nouvelle selection</span>
+                            <h2>Pieces feminines pour chaque moment</h2>
+                            <p>Robes, ensembles, accessoires et essentiels choisis pour un style raffine au quotidien.</p>
+                            <a href="{{ path('products') }}" class="btn btn-primary btn-lg">Voir la collection</a>
                         </div>
                     </div>
                 {% endfor %}
             </div>
+
             {% if slider_images|length > 1 %}
                 <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon"></span>
@@ -49,148 +43,127 @@
         </div>
     </div>
 
-    <!-- Produits en vedette -->
-    <section class="container my-5">
-        <h2 class="text-center mb-4">Produits en Vedette</h2>
-        <div class="row">
-            {% if productsWithPromotions is defined and productsWithPromotions|length > 0 %}
+    <section class="container bc-feature-strip">
+        <div class="card">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <div class="bc-feature-item">
+                        <i class="fas fa-truck"></i>
+                        <div>
+                            <strong>Livraison en Tunisie</strong>
+                            <p class="mb-0 text-muted small">Une commande preparee avec soin.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bc-feature-item">
+                        <i class="fas fa-gem"></i>
+                        <div>
+                            <strong>Selection elegante</strong>
+                            <p class="mb-0 text-muted small">Des articles mode faciles a porter.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bc-feature-item">
+                        <i class="fas fa-headset"></i>
+                        <div>
+                            <strong>Conseil client</strong>
+                            <p class="mb-0 text-muted small">Une question ? Nous sommes disponibles.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container my-5 pt-3">
+        <div class="d-flex justify-content-between align-items-end gap-3 mb-4 flex-wrap">
+            <div>
+                <span class="page-kicker">Selection boutique</span>
+                <h2 class="section-title mb-2">Produits en vedette</h2>
+                <p class="section-subtitle mb-0">Une selection douce et actuelle pour renouveler votre dressing avec des pieces qui restent faciles a associer.</p>
+            </div>
+            <a href="{{ path('products') }}" class="btn btn-outline-primary">
+                Voir toute la collection
+            </a>
+        </div>
+
+        {% if productsWithPromotions is defined and productsWithPromotions|length > 0 %}
+            <div class="row g-4">
                 {% for item in productsWithPromotions %}
                     {% set product = item.product %}
                     {% set promotion = item.promotion %}
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="col-xl-3 col-lg-4 col-md-6">
                         <div class="card product-card h-100">
-                            <!-- Badge promotion -->
                             {% if promotion and promotion.isValid() %}
-                                <div class="position-absolute top-0 start-0 m-2">
-                                    <span class="badge bg-danger fs-6">-{{ promotion.discount }}%</span>
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <span class="badge bg-danger px-3 py-2">-{{ promotion.discount }}%</span>
                                 </div>
                             {% endif %}
-                            
+
                             {% if product.images|length > 0 %}
-                                <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" 
-                                     class="card-img-top" alt="{{ product.name }}" 
-                                     style="height: 250px; object-fit: cover;">
+                                <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="card-img-top" alt="{{ product.name }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
                             {% else %}
-                                <img src="{{ asset('images/placeholder.jpg') }}" 
-                                     class="card-img-top" alt="Image non disponible" 
-                                     style="height: 250px; object-fit: cover;">
+                                <img src="{{ asset('images/placeholder.svg') }}" class="card-img-top" alt="Image non disponible">
                             {% endif %}
+
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">{{ product.name }}</h5>
-                                
-                                <!-- Section prix avec promotion -->
-                                <div class="price-section mb-2">
+                                <div class="d-flex justify-content-between gap-2 align-items-start mb-2">
+                                    <h5 class="card-title mb-0">{{ product.name }}</h5>
+                                    {% if product.category %}
+                                        <span class="badge bg-info">{{ product.category.name }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="price-section mb-3">
                                     {% if promotion and promotion.isValid() %}
-                                        <div class="d-flex align-items-center flex-wrap">
-                                            <span class="text-muted text-decoration-line-through me-2">
-                                                {{ product.price }} DT
-                                            </span>
-                                            <span class="h5 text-primary mb-0">
-                                                {{ promotion.calculateDiscountedPrice(product.price)|number_format(2) }} DT
-                                            </span>
-                                        </div>
-                                        <small class="text-success fw-bold">{{ promotion.title }}</small>
+                                        <span class="text-muted text-decoration-line-through me-2">{{ product.price }} DT</span>
+                                        <span class="h5 text-primary mb-0">{{ promotion.calculateDiscountedPrice(product.price)|number_format(2) }} DT</span>
+                                        <small class="d-block text-success fw-bold mt-1">{{ promotion.title }}</small>
                                     {% else %}
                                         <span class="h5 text-primary">{{ product.price }} DT</span>
                                     {% endif %}
                                 </div>
-                                
+
                                 <p class="card-text text-muted small flex-grow-1">
-                                    {{ product.description|length > 80 ? product.description|slice(0, 80) ~ '...' : product.description }}
+                                    {{ product.description|length > 88 ? product.description|slice(0, 88) ~ '...' : product.description }}
                                 </p>
-                                <div class="mt-auto">
-                                    <p class="card-text small mb-2">
-                                        {% if product.sizes|length > 0 %}
-                                            <span class="badge bg-light text-dark">
-                                                Tailles: 
-                                                {% for size in product.sizes %}
-                                                    {{ size.name }}{% if not loop.last %}, {% endif %}
-                                                {% endfor %}
-                                            </span><br>
-                                        {% endif %}
-                                        <span class="badge bg-light text-dark">
-                                            Couleur: {{ product.color }}
-                                        </span>
-                                    </p>
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ path('product_detail', {'id': product.id}) }}" 
-                                           class="btn btn-outline-primary">Voir détails</a>
-                                        {% if product.quantity > 0 %}
-                                            <form action="{{ path('cart_add', {'id': product.id}) }}" method="POST" class="d-inline">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-primary w-100">
-                                                    <i class="fas fa-shopping-cart"></i> Ajouter
-                                                </button>
-                                            </form>
-                                        {% else %}
-                                            <button class="btn btn-secondary w-100" disabled>
-                                                Rupture de stock
-                                            </button>
-                                        {% endif %}
-                                    </div>
+
+                                <div class="d-flex flex-wrap gap-1 mb-3">
+                                    {% for size in product.sizes|slice(0, 4) %}
+                                        <span class="badge bg-light text-dark">{{ size.name }}</span>
+                                    {% endfor %}
+                                    {% for color in product.colors|slice(0, 3) %}
+                                        <span class="badge bg-light text-dark">{{ color }}</span>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="d-grid gap-2 mt-auto">
+                                    {% if product.quantity > 0 %}
+                                        <a href="{{ path('product_detail', {'id': product.id}) }}" class="btn btn-primary">
+                                            <i class="fas fa-ruler-combined me-1"></i> Choisir taille et couleur
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-outline-secondary w-100" disabled>Rupture de stock</button>
+                                    {% endif %}
+                                    <a href="{{ path('product_detail', {'id': product.id}) }}" class="btn btn-outline-primary">Voir details</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
-            {% else %}
-                <div class="col-12 text-center py-5">
-                    <i class="fas fa-tshirt fa-3x text-muted mb-3"></i>
-                    <h4>Aucun produit en vedette</h4>
-                    <p class="text-muted">Découvrez tous nos produits disponibles.</p>
-                    <a href="{{ path('products') }}" class="btn btn-primary">
-                        <i class="fas fa-bag-shopping me-2"></i>Voir tous les produits
-                    </a>
-                </div>
-            {% endif %}
-        </div>
-        
-        <!-- Bouton pour voir tous les produits -->
-        {% if productsWithPromotions is defined and productsWithPromotions|length > 0 %}
-            <div class="text-center mt-4">
-                <a href="{{ path('products') }}" class="btn btn-outline-primary btn-lg">
-                    <i class="fas fa-bag-shopping me-2"></i>Voir tous nos produits
-                </a>
+            </div>
+        {% else %}
+            <div class="bc-empty-state text-center py-5 px-3">
+                <i class="fas fa-bag-shopping fa-3x text-primary mb-3"></i>
+                <h4>Aucun produit en vedette</h4>
+                <p class="text-muted mb-4">Decouvrez tous les produits disponibles dans la boutique.</p>
+                <a href="{{ path('products') }}" class="btn btn-primary">Voir les produits</a>
             </div>
         {% endif %}
     </section>
 
-    <!-- Section Avantages -->
-    <section class="bg-light py-5">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-md-4 mb-4">
-                    <div class="card border-0 bg-transparent">
-                        <div class="card-body">
-                            <i class="fas fa-shipping-fast fa-3x text-primary mb-3"></i>
-                            <h5>Livraison Rapide</h5>
-                            <p class="text-muted">Livraison express partout en Tunisie</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card border-0 bg-transparent">
-                        <div class="card-body">
-                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
-                            <h5>Paiement Sécurisé</h5>
-                            <p class="text-muted">Paiement 100% sécurisé</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card border-0 bg-transparent">
-                        <div class="card-body">
-                            <i class="fas fa-headset fa-3x text-primary mb-3"></i>
-                            <h5>Support Client</h5>
-                            <p class="text-muted">Service client à votre écoute</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Promotions spéciales -->
     {% if productsWithPromotions is defined and productsWithPromotions|length > 0 %}
         {% set hasPromotions = false %}
         {% for item in productsWithPromotions %}
@@ -198,140 +171,43 @@
                 {% set hasPromotions = true %}
             {% endif %}
         {% endfor %}
-        
+
         {% if hasPromotions %}
             <section class="container my-5">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0">Promotions Spéciales</h2>
-                    <span class="badge bg-danger fs-6">Limited Time</span>
-                </div>
-                <div class="row">
-                    {% for item in productsWithPromotions %}
-                        {% if item.promotion and item.promotion.isValid() %}
-                            {% set product = item.product %}
-                            {% set promotion = item.promotion %}
-                            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                                <div class="card promotion-card h-100 border-danger">
-                                    <div class="card-header bg-danger text-white text-center">
-                                        <strong>-{{ promotion.discount }}%</strong>
-                                        <small class="d-block">{{ promotion.title }}</small>
-                                    </div>
-                                    {% if product.images|length > 0 %}
-                                        <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" 
-                                             class="card-img-top" alt="{{ product.name }}" 
-                                             style="height: 200px; object-fit: cover;">
-                                    {% else %}
-                                        <img src="{{ asset('images/placeholder.jpg') }}" 
-                                             class="card-img-top" alt="Image non disponible" 
-                                             style="height: 200px; object-fit: cover;">
-                                    {% endif %}
-                                    <div class="card-body d-flex flex-column">
-                                        <h6 class="card-title">{{ product.name }}</h6>
-                                        <div class="price-section mb-2">
-                                            <span class="text-muted text-decoration-line-through">
-                                                {{ product.price }} DT
-                                            </span>
-                                            <span class="h5 text-danger d-block">
-                                                {{ promotion.calculateDiscountedPrice(product.price)|number_format(2) }} DT
-                                            </span>
-                                        </div>
-                                        <div class="mt-auto">
-                                            <a href="{{ path('product_detail', {'id': product.id}) }}" class="btn btn-outline-danger btn-sm w-100">
-                                                Profiter de l'offre
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="card border-0">
+                    <div class="card-body p-4 p-lg-5">
+                        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-4">
+                            <div>
+                                <span class="page-kicker">Offres du moment</span>
+                                <h2 class="section-title mb-0">Promotions speciales</h2>
                             </div>
-                        {% endif %}
-                    {% endfor %}
+                            <span class="badge bg-danger px-3 py-2">Edition limitee</span>
+                        </div>
+
+                        <div class="row g-4">
+                            {% for item in productsWithPromotions %}
+                                {% if item.promotion and item.promotion.isValid() %}
+                                    {% set product = item.product %}
+                                    {% set promotion = item.promotion %}
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="d-flex gap-3 align-items-center p-3 bg-light rounded-3 h-100">
+                                            {% if product.images|length > 0 %}
+                                                <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" alt="{{ product.name }}" class="rounded-3" style="width: 92px; height: 92px; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
+                                            {% endif %}
+                                            <div>
+                                                <span class="badge bg-danger mb-2">-{{ promotion.discount }}%</span>
+                                                <h6 class="mb-1">{{ product.name }}</h6>
+                                                <p class="mb-2 text-muted small">{{ promotion.title }}</p>
+                                                <a href="{{ path('product_detail', {'id': product.id}) }}" class="small fw-bold">Profiter de l'offre</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </section>
         {% endif %}
     {% endif %}
-
-  
-  
-
-    <style>
-        .product-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            border: none;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .promotion-card {
-            transition: transform 0.2s ease-in-out;
-            border: 2px solid #dc3545 !important;
-        }
-
-        .promotion-card:hover {
-            transform: scale(1.05);
-        }
-
-        .price-section .text-muted {
-            font-size: 0.9rem;
-        }
-
-        .position-absolute {
-            z-index: 1;
-        }
-
-        .hero-slider .carousel-item {
-            position: relative;
-        }
-
-        .hero-slider .carousel-caption {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            padding: 20px;
-        }
-
-        .bg-light {
-            background-color: #f8f9fa !important;
-        }
-    </style>
-
-   <script>
-    // Animation pour les cartes de produits
-    document.addEventListener('DOMContentLoaded', function() {
-        const productCards = document.querySelectorAll('.product-card');
-        
-        productCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
-                this.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.15)';
-                this.style.transition = 'all 0.3s ease';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-            });
-        });
-
-        // Animation pour le compteur de promotions
-        const promotionBadges = document.querySelectorAll('.badge.bg-danger');
-        promotionBadges.forEach(badge => {
-            badge.style.animation = 'pulse 2s infinite';
-        });
-
-        // Ajout d'une animation CSS pour les badges promotion
-        const animationStyle = document.createElement('style');
-        animationStyle.textContent = `
-            @keyframes pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.1); }
-                100% { transform: scale(1); }
-            }
-        `;
-        document.head.appendChild(animationStyle);
-    });
-</script>
-
 {% endblock %}

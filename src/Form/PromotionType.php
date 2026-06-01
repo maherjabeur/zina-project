@@ -8,7 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\EntityType; // For selecting a product
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,18 +18,35 @@ class PromotionType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Promotion Title'
+                'label' => 'Titre de la promotion *',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ex: Soldes week-end'
+                ]
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Description'
+                'label' => 'Description',
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 4,
+                    'placeholder' => 'Expliquez l offre...'
+                ]
             ])
             ->add('discount', NumberType::class, [
-                'label' => 'Discount (%)'
+                'label' => 'Remise (%) *',
+                'attr' => [
+                    'class' => 'form-control',
+                    'min' => 1,
+                    'max' => 100,
+                    'placeholder' => 'Ex: 20'
+                ]
             ])
-            ->add('product', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('product', EntityType::class, [
                 'class' => Product::class,
-                'choice_label' => 'name',  // Display product name
-                'label' => 'Select Product'
+                'choice_label' => 'name',
+                'label' => 'Produit concerne *',
+                'attr' => ['class' => 'form-select'],
+                'placeholder' => 'Choisir un produit'
             ]);
     }
 

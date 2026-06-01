@@ -27,7 +27,7 @@ class CheckoutController extends AbstractController
         $cart = $session->get('cart', []);
 
         if (empty($cart)) {
-            $this->addFlash('warning', 'Votre panier est vide');
+            $this->addFlash('warning', 'Votre panier est vide.');
             return $this->redirectToRoute('products');
         }
 
@@ -36,37 +36,55 @@ class CheckoutController extends AbstractController
         $totalDiscount = 0;
         $totalWithDiscount = 0;
 
-        foreach ($cart as $id => $quantity) {
-            $product = $productRepository->find($id);
-            if ($product) {
-                // Vérifier le stock
-                if ($product->getQuantity() < $quantity) {
-                    $this->addFlash('warning', "Le produit \"{$product->getName()}\" n'est plus disponible en quantité suffisante. Stock restant: {$product->getQuantity()}");
-                    return $this->redirectToRoute('cart');
-                }
-
-                // Trouver la meilleure promotion active pour ce produit
-                $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
-                $discount = 0;
-                $discountedPrice = $product->getPrice();
-
-                if ($bestPromotion && $bestPromotion->isValid()) {
-                    $discount = $bestPromotion->getDiscount();
-                    $discountedPrice = $bestPromotion->calculateDiscountedPrice($product->getPrice());
-                }
-
-                $cartData[] = [
-                    'product' => $product,
-                    'quantity' => $quantity,
-                    'discount' => $discount,
-                    'discountedPrice' => $discountedPrice,
-                    'promotion' => $bestPromotion
-                ];
-
-                $total += $product->getPrice() * $quantity;
-                $totalDiscount += ($product->getPrice() - $discountedPrice) * $quantity;
-                $totalWithDiscount += $discountedPrice * $quantity;
+        foreach ($cart as $key => $rawItem) {
+            $item = $this->normalizeCartItem($key, $rawItem);
+            if (!$item) {
+                continue;
             }
+
+            if (!$item['size'] || !$item['color']) {
+                $this->addFlash('warning', 'Veuillez choisir une taille et une couleur pour chaque article.');
+                return $this->redirectToRoute('cart');
+            }
+
+            $product = $productRepository->find($item['productId']);
+            if (!$product) {
+                continue;
+            }
+
+            if ($product->getQuantity() < $item['quantity']) {
+                $this->addFlash('warning', "Le produit \"{$product->getName()}\" n est plus disponible en quantite suffisante. Stock restant: {$product->getQuantity()}");
+                return $this->redirectToRoute('cart');
+            }
+
+            $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
+            $discount = 0;
+            $discountedPrice = $product->getPrice();
+
+            if ($bestPromotion && $bestPromotion->isValid()) {
+                $discount = $bestPromotion->getDiscount();
+                $discountedPrice = $bestPromotion->calculateDiscountedPrice($product->getPrice());
+            }
+
+            $cartData[] = [
+                'key' => $item['key'],
+                'product' => $product,
+                'quantity' => $item['quantity'],
+                'size' => $item['size'],
+                'color' => $item['color'],
+                'discount' => $discount,
+                'discountedPrice' => $discountedPrice,
+                'promotion' => $bestPromotion,
+            ];
+
+            $total += $product->getPrice() * $item['quantity'];
+            $totalDiscount += ($product->getPrice() - $discountedPrice) * $item['quantity'];
+            $totalWithDiscount += $discountedPrice * $item['quantity'];
+        }
+
+        if (empty($cartData)) {
+            $this->addFlash('warning', 'Votre panier ne contient aucun produit disponible.');
+            return $this->redirectToRoute('cart');
         }
 
         $settings = $settingRepository->findOneBy([], ['id' => 'DESC']);
@@ -74,9 +92,9 @@ class CheckoutController extends AbstractController
         $finalTotal = $totalWithDiscount + $shippingFee;
 
         return $this->render('checkout/index.html.twig', [
-            'shippingFee' => (float)$shippingFee,
+            'shippingFee' => (float) $shippingFee,
             'cartData' => $cartData,
-            'total' => (float)$total,
+            'total' => (float) $total,
             'totalDiscount' => $totalDiscount,
             'totalWithDiscount' => $totalWithDiscount,
             'finalTotal' => $finalTotal,
@@ -89,116 +107,138 @@ class CheckoutController extends AbstractController
         SessionInterface $session,
         ProductRepository $productRepository,
         PromotionRepository $promotionRepository,
+        SettingRepository $settingRepository,
         EntityManagerInterface $entityManager,
         NotificationService $notificationService
     ): Response {
         $cart = $session->get('cart', []);
 
         if (empty($cart)) {
-            $this->addFlash('error', 'Votre panier est vide');
+            $this->addFlash('error', 'Votre panier est vide.');
             return $this->redirectToRoute('products');
         }
 
-        // Validation des données du formulaire
-        $customerName = $request->request->get('customer_name');
-        $customerPhone = $request->request->get('customer_phone');
-        $customerEmail = $request->request->get('customer_email');
-        $shippingAddress = $request->request->get('shipping_address');
+        $customerName = trim((string) $request->request->get('customer_name'));
+        $customerPhone = trim((string) $request->request->get('customer_phone'));
+        $customerEmail = trim((string) $request->request->get('customer_email'));
+        $shippingAddress = trim((string) $request->request->get('shipping_address'));
 
-        if (empty($customerName) || empty($customerPhone) || empty($shippingAddress)) {
-            $this->addFlash('error', 'Veuillez remplir tous les champs obligatoires');
+        if ($customerName === '' || $customerPhone === '' || $shippingAddress === '') {
+            $this->addFlash('error', 'Veuillez remplir tous les champs obligatoires.');
             return $this->redirectToRoute('checkout');
         }
 
-        // Validation du téléphone
         if (!preg_match('/^[0-9]{8}$/', $customerPhone)) {
-            $this->addFlash('error', 'Veuillez entrer un numéro de téléphone valide (8 chiffres)');
+            $this->addFlash('error', 'Veuillez entrer un numero de telephone valide (8 chiffres).');
             return $this->redirectToRoute('checkout');
         }
 
-        // Validation de l'email si fourni
-        if ($customerEmail && !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
-            $this->addFlash('error', 'Veuillez entrer un email valide ou laisser le champ vide');
+        if ($customerEmail !== '' && !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+            $this->addFlash('error', 'Veuillez entrer un email valide ou laisser le champ vide.');
             return $this->redirectToRoute('checkout');
         }
 
-        // Vérifier à nouveau le stock avant de créer la commande
-        foreach ($cart as $productId => $quantity) {
-            $product = $productRepository->find($productId);
-            if (!$product || $product->getQuantity() < $quantity) {
-                $this->addFlash('error', "Le produit \"{$product->getName()}\" n'est plus disponible en quantité suffisante");
+        $cartItems = [];
+        foreach ($cart as $key => $rawItem) {
+            $item = $this->normalizeCartItem($key, $rawItem);
+            if (!$item) {
+                continue;
+            }
+
+            if (!$item['size'] || !$item['color']) {
+                $this->addFlash('error', 'Une taille et une couleur sont obligatoires pour chaque article.');
                 return $this->redirectToRoute('cart');
             }
+
+            $product = $productRepository->find($item['productId']);
+            if (!$product) {
+                $this->addFlash('error', 'Un produit de votre panier n est plus disponible.');
+                return $this->redirectToRoute('cart');
+            }
+
+            if ($product->getQuantity() < $item['quantity']) {
+                $this->addFlash('error', "Le produit \"{$product->getName()}\" n est plus disponible en quantite suffisante.");
+                return $this->redirectToRoute('cart');
+            }
+
+            $cartItems[] = [
+                'product' => $product,
+                'quantity' => $item['quantity'],
+                'size' => $item['size'],
+                'color' => $item['color'],
+            ];
         }
 
-        // Créer la commande
+        if (empty($cartItems)) {
+            $this->addFlash('error', 'Votre panier ne contient aucun produit disponible.');
+            return $this->redirectToRoute('cart');
+        }
+
         $order = new Order();
         $order->setCustomerName($customerName);
         $order->setCustomerPhone($customerPhone);
-        $order->setCustomerEmail($customerEmail ?: null);
+        $order->setCustomerEmail($customerEmail !== '' ? $customerEmail : null);
         $order->setShippingAddress($shippingAddress);
 
         if ($this->getUser()) {
             $order->setUser($this->getUser());
         }
 
-        $total = 0;
+        $settings = $settingRepository->findOneBy([], ['id' => 'DESC']);
+        $shippingFee = $settings ? (float) $settings->getShippingFee() : 0.0;
+        $itemsTotal = 0;
+        $originalTotal = 0;
         $totalDiscount = 0;
 
-        foreach ($cart as $productId => $quantity) {
-            $product = $productRepository->find($productId);
-            if ($product && $product->getQuantity() >= $quantity) {
-                // Trouver la meilleure promotion active pour ce produit
-                $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
-                $unitPrice = $product->getPrice();
-                $discount = 0;
+        foreach ($cartItems as $item) {
+            $product = $item['product'];
+            $quantity = $item['quantity'];
 
-                if ($bestPromotion && $bestPromotion->isValid()) {
-                    $discount = $bestPromotion->getDiscount();
-                    $unitPrice = $bestPromotion->calculateDiscountedPrice($product->getPrice());
-                }
+            $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
+            $originalPrice = (float) $product->getPrice();
+            $unitPrice = $originalPrice;
+            $discount = 0;
 
-                $orderItem = new OrderItem();
-                $orderItem->setProduct($product);
-                $orderItem->setQuantity($quantity);
-                $orderItem->setUnitPrice($unitPrice);
-                $orderItem->setOriginalPrice($product->getPrice());
-                $orderItem->setDiscount($discount);
-
-                if ($product->getSizes()->count() > 0) {
-                    $sizes = [];
-                    foreach ($product->getSizes() as $size) {
-                        $sizes[] = $size->getName();
-                    }
-                    $orderItem->setSize(implode(', ', $sizes));
-                }
-                $orderItem->setColor($product->getColor());
-                $orderItem->setOrder($order);
-
-                $entityManager->persist($orderItem);
-                $total += $unitPrice * $quantity;
-                $totalDiscount += ($product->getPrice() - $unitPrice) * $quantity;
-
-                // Mettre à jour le stock
-                $product->setQuantity($product->getQuantity() - $quantity);
+            if ($bestPromotion && $bestPromotion->isValid()) {
+                $discount = $bestPromotion->getDiscount();
+                $unitPrice = (float) $bestPromotion->calculateDiscountedPrice($product->getPrice());
             }
+
+            $orderItem = new OrderItem();
+            $orderItem->setProduct($product);
+            $orderItem->setQuantity($quantity);
+            $orderItem->setUnitPrice(number_format($unitPrice, 2, '.', ''));
+            $orderItem->setOriginalPrice($originalPrice);
+            $orderItem->setDiscount($discount);
+            $orderItem->setPromotionTitle($bestPromotion && $bestPromotion->isValid() ? $bestPromotion->getTitle() : null);
+            $orderItem->setSize($item['size']);
+            $orderItem->setColor($item['color']);
+            $orderItem->setOrder($order);
+
+            $entityManager->persist($orderItem);
+
+            $itemsTotal += $unitPrice * $quantity;
+            $originalTotal += $originalPrice * $quantity;
+            $totalDiscount += ($originalPrice - $unitPrice) * $quantity;
+            $product->setQuantity($product->getQuantity() - $quantity);
         }
 
-        $order->setTotal($total);
+        $finalTotal = $itemsTotal + $shippingFee;
+        $order->setOriginalTotal($originalTotal);
         $order->setDiscount($totalDiscount);
+        $order->setShippingFee($shippingFee);
+        $order->setTotal(number_format($finalTotal, 2, '.', ''));
         $entityManager->persist($order);
         $entityManager->flush();
 
-        // Envoyer les notifications seulement si l'email est valide
-        if ($customerEmail && filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+        if ($customerEmail !== '') {
             try {
                 $notificationService->sendOrderNotification($order);
             } catch (\Exception $e) {
                 error_log('Erreur envoi email: ' . $e->getMessage());
-                $this->addFlash('warning', 'Votre commande a été passée mais l\'email de confirmation n\'a pas pu être envoyé');
+                $this->addFlash('warning', 'Votre commande a ete passee mais l email de confirmation n a pas pu etre envoye.');
             }
         } else {
-            // Pas d'email, on envoie seulement la notification admin
             try {
                 $notificationService->sendAdminNotification($order);
             } catch (\Exception $e) {
@@ -206,11 +246,9 @@ class CheckoutController extends AbstractController
             }
         }
 
-        // Vider le panier
         $session->remove('cart');
 
-        $this->addFlash('success', 'Votre commande a été passée avec succès !' .
-            ($customerEmail ? ' Vous recevrez un email de confirmation.' : ' Votre numéro de téléphone a été enregistré.'));
+        $this->addFlash('success', 'Votre commande a ete passee avec succes !');
 
         return $this->redirectToRoute('checkout_success', ['id' => $order->getId()]);
     }
@@ -219,7 +257,32 @@ class CheckoutController extends AbstractController
     public function success(Order $order): Response
     {
         return $this->render('checkout/success.html.twig', [
-            'order' => $order
+            'order' => $order,
         ]);
+    }
+
+    private function normalizeCartItem(string|int $key, mixed $rawItem): ?array
+    {
+        if (is_array($rawItem) && isset($rawItem['productId'], $rawItem['quantity'])) {
+            return [
+                'key' => (string) $key,
+                'productId' => (int) $rawItem['productId'],
+                'quantity' => max(1, (int) $rawItem['quantity']),
+                'size' => isset($rawItem['size']) ? trim((string) $rawItem['size']) : null,
+                'color' => isset($rawItem['color']) ? trim((string) $rawItem['color']) : null,
+            ];
+        }
+
+        if (is_numeric($key) && is_numeric($rawItem)) {
+            return [
+                'key' => (string) $key,
+                'productId' => (int) $key,
+                'quantity' => max(1, (int) $rawItem),
+                'size' => null,
+                'color' => null,
+            ];
+        }
+
+        return null;
     }
 }

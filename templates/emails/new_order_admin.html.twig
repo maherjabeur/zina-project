@@ -30,7 +30,12 @@
     <p><strong>Email :</strong> <span style="color: #dc3545;">Non fourni</span></p>
     {% endif %}
             <p><strong>Date:</strong> {{ order.createdAt|date('d/m/Y H:i') }}</p>
-            <p><strong>Total:</strong> {{ order.total }} Dt</p>
+            <p><strong>Sous-total articles:</strong> {{ order.itemsTotal|number_format(2) }} Dt</p>
+            {% if order.discount and order.discount > 0 %}
+            <p><strong>Remise:</strong> -{{ order.discount|number_format(2) }} Dt</p>
+            {% endif %}
+            <p><strong>Livraison:</strong> {{ (order.shippingFee ?? 0)|number_format(2) }} Dt</p>
+            <p><strong>Total final:</strong> {{ order.total|number_format(2) }} Dt</p>
         </div>
 
         <h3>Articles commandés:</h3>
@@ -49,8 +54,8 @@
                 {% for item in order.items %}
                 <tr>
                     <td>{{ item.product.name }}</td>
-                    <td>{{ item.size }}</td>
-                    <td>{{ item.color }}</td>
+                    <td>{{ item.size ?? 'Non specifie' }}</td>
+                    <td>{{ item.color ?? 'Non specifie' }}</td>
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.unitPrice }} Dt</td>
                     <td>{{ item.total }} Dt</td>

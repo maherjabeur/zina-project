@@ -37,10 +37,10 @@ class OrderItem
     private ?string $color = null;
 
     #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
-    private ?float $originalPrice = null;
+    private ?string $originalPrice = null;
 
     #[ORM\Column(type: "decimal", precision: 5, scale: 2, nullable: true)]
-    private ?float $discount = null;
+    private ?string $discount = null;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $promotionTitle = null;
@@ -57,7 +57,7 @@ class OrderItem
 
     public function setOriginalPrice(?float $originalPrice): static
     {
-        $this->originalPrice = $originalPrice;
+        $this->originalPrice = $originalPrice !== null ? number_format($originalPrice, 2, '.', '') : null;
         return $this;
     }
 
@@ -68,7 +68,7 @@ class OrderItem
 
     public function setDiscount(?float $discount): static
     {
-        $this->discount = $discount;
+        $this->discount = $discount !== null ? number_format($discount, 2, '.', '') : null;
         return $this;
     }
 
