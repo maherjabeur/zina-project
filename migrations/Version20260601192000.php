@@ -20,7 +20,7 @@ final class Version20260601192000 extends AbstractMigration
         $this->addSql("UPDATE settings SET seo_title = 'Bella Couture - Mode feminine elegante' WHERE seo_title IS NULL");
         $this->addSql("UPDATE settings SET seo_description = 'Boutique de mode feminine a Sousse: vetements elegants, collections tendance, tailles et couleurs au choix avec livraison en Tunisie.' WHERE seo_description IS NULL");
         $this->addSql("UPDATE settings SET seo_keywords = 'mode feminine, boutique femme, vetements femme, Bella Couture, Sousse, Tunisie' WHERE seo_keywords IS NULL");
-        $this->addSql("UPDATE settings SET seo_image = 'logo/logo.png' WHERE seo_image IS NULL");
+        $this->addSql("UPDATE settings SET seo_image = 'logo/logo.webp' WHERE seo_image IS NULL");
         $this->addSql("UPDATE settings SET seo_author = 'Bella Couture' WHERE seo_author IS NULL");
     }
 

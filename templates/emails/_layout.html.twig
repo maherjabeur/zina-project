@@ -1,0 +1,102 @@
+{% set email_title = email_title|default('Bella Couture') %}
+{% set email_preheader = email_preheader|default('Notification Bella Couture') %}
+{% set email_badge = email_badge|default('Bella Couture') %}
+{% set email_action_url = email_action_url|default(null) %}
+{% set email_action_label = email_action_label|default(null) %}
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{{ email_title }}</title>
+    <style>
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        a { color: #b23a63; }
+        @media screen and (max-width: 640px) {
+            .email-wrapper { width: 100% !important; }
+            .email-container { width: 100% !important; border-radius: 0 !important; }
+            .email-padding { padding-left: 18px !important; padding-right: 18px !important; }
+            .email-title { font-size: 26px !important; line-height: 32px !important; }
+            .stack-column { display: block !important; width: 100% !important; max-width: 100% !important; }
+            .mobile-center { text-align: center !important; }
+            .mobile-full-button { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+            .hide-mobile { display: none !important; }
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; background-color:#fff7f9; font-family:Arial, Helvetica, sans-serif; color:#2f2430;">
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0; color:transparent; line-height:1px; font-size:1px;">
+        {{ email_preheader }}
+    </div>
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#fff7f9;">
+        <tr>
+            <td align="center" style="padding:24px 10px;">
+                <table role="presentation" class="email-wrapper" width="640" cellspacing="0" cellpadding="0" border="0" style="width:640px; max-width:640px;">
+                    <tr>
+                        <td align="center" style="padding:0 0 16px;">
+                            <a href="{{ absolute_url(path('home')) }}" style="text-decoration:none;">
+                                <img src="{{ absolute_url(asset('logo/logo.png')) }}" width="150" alt="Bella Couture" style="display:block; width:150px; max-width:150px; height:auto;">
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="email-container" style="background-color:#ffffff; border:1px solid #eadde3; border-radius:18px; overflow:hidden; box-shadow:0 14px 36px rgba(87,49,65,0.10);">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td style="background-color:#2f2430; padding:0;">
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td class="email-padding" style="padding:28px 34px;">
+                                                    <span style="display:inline-block; padding:7px 12px; border-radius:999px; background-color:#fff7f9; color:#8f2f52; font-size:12px; line-height:16px; font-weight:bold; letter-spacing:1.2px; text-transform:uppercase;">
+                                                        {{ email_badge }}
+                                                    </span>
+                                                    <h1 class="email-title" style="margin:16px 0 0; color:#ffffff; font-size:32px; line-height:39px; font-weight:800; font-family:Arial, Helvetica, sans-serif;">
+                                                        {% block email_heading %}{{ email_title }}{% endblock %}
+                                                    </h1>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="email-padding" style="padding:32px 34px 28px;">
+                                        {% block email_body %}{% endblock %}
+
+                                        {% if email_action_url and email_action_label %}
+                                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:26px 0 0;">
+                                                <tr>
+                                                    <td align="center" style="border-radius:999px; background-color:#b23a63;">
+                                                        <a href="{{ email_action_url }}" class="mobile-full-button" style="display:inline-block; padding:13px 22px; border-radius:999px; background-color:#b23a63; color:#ffffff; font-size:15px; line-height:20px; font-weight:bold; text-decoration:none;">
+                                                            {{ email_action_label }}
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding:22px 18px 0; color:#7b717a; font-size:12px; line-height:19px;">
+                            <p style="margin:0 0 8px; color:#5d4754; font-weight:bold;">Bella Couture - Mode feminine elegante</p>
+                            <p style="margin:0;">Sousse, Tunisie &nbsp;|&nbsp; <a href="tel:+21621201092" style="color:#b23a63; text-decoration:none;">+216 21 201 092</a> &nbsp;|&nbsp; <a href="mailto:mjbali833@gmail.com" style="color:#b23a63; text-decoration:none;">mjbali833@gmail.com</a></p>
+                            <p style="margin:8px 0 0;">&copy; {{ "now"|date("Y") }} Bella Couture. Tous droits reserves.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

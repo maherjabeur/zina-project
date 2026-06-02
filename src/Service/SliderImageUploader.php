@@ -10,11 +10,13 @@ class SliderImageUploader
 {
     private $targetDirectory;
     private $slugger;
+    private WebpImageConverter $webpImageConverter;
 
-    public function __construct($targetDirectory, SluggerInterface $slugger)
+    public function __construct($targetDirectory, SluggerInterface $slugger, WebpImageConverter $webpImageConverter)
     {
         $this->targetDirectory = $targetDirectory;
         $this->slugger = $slugger;
+        $this->webpImageConverter = $webpImageConverter;
     }
 
     public function upload(UploadedFile $file): string
@@ -26,11 +28,10 @@ class SliderImageUploader
 
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
-        $fileName = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
         try {
-            $file->move($this->getTargetDirectory(), $fileName);
-        } catch (FileException $e) {
+            $fileName = $this->webpImageConverter->convertUploadedFile($file, $this->getTargetDirectory(), $safeFilename);
+        } catch (FileException|\RuntimeException $e) {
             throw new \Exception('Erreur lors de l\'upload du fichier: '.$e->getMessage());
         }
 

@@ -31,7 +31,7 @@
                                     {% if item.product.images|length > 0 %}
                                         <img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" alt="{{ item.product.name }}">
                                     {% else %}
-                                        <img src="{{ asset('images/placeholder.svg') }}" alt="Image non disponible">
+                                        <img src="{{ asset('images/placeholder.webp') }}" alt="Image non disponible">
                                     {% endif %}
                                     <div class="flex-grow-1">
                                         <h6 class="mb-1">{{ item.product.name }}</h6>

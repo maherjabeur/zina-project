@@ -2,8 +2,12 @@
 
 {% block title %}Modifier {{ product.name }} - Admin{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
-<link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
 <div class="container-fluid">
     <div class="row">
         {% include 'admin/_sidebar.html.twig' %}
@@ -158,26 +162,64 @@
     <script src="{{ asset('js/select2.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            if (!window.jQuery) {
+                return;
+            }
+
+            const $ = window.jQuery;
             const $sizeSelect = $('.product-size-select');
 
-            $sizeSelect.select2({
-                width: '100%',
-                closeOnSelect: false,
-                placeholder: $sizeSelect.data('placeholder') || 'Rechercher et choisir plusieurs tailles',
-                allowClear: true,
-                language: {
-                    noResults: function () { return 'Aucune taille trouvee'; },
-                    searching: function () { return 'Recherche...'; }
+            if (!$sizeSelect.length) {
+                return;
+            }
+
+            function getSelectableValues($select) {
+                return $select.find('option').filter(function () {
+                    return this.value !== '' && !this.disabled;
+                }).map(function () {
+                    return this.value;
+                }).get();
+            }
+
+            function updateSizeSelect($select, values) {
+                $select.val(values);
+                $select.trigger('change');
+                if ($.fn.select2) {
+                    $select.trigger('change.select2');
                 }
-            });
+            }
+
+            if ($.fn.select2) {
+                $sizeSelect.each(function () {
+                    const $select = $(this);
+                    if ($select.data('select2')) {
+                        $select.select2('destroy');
+                    }
+
+                    $select.select2({
+                        width: '100%',
+                        closeOnSelect: false,
+                        placeholder: $select.data('placeholder') || 'Rechercher et choisir plusieurs tailles',
+                        allowClear: true,
+                        language: {
+                            noResults: function () { return 'Aucune taille trouvee'; },
+                            searching: function () { return 'Recherche...'; },
+                            removeAllItems: function () { return 'Vider la selection'; },
+                            removeItem: function () { return 'Retirer'; },
+                            search: function () { return 'Rechercher'; }
+                        }
+                    });
+                });
+            }
 
             $('.js-select-all-sizes').on('click', function () {
-                $sizeSelect.find('option').prop('selected', true);
-                $sizeSelect.trigger('change');
+                const $select = $(this).closest('form').find('.product-size-select');
+                updateSizeSelect($select, getSelectableValues($select));
             });
 
             $('.js-clear-sizes').on('click', function () {
-                $sizeSelect.val(null).trigger('change');
+                const $select = $(this).closest('form').find('.product-size-select');
+                updateSizeSelect($select, []);
             });
         });
     </script>

@@ -3,17 +3,21 @@
 namespace App\Command;
 
 use App\Entity\Product;
+use App\Entity\Size;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+#[AsCommand(
+    name: 'app:load-fixtures',
+    description: 'Charge les donnees de test',
+)]
 class LoadFixturesCommand extends Command
 {
-    protected static $defaultName = 'app:load-fixtures';
-    
     private EntityManagerInterface $entityManager;
     private UserPasswordHasherInterface $passwordHasher;
 
@@ -74,7 +78,10 @@ class LoadFixturesCommand extends Command
             $product->setName($data[0]);
             $product->setDescription($data[1]);
             $product->setPrice($data[2]);
-            $product->setSize($data[3]);
+            $size = $this->entityManager->getRepository(Size::class)->findOneBy(['code' => $data[3]]);
+            if ($size) {
+                $product->addSize($size);
+            }
             $product->setColor($data[4]);
             $product->setCategory(null);
             $product->setQuantity($data[6]);

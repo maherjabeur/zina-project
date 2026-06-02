@@ -1,0 +1,6 @@
+{% include 'bundles/TwigBundle/Exception/_error_layout.html.twig' with {
+    error_code: 500,
+    error_heading: 'Service momentanement indisponible',
+    error_message: 'Une erreur technique nous empeche d afficher cette page pour le moment. Notre equipe peut intervenir sans exposer de details sensibles aux visiteurs.',
+    error_icon: 'fa-screwdriver-wrench'
+} only %}

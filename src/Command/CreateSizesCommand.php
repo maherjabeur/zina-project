@@ -4,14 +4,17 @@ namespace App\Command;
 
 use App\Entity\Size;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'app:create-sizes',
+    description: 'Cree les tailles par defaut',
+)]
 class CreateSizesCommand extends Command
 {
-    protected static $defaultName = 'app:create-sizes';
-    
     private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)

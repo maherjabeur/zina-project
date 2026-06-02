@@ -55,7 +55,7 @@ class SettingsType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'maxlength' => 255,
-                    'placeholder' => 'logo/logo.png ou https://...',
+                    'placeholder' => 'logo/logo.webp ou https://...',
                 ],
             ])
             ->add('seoAuthor', TextType::class, [

@@ -41,7 +41,7 @@
                     <div class="card stat-card h-100">
                         <div class="card-body">
                             <span class="text-muted small">Image sociale</span>
-                            <h4 class="mb-0 text-truncate">{{ form.vars.value.seoImage|default('logo/logo.png') }}</h4>
+                            <h4 class="mb-0 text-truncate">{{ form.vars.value.seoImage|default('logo/logo.webp') }}</h4>
                         </div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                                 <div class="row g-3">
                                     <div class="col-md-7">
                                         {{ form_row(form.seoImage) }}
-                                        <div class="form-text">Chemin public comme <code>logo/logo.png</code> ou URL complete.</div>
+                                        <div class="form-text">Chemin public comme <code>logo/logo.webp</code> ou URL complete.</div>
                                     </div>
                                     <div class="col-md-5">
                                         {{ form_row(form.seoAuthor) }}

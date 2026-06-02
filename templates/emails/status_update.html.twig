@@ -1,28 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #6f42c1; color: white; padding: 20px; text-align: center; }
-        .content { background: #f8f9fa; padding: 20px; }
-        .badge { background: #6f42c1; color: white; padding: 4px 10px; border-radius: 12px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Bella Couture</h1>
-            <h2>Mise a jour de commande</h2>
-        </div>
-        <div class="content">
-            <p>Bonjour <strong>{{ order.customerName }}</strong>,</p>
-            <p>Le statut de votre commande <strong>{{ order.orderNumber }}</strong> a ete mis a jour.</p>
-            <p>Statut actuel : <span class="badge">{{ order.statusLabel }}</span></p>
-            <p>Total : <strong>{{ order.total|number_format(2) }} DT</strong></p>
-            <p>Merci pour votre confiance.</p>
-        </div>
-    </div>
-</body>
-</html>
+{% set email_title = 'Mise a jour de votre commande' %}
+{% set email_preheader = 'Le statut de votre commande ' ~ order.orderNumber ~ ' a ete mis a jour.' %}
+{% set email_badge = 'Suivi commande' %}
+{% set email_action_url = absolute_url(path('contact')) %}
+{% set email_action_label = 'Contacter la boutique' %}
+{% extends 'emails/_layout.html.twig' %}
+
+{% block email_heading %}Mise a jour de votre commande{% endblock %}
+
+{% block email_body %}
+    <p style="margin:0 0 14px; color:#2f2430; font-size:16px; line-height:25px;">
+        Bonjour <strong>{{ order.customerName }}</strong>,
+    </p>
+    <p style="margin:0 0 22px; color:#5d4754; font-size:15px; line-height:24px;">
+        Le statut de votre commande <strong>{{ order.orderNumber }}</strong> a ete mis a jour.
+    </p>
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px; background-color:#fff7f9; border:1px solid #eadde3; border-radius:14px;">
+        <tr>
+            <td style="padding:20px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                        <td class="stack-column" width="50%" style="padding:0 12px 0 0; color:#7b717a; font-size:13px; line-height:20px;">
+                            Statut actuel<br>
+                            <span style="display:inline-block; margin-top:6px; padding:7px 12px; border-radius:999px; background-color:#b23a63; color:#ffffff; font-size:13px; font-weight:bold;">{{ order.statusLabel }}</span>
+                        </td>
+                        <td class="stack-column" width="50%" style="padding:0 0 0 12px; color:#7b717a; font-size:13px; line-height:20px;">
+                            Total de la commande<br>
+                            <strong style="color:#b23a63; font-size:18px;">{{ order.total|number_format(2, ',', ' ') }} DT</strong>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <p style="margin:0; color:#5d4754; font-size:14px; line-height:23px;">
+        Merci pour votre confiance. Notre equipe reste disponible pour toute question concernant votre commande.
+    </p>
+{% endblock %}

@@ -1,0 +1,503 @@
+{% set code = error_code|default(status_code|default(500)) %}
+{% set heading = error_heading|default('Une erreur est survenue') %}
+{% set message = error_message|default('Nous preparons la page pour vous permettre de reprendre votre visite dans les meilleures conditions.') %}
+{% set icon = error_icon|default('fa-wand-magic-sparkles') %}
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="robots" content="noindex, nofollow">
+        <title>{{ code }} - {{ heading }} | Bella Couture</title>
+        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <style>
+            /* Standalone error screen: no DB-backed base layout on 500 pages. */
+            :root {
+                --bc-ink: #2f2430;
+                --bc-muted: #7b717a;
+                --bc-soft: #fff7f9;
+                --bc-soft-2: #f7eef2;
+                --bc-line: #eadde3;
+                --bc-primary: #b23a63;
+                --bc-primary-dark: #8f2f52;
+                --bc-gold: #c39a4b;
+                --bc-secondary: #5d4754;
+                --bc-shadow: 0 18px 55px rgba(87, 49, 65, 0.12);
+                --bc-shadow-soft: 0 10px 30px rgba(87, 49, 65, 0.1);
+            }
+
+            html,
+            body {
+                min-height: 100vh;
+            }
+
+            body {
+                margin: 0;
+                color: var(--bc-ink);
+                background:
+                    radial-gradient(circle at top left, rgba(255, 228, 235, 0.75), transparent 34rem),
+                    linear-gradient(180deg, #fffafb 0%, #fff 32%, #fff9fb 100%);
+                font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+                letter-spacing: 0;
+            }
+
+            img {
+                max-width: 100%;
+            }
+
+            .error-shell {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .error-navbar {
+                min-height: 78px;
+                background: rgba(255, 255, 255, 0.9);
+                border-bottom: 1px solid rgba(234, 221, 227, 0.8);
+                box-shadow: 0 8px 25px rgba(87, 49, 65, 0.08);
+                backdrop-filter: blur(16px);
+            }
+
+            .error-navbar .container {
+                min-height: 78px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+            }
+
+            .error-brand img {
+                max-height: 58px;
+                width: auto;
+                display: block;
+            }
+
+            .error-nav {
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            .error-nav a {
+                min-height: 42px;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+                color: var(--bc-secondary);
+                border-radius: 999px;
+                padding: 0.55rem 0.9rem;
+                font-size: 0.95rem;
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+            .error-nav a:hover {
+                color: var(--bc-primary);
+                background: rgba(178, 58, 99, 0.1);
+            }
+
+            .error-main {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                padding: clamp(2.25rem, 6vw, 4.75rem) 0;
+            }
+
+            .error-hero {
+                align-items: center;
+                min-height: min(620px, calc(100vh - 190px));
+            }
+
+            .error-copy {
+                max-width: 720px;
+            }
+
+            .error-visual {
+                position: relative;
+                min-height: 360px;
+                border: 1px solid rgba(234, 221, 227, 0.92);
+                border-radius: 22px;
+                overflow: hidden;
+                background:
+                    linear-gradient(135deg, rgba(47, 36, 48, 0.7), rgba(178, 58, 99, 0.42)),
+                    url("{{ asset('uploads/slider/Soldes-6911b4f6aa588.webp') }}");
+                background-position: center;
+                background-size: cover;
+                box-shadow: var(--bc-shadow);
+            }
+
+            .error-visual::after {
+                content: "";
+                position: absolute;
+                inset: 1rem;
+                border: 1px solid rgba(255, 255, 255, 0.36);
+                border-radius: 16px;
+                pointer-events: none;
+            }
+
+            .error-visual-badge {
+                position: absolute;
+                right: 1.25rem;
+                bottom: 1.25rem;
+                left: 1.25rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                color: #fff;
+            }
+
+            .error-visual-badge strong {
+                display: block;
+                font-size: clamp(4rem, 10vw, 7rem);
+                font-weight: 900;
+                line-height: 0.85;
+            }
+
+            .error-visual-badge span {
+                max-width: 220px;
+                color: rgba(255, 255, 255, 0.84);
+                font-weight: 700;
+                line-height: 1.45;
+                text-align: right;
+            }
+
+            .error-kicker {
+                color: var(--bc-primary);
+                font-size: 0.78rem;
+                font-weight: 800;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+
+            .error-code {
+                color: rgba(178, 58, 99, 0.12);
+                font-size: clamp(4.8rem, 14vw, 9.5rem);
+                font-weight: 900;
+                line-height: 0.9;
+                margin: 0;
+                user-select: none;
+            }
+
+            .error-title {
+                max-width: 680px;
+                font-size: clamp(2rem, 5vw, 4rem);
+                font-weight: 900;
+                line-height: 1.02;
+                margin: 0.7rem 0 1rem;
+            }
+
+            .error-text {
+                max-width: 640px;
+                color: var(--bc-muted);
+                font-size: 1.05rem;
+                line-height: 1.7;
+            }
+
+            .error-icon {
+                width: 66px;
+                height: 66px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--bc-primary), var(--bc-primary-dark));
+                box-shadow: 0 16px 36px rgba(178, 58, 99, 0.24);
+                margin-bottom: 1rem;
+            }
+
+            .error-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                margin-top: 2rem;
+            }
+
+            .btn {
+                min-height: 48px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 999px;
+                font-weight: 800;
+                letter-spacing: 0;
+                padding-left: 1.2rem;
+                padding-right: 1.2rem;
+            }
+
+            .btn-primary,
+            .btn-primary:hover {
+                background: linear-gradient(135deg, var(--bc-primary), var(--bc-primary-dark));
+                border-color: var(--bc-primary);
+                color: #fff;
+                box-shadow: 0 12px 26px rgba(178, 58, 99, 0.24);
+            }
+
+            .btn-outline-primary {
+                color: var(--bc-primary);
+                border-color: rgba(178, 58, 99, 0.35);
+                background: rgba(255, 255, 255, 0.72);
+            }
+
+            .btn-outline-primary:hover {
+                color: #fff;
+                background: var(--bc-primary);
+                border-color: var(--bc-primary);
+            }
+
+            .error-help {
+                max-width: 620px;
+                margin-top: 2.2rem;
+                padding-top: 1.35rem;
+                border-top: 1px solid var(--bc-line);
+                color: var(--bc-muted);
+                font-size: 0.95rem;
+            }
+
+            .error-help a {
+                color: var(--bc-primary);
+                font-weight: 800;
+                text-decoration: none;
+            }
+
+            .error-footer {
+                color: rgba(255, 255, 255, 0.72);
+                background: #2f2430;
+                padding: 2rem 0;
+            }
+
+            .error-footer img {
+                max-width: 155px;
+                height: auto;
+            }
+
+            .error-footer a {
+                color: #fff;
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+            .error-footer-links {
+                display: flex;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            @media (max-width: 991.98px) {
+                .error-hero {
+                    min-height: auto;
+                }
+
+                .error-visual {
+                    min-height: 300px;
+                }
+            }
+
+            @media (max-width: 767.98px) {
+                html,
+                body,
+                .error-shell {
+                    overflow-x: hidden;
+                }
+
+                .container {
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                }
+
+                .error-navbar,
+                .error-navbar .container {
+                    min-height: 68px;
+                }
+
+                .error-brand img {
+                    max-height: 48px;
+                }
+
+                .error-nav {
+                    gap: 0.15rem;
+                }
+
+                .error-nav a {
+                    width: 42px;
+                    min-height: 42px;
+                    justify-content: center;
+                    padding: 0;
+                    border: 1px solid var(--bc-line);
+                    background: #fff;
+                }
+
+                .error-nav span {
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    overflow: hidden;
+                    clip: rect(0, 0, 0, 0);
+                    white-space: nowrap;
+                }
+
+                .error-main {
+                    align-items: flex-start;
+                    padding-top: 2rem;
+                }
+
+                .error-code {
+                    font-size: 4.9rem;
+                }
+
+                .error-title {
+                    font-size: 2rem;
+                    line-height: 1.08;
+                    overflow-wrap: anywhere;
+                }
+
+                .error-text {
+                    font-size: 0.98rem;
+                }
+
+                .error-visual {
+                    min-height: 250px;
+                    border-radius: 18px;
+                }
+
+                .error-visual::after {
+                    inset: 0.75rem;
+                    border-radius: 14px;
+                }
+
+                .error-visual-badge {
+                    display: block;
+                    right: 1rem;
+                    bottom: 1rem;
+                    left: 1rem;
+                }
+
+                .error-visual-badge strong {
+                    font-size: 4rem;
+                }
+
+                .error-visual-badge span {
+                    display: block;
+                    max-width: 100%;
+                    margin-top: 0.5rem;
+                    text-align: left;
+                }
+
+                .error-actions .btn {
+                    width: 100%;
+                }
+
+                .error-footer {
+                    text-align: center;
+                }
+
+                .error-footer-links {
+                    justify-content: center;
+                    margin-top: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="error-shell">
+            <header class="error-navbar">
+                <div class="container">
+                    <a class="error-brand" href="{{ path('home') }}" aria-label="Bella Couture">
+                        <img src="{{ asset('logo/logo.webp') }}" alt="Bella Couture">
+                    </a>
+                    <nav aria-label="Navigation principale">
+                        <ul class="error-nav">
+                            <li>
+                                <a href="{{ path('home') }}">
+                                    <i class="fas fa-house"></i>
+                                    <span>Accueil</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ path('products') }}">
+                                    <i class="fas fa-shirt"></i>
+                                    <span>Boutique</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ path('contact') }}">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>Contact</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+
+            <main class="error-main">
+                <div class="container">
+                    <section class="row error-hero g-4 g-lg-5">
+                        <div class="col-lg-7">
+                            <div class="error-copy">
+                                <div class="error-icon">
+                                    <i class="fas {{ icon }} fa-2x"></i>
+                                </div>
+                                <span class="error-kicker">Bella Couture</span>
+                                <p class="error-code">{{ code }}</p>
+                                <h1 class="error-title">{{ heading }}</h1>
+                                <p class="error-text mb-0">{{ message }}</p>
+
+                                <div class="error-actions">
+                                    <a class="btn btn-primary" href="{{ path('home') }}">
+                                        <i class="fas fa-house me-2"></i> Retour a l'accueil
+                                    </a>
+                                    <a class="btn btn-outline-primary" href="{{ path('products') }}">
+                                        <i class="fas fa-shirt me-2"></i> Voir la boutique
+                                    </a>
+                                    <a class="btn btn-outline-primary" href="{{ path('contact') }}">
+                                        <i class="fas fa-envelope me-2"></i> Contact
+                                    </a>
+                                </div>
+
+                                <div class="error-help">
+                                    Si le probleme persiste, contactez-nous et indiquez le code
+                                    <strong>{{ code }}</strong>.
+                                    <a href="tel:+21621201092">+216 21 201 092</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="error-visual" aria-hidden="true">
+                                <div class="error-visual-badge">
+                                    <strong>{{ code }}</strong>
+                                    <span>Une pause elegante avant de reprendre votre shopping.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+
+            <footer class="error-footer">
+                <div class="container">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-5">
+                            <img src="{{ asset('logo/logo_foot.webp') }}" alt="Bella Couture">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="error-footer-links">
+                                <a href="{{ path('home') }}">Accueil</a>
+                                <a href="{{ path('products') }}">Boutique</a>
+                                <a href="{{ path('contact') }}">Contact</a>
+                                <a href="tel:+21621201092">+216 21 201 092</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </body>
+</html>

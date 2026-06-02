@@ -75,9 +75,9 @@
 											<tr>
 												<td>
 													{% if product.images|length > 0 %}
-														<img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-thumbnail" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
+														<img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-thumbnail" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
 													{% else %}
-														<img src="{{ asset('images/placeholder.svg') }}" class="img-thumbnail" alt="Aucune image" style="width: 50px; height: 50px; object-fit: cover;">
+														<img src="{{ asset('images/placeholder.webp') }}" class="img-thumbnail" alt="Aucune image" style="width: 50px; height: 50px; object-fit: cover;">
 													{% endif %}
 												</td>
 												<td>

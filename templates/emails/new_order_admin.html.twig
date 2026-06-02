@@ -1,72 +1,115 @@
-<!-- templates/emails/new_order_admin.html.twig -->
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #f8f9fa; padding: 20px; text-align: center; }
-        .order-details { margin: 20px 0; }
-        .product-table { width: 100%; border-collapse: collapse; }
-        .product-table th, .product-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .product-table th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Nouvelle Commande Reçue</h1>
-        </div>
-        
-        <div class="order-details">
-            <h2>Détails de la commande</h2>
-            <p><strong>Numéro de commande:</strong> {{ order.orderNumber }}</p>
-            <p><strong>Client:</strong> {{ order.customerName }}</p>
-            <p><strong>Téléphone:</strong> {{ order.customerPhone }}</p>
-            {% if order.customerEmail %}
-    <p><strong>Email :</strong> {{ order.customerEmail }}</p>
-    {% else %}
-    <p><strong>Email :</strong> <span style="color: #dc3545;">Non fourni</span></p>
-    {% endif %}
-            <p><strong>Date:</strong> {{ order.createdAt|date('d/m/Y H:i') }}</p>
-            <p><strong>Sous-total articles:</strong> {{ order.itemsTotal|number_format(2) }} Dt</p>
-            {% if order.discount and order.discount > 0 %}
-            <p><strong>Remise:</strong> -{{ order.discount|number_format(2) }} Dt</p>
-            {% endif %}
-            <p><strong>Livraison:</strong> {{ (order.shippingFee ?? 0)|number_format(2) }} Dt</p>
-            <p><strong>Total final:</strong> {{ order.total|number_format(2) }} Dt</p>
-        </div>
+{% set email_title = 'Nouvelle commande recue' %}
+{% set email_preheader = 'Nouvelle commande ' ~ order.orderNumber ~ ' a traiter dans l administration Bella Couture.' %}
+{% set email_badge = 'Administration' %}
+{% set email_action_url = absolute_url(path('admin_orders')) %}
+{% set email_action_label = 'Ouvrir les commandes' %}
+{% extends 'emails/_layout.html.twig' %}
 
-        <h3>Articles commandés:</h3>
-        <table class="product-table">
-            <thead>
-                <tr>
-                    <th>Produit</th>
-                    <th>Taille</th>
-                    <th>Couleur</th>
-                    <th>Quantité</th>
-                    <th>Prix unitaire</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in order.items %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.size ?? 'Non specifie' }}</td>
-                    <td>{{ item.color ?? 'Non specifie' }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.unitPrice }} Dt</td>
-                    <td>{{ item.total }} Dt</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% block email_heading %}Nouvelle commande recue{% endblock %}
 
-        <p>
-            <a href="{{ absolute_url(path('admin_orders')) }}">Voir la commande dans l'interface admin</a>
-        </p>
-    </div>
-</body>
-</html>
+{% block email_body %}
+    <p style="margin:0 0 18px; color:#5d4754; font-size:15px; line-height:24px;">
+        Une nouvelle commande vient d'etre enregistree sur la boutique. Voici les informations utiles pour la traiter rapidement.
+    </p>
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px; background-color:#fff7f9; border:1px solid #eadde3; border-radius:14px;">
+        <tr>
+            <td style="padding:18px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                        <td class="stack-column" width="50%" style="padding:0 12px 12px 0; color:#7b717a; font-size:13px; line-height:20px;">
+                            Commande<br>
+                            <strong style="color:#2f2430; font-size:16px;">{{ order.orderNumber }}</strong>
+                        </td>
+                        <td class="stack-column" width="50%" style="padding:0 0 12px 12px; color:#7b717a; font-size:13px; line-height:20px;">
+                            Date<br>
+                            <strong style="color:#2f2430; font-size:16px;">{{ order.createdAt|date('d/m/Y \\a H:i') }}</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="stack-column" width="50%" style="padding:0 12px 0 0; color:#7b717a; font-size:13px; line-height:20px;">
+                            Client<br>
+                            <strong style="color:#2f2430; font-size:16px;">{{ order.customerName }}</strong>
+                        </td>
+                        <td class="stack-column" width="50%" style="padding:0 0 0 12px; color:#7b717a; font-size:13px; line-height:20px;">
+                            Total final<br>
+                            <strong style="color:#b23a63; font-size:18px;">{{ order.total|number_format(2, ',', ' ') }} DT</strong>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <h2 style="margin:0 0 12px; color:#2f2430; font-size:20px; line-height:26px;">Coordonnees client</h2>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px; border:1px solid #eadde3; border-radius:12px;">
+        <tr>
+            <td style="padding:16px; color:#5d4754; font-size:14px; line-height:23px;">
+                <strong style="color:#2f2430;">Nom :</strong> {{ order.customerName }}<br>
+                <strong style="color:#2f2430;">Telephone :</strong> <a href="tel:{{ order.customerPhone }}" style="color:#b23a63; text-decoration:none;">{{ order.customerPhone }}</a><br>
+                <strong style="color:#2f2430;">Email :</strong>
+                {% if order.customerEmail %}
+                    <a href="mailto:{{ order.customerEmail }}" style="color:#b23a63; text-decoration:none;">{{ order.customerEmail }}</a>
+                {% else %}
+                    <span style="color:#ad2442;">Non fourni</span>
+                {% endif %}
+                {% if order.shippingAddress %}
+                    <br><strong style="color:#2f2430;">Adresse :</strong> {{ order.shippingAddress|nl2br }}
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <h2 style="margin:0 0 12px; color:#2f2430; font-size:20px; line-height:26px;">Articles commandes</h2>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #eadde3; border-radius:12px; overflow:hidden; margin:0 0 22px;">
+        <tr>
+            <td style="padding:0;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                        <th align="left" style="padding:11px 12px; background-color:#f7eef2; color:#5d4754; font-size:12px;">Produit</th>
+                        <th align="left" style="padding:11px 8px; background-color:#f7eef2; color:#5d4754; font-size:12px;">Taille</th>
+                        <th align="left" style="padding:11px 8px; background-color:#f7eef2; color:#5d4754; font-size:12px;">Couleur</th>
+                        <th align="center" style="padding:11px 8px; background-color:#f7eef2; color:#5d4754; font-size:12px;">Qt.</th>
+                        <th align="right" style="padding:11px 12px; background-color:#f7eef2; color:#5d4754; font-size:12px;">Total</th>
+                    </tr>
+                    {% for item in order.items %}
+                        <tr>
+                            <td style="padding:12px; border-top:1px solid #eadde3; color:#2f2430; font-size:13px; line-height:19px; font-weight:bold;">{{ item.product.name }}</td>
+                            <td style="padding:12px 8px; border-top:1px solid #eadde3; color:#5d4754; font-size:13px; line-height:19px;">{{ item.size ?? 'Non specifie' }}</td>
+                            <td style="padding:12px 8px; border-top:1px solid #eadde3; color:#5d4754; font-size:13px; line-height:19px;">{{ item.color ?? 'Non specifie' }}</td>
+                            <td align="center" style="padding:12px 8px; border-top:1px solid #eadde3; color:#5d4754; font-size:13px; line-height:19px;">{{ item.quantity }}</td>
+                            <td align="right" style="padding:12px; border-top:1px solid #eadde3; color:#2f2430; font-size:13px; line-height:19px; font-weight:bold;">{{ item.total|number_format(2, ',', ' ') }} DT</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td style="padding:14px 0 0; border-top:1px solid #eadde3;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                        <td style="padding:4px 0; color:#7b717a; font-size:14px;">Sous-total articles</td>
+                        <td align="right" style="padding:4px 0; color:#2f2430; font-size:14px;">{{ order.itemsTotal|number_format(2, ',', ' ') }} DT</td>
+                    </tr>
+                    {% if order.discount and order.discount > 0 %}
+                        <tr>
+                            <td style="padding:4px 0; color:#7b717a; font-size:14px;">Remise</td>
+                            <td align="right" style="padding:4px 0; color:#2f8f72; font-size:14px;">-{{ order.discount|number_format(2, ',', ' ') }} DT</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <td style="padding:4px 0; color:#7b717a; font-size:14px;">Livraison</td>
+                        <td align="right" style="padding:4px 0; color:#2f2430; font-size:14px;">{{ (order.shippingFee ?? 0)|number_format(2, ',', ' ') }} DT</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0 0; color:#2f2430; font-size:16px; font-weight:bold;">Total final</td>
+                        <td align="right" style="padding:10px 0 0; color:#b23a63; font-size:18px; font-weight:bold;">{{ order.total|number_format(2, ',', ' ') }} DT</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+{% endblock %}

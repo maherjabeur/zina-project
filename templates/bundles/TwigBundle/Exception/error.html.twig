@@ -1,0 +1,12 @@
+{% set fallback_heading = status_code is defined and status_code == 403 ? 'Acces non autorise' : 'Oups, cette page ne repond pas' %}
+{% set fallback_message = status_code is defined and status_code == 403
+    ? 'Cette zone est reservee. Connectez-vous avec un compte autorise ou revenez a la boutique.'
+    : 'Quelque chose a bloque le chargement de la page. Vous pouvez continuer votre navigation depuis les liens ci-dessous.'
+%}
+
+{% include 'bundles/TwigBundle/Exception/_error_layout.html.twig' with {
+    error_code: status_code|default(500),
+    error_heading: fallback_heading,
+    error_message: fallback_message,
+    error_icon: status_code is defined and status_code == 403 ? 'fa-lock' : 'fa-circle-exclamation'
+} only %}

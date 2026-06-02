@@ -25,7 +25,7 @@ class Settings
     private ?string $seoKeywords = 'mode feminine, boutique femme, vetements femme, Bella Couture, Sousse, Tunisie';
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $seoImage = 'logo/logo.png';
+    private ?string $seoImage = 'logo/logo.webp';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $seoAuthor = 'Bella Couture';

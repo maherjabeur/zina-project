@@ -9,7 +9,7 @@
     {% if product.images|length > 0 %}
         uploads/products/{{ product.images.first.filename }}
     {% else %}
-        images/placeholder.svg
+        images/placeholder.webp
     {% endif %}
 {% endblock %}
 {% block structured_data %}
@@ -19,7 +19,7 @@
             '@type': 'Product',
             name: product.name,
             description: product.description|striptags,
-            image: product.images|length > 0 ? absolute_url(asset('uploads/products/' ~ product.images.first.filename)) : absolute_url(asset('images/placeholder.svg')),
+            image: product.images|length > 0 ? absolute_url(asset('uploads/products/' ~ product.images.first.filename)) : absolute_url(asset('images/placeholder.webp')),
             brand: {
                 '@type': 'Brand',
                 name: 'Bella Couture'
@@ -56,20 +56,20 @@
                                 <span class="badge bg-danger fs-6 px-3 py-2">-{{ bestPromotion.discount }}%</span>
                             </div>
                         {% endif %}
-                        <img id="mainImage" src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-fluid product-gallery-main" alt="{{ product.name }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
+                        <img id="mainImage" src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-fluid product-gallery-main" alt="{{ product.name }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
                     </div>
 
                     {% if product.images|length > 1 %}
                         <div class="row g-3">
                             {% for image in product.images %}
                                 <div class="col-3">
-                                    <img src="{{ asset('uploads/products/' ~ image.filename) }}" class="img-thumbnail thumbnail-image {% if loop.first %}active{% endif %}" alt="{{ product.name }} - vue {{ loop.index }}" onclick="changeMainImage(this)" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
+                                    <img src="{{ asset('uploads/products/' ~ image.filename) }}" class="img-thumbnail thumbnail-image {% if loop.first %}active{% endif %}" alt="{{ product.name }} - vue {{ loop.index }}" onclick="changeMainImage(this)" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
                                 </div>
                             {% endfor %}
                         </div>
                     {% endif %}
                 {% else %}
-                    <img src="{{ asset('images/placeholder.svg') }}" class="img-fluid product-gallery-main" alt="Image non disponible">
+                    <img src="{{ asset('images/placeholder.webp') }}" class="img-fluid product-gallery-main" alt="Image non disponible">
                 {% endif %}
             </div>
 

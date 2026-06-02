@@ -7,7 +7,7 @@
     {% set default_seo_description = settings and settings.seoDescription ? settings.seoDescription : 'Boutique de mode feminine a Sousse: vetements elegants, collections tendance, tailles et couleurs au choix avec livraison en Tunisie.' %}
     {% set default_seo_keywords = settings and settings.seoKeywords ? settings.seoKeywords : 'mode feminine, boutique femme, vetements femme, Bella Couture, Sousse, Tunisie' %}
     {% set default_seo_author = settings and settings.seoAuthor ? settings.seoAuthor : 'Bella Couture' %}
-    {% set default_seo_image = settings and settings.seoImage ? settings.seoImage : 'logo/logo.png' %}
+    {% set default_seo_image = settings and settings.seoImage ? settings.seoImage : 'logo/logo.webp' %}
     {% set default_robots = is_admin_area or (settings and not settings.seoIndexingEnabled) ? 'noindex, nofollow' : 'index, follow' %}
     {% set default_canonical = app.request.schemeAndHttpHost ~ app.request.pathInfo %}
     <head>
@@ -46,7 +46,7 @@
                         '@type': 'ClothingStore',
                         name: 'Bella Couture',
                         url: app.request.schemeAndHttpHost ~ path('home'),
-                        image: absolute_url(asset('logo/logo.png')),
+                        image: absolute_url(asset('logo/logo.webp')),
                         address: {
                             '@type': 'PostalAddress',
                             addressLocality: 'Sousse',
@@ -77,18 +77,72 @@
         <title>{% block title %}{{ default_seo_title }}{% endblock %}</title>
         <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+        <style>
+            .swal2-popup.bella-alert {
+                border: 1px solid #eadde3;
+                border-radius: 18px;
+                color: #2f2430;
+                box-shadow: 0 18px 55px rgba(87, 49, 65, 0.14);
+                font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            }
+
+            .swal2-popup.bella-alert .swal2-title {
+                color: #2f2430;
+                font-weight: 850;
+                letter-spacing: 0;
+            }
+
+            .swal2-popup.bella-alert .swal2-html-container {
+                color: #7b717a;
+                line-height: 1.6;
+            }
+
+            .swal2-popup.bella-alert .swal2-confirm {
+                border-radius: 999px !important;
+                background: linear-gradient(135deg, #b23a63, #8f2f52) !important;
+                box-shadow: 0 10px 24px rgba(178, 58, 99, 0.24) !important;
+                font-weight: 800;
+                padding: 0.72rem 1.35rem;
+            }
+
+            .swal2-popup.bella-alert .swal2-icon.swal2-success,
+            .swal2-popup.bella-alert .swal2-icon.swal2-info,
+            .swal2-popup.bella-alert .swal2-icon.swal2-warning,
+            .swal2-popup.bella-alert .swal2-icon.swal2-error {
+                margin-top: 1.6rem;
+            }
+
+            .swal2-popup.bella-alert .swal2-icon.swal2-success {
+                border-color: #2f8f72;
+                color: #2f8f72;
+            }
+
+            .swal2-popup.bella-alert .swal2-icon.swal2-info {
+                border-color: #b23a63;
+                color: #b23a63;
+            }
+
+            @media (max-width: 575.98px) {
+                .swal2-popup.bella-alert {
+                    width: calc(100% - 2rem) !important;
+                    border-radius: 16px;
+                }
+            }
+        </style>
         {% if is_admin_area %}
             <link href="{{ asset('css/admin-ux.css') }}?v=admin-fem-5" rel="stylesheet">
         {% else %}
             <link href="{{ asset('css/front-ux.css') }}?v=front-mobile-3" rel="stylesheet">
         {% endif %}
+        {% block stylesheets %}{% endblock %}
     </head>
     <body class="{{ is_admin_area ? 'admin-shell' : 'front-shell' }}">
         {% if is_admin_area %}
         <nav class="admin-topbar">
             <div class="container-fluid">
                 <a class="admin-brand" href="{{ path('admin_dashboard') }}" aria-label="Administration Bella Couture">
-                    <img src="{{ asset('/logo/logo.png') }}" alt="Bella Couture">
+                    <img src="{{ asset('/logo/logo.webp') }}" alt="Bella Couture">
                     <span>Administration</span>
                 </a>
 
@@ -109,7 +163,7 @@
         <nav class="navbar navbar-expand-lg navbar-light sticky-top">
             <div class="container">
                 <a class="navbar-brand" href="{{ path('home') }}" aria-label="Bella Couture">
-                    <img src="{{ asset('/logo/logo.png') }}" alt="Bella Couture">
+                    <img src="{{ asset('/logo/logo.webp') }}" alt="Bella Couture">
                 </a>
 
                 <form class="search-form d-none d-lg-flex me-lg-3" method="GET" action="{{ path('search') }}">
@@ -208,17 +262,6 @@
         </nav>
         {% endif %}
 
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="container mt-3">
-                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endfor %}
-
         {% block body %}{% endblock %}
 
         {% if not is_admin_area %}
@@ -226,7 +269,7 @@
             <div class="container">
                 <div class="row g-4">
                     <div class="col-lg-4 col-md-6">
-                        <img src="{{ asset('/logo/logo_foot.png') }}" alt="Bella Couture">
+                        <img src="{{ asset('/logo/logo_foot.webp') }}" alt="Bella Couture">
                         <p class="text-white-50 mb-0">
                             Une sélection de vêtements féminins pour composer des tenues élégantes, modernes et faciles à porter.
                         </p>
@@ -275,6 +318,72 @@
 
         <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const flashes = [
+                    {% for label, messages in app.flashes %}
+                        {% set normalized_label = label == 'danger' ? 'error' : (label == 'notice' ? 'info' : label) %}
+                        {% set alert_icon = normalized_label in ['success', 'error', 'warning', 'info', 'question'] ? normalized_label : 'info' %}
+                        {% set alert_title = 'Information' %}
+                        {% if alert_icon == 'success' %}
+                            {% set alert_title = 'Succes' %}
+                        {% elseif alert_icon == 'error' %}
+                            {% set alert_title = 'Erreur' %}
+                        {% elseif alert_icon == 'warning' %}
+                            {% set alert_title = 'Attention' %}
+                        {% elseif alert_icon == 'question' %}
+                            {% set alert_title = 'Confirmation' %}
+                        {% endif %}
+                        {% for message in messages %}
+                            {
+                                icon: {{ alert_icon|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_QUOT'))|raw }},
+                                title: {{ alert_title|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_QUOT'))|raw }},
+                                message: {{ message|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_QUOT'))|raw }}
+                            },
+                        {% endfor %}
+                    {% endfor %}
+                ];
+
+                if (!flashes.length) {
+                    return;
+                }
+
+                function showFallback(message) {
+                    window.alert(message);
+                }
+
+                function showNext(index) {
+                    if (index >= flashes.length) {
+                        return;
+                    }
+
+                    const flash = flashes[index];
+                    const text = String(flash.message || '');
+
+                    if (!window.Swal) {
+                        showFallback(text);
+                        showNext(index + 1);
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: flash.title || 'Information',
+                        text: text,
+                        icon: flash.icon || 'info',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            popup: 'bella-alert'
+                        },
+                        buttonsStyling: true
+                    }).then(function () {
+                        showNext(index + 1);
+                    });
+                }
+
+                showNext(0);
+            });
+        </script>
         {% if not is_admin_area %}
         <script>
             document.addEventListener('DOMContentLoaded', function () {

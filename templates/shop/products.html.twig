@@ -117,9 +117,9 @@
                                     {% endif %}
 
                                     {% if product.images|length > 0 %}
-                                        <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="card-img-top" alt="{{ product.name }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';">
+                                        <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="card-img-top" alt="{{ product.name }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
                                     {% else %}
-                                        <img src="{{ asset('images/placeholder.svg') }}" class="card-img-top" alt="Image non disponible">
+                                        <img src="{{ asset('images/placeholder.webp') }}" class="card-img-top" alt="Image non disponible">
                                     {% endif %}
 
                                     <div class="card-body d-flex flex-column">
