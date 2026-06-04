@@ -9,6 +9,8 @@ use App\Repository\ProductRepository;
 use App\Entity\Category;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Index(name: 'idx_product_active_created', columns: ['is_active', 'created_at'])]
+#[ORM\Index(name: 'idx_product_category_active', columns: ['category_id', 'is_active'])]
 class Product
 {
     #[ORM\Id]

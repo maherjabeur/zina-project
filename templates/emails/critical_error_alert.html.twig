@@ -1,0 +1,119 @@
+{% set email_title = 'Alerte erreur critique' %}
+{% set email_preheader = 'Une erreur serveur critique a ete detectee sur Bella Couture.' %}
+{% set email_badge = 'Alerte technique' %}
+{% set email_action_url = absolute_url(path('home')) %}
+{% set email_action_label = 'Ouvrir le site' %}
+{% extends 'emails/_layout.html.twig' %}
+
+{% block email_heading %}Erreur critique detectee{% endblock %}
+
+{% block email_body %}
+    <p style="margin:0 0 18px; color:#2f2430; font-size:16px; line-height:25px;">
+        Une erreur serveur a ete detectee pendant l'utilisation du site. Les details ci-dessous permettent d'identifier rapidement la page, le contexte de requete et l'origine technique probable.
+    </p>
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px; background-color:#fff7f9; border:1px solid #eadde3; border-radius:14px;">
+        <tr>
+            <td style="padding:18px 20px;">
+                <p style="margin:0 0 6px; color:#8f2f52; font-size:12px; line-height:17px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">Resume</p>
+                <p style="margin:0; color:#2f2430; font-size:22px; line-height:29px; font-weight:800;">
+                    HTTP {{ status_code }} - {{ exception_class }}
+                </p>
+                <p style="margin:10px 0 0; color:#5d4754; font-size:14px; line-height:22px;">
+                    {{ exception_message ?: 'Aucun message fourni par l exception.' }}
+                </p>
+            </td>
+        </tr>
+    </table>
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
+        <tr>
+            <td class="stack-column" width="50%" valign="top" style="width:50%; padding:0 8px 12px 0;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #eadde3; border-radius:12px;">
+                    <tr>
+                        <td style="padding:14px 16px;">
+                            <p style="margin:0 0 4px; color:#7b717a; font-size:12px; line-height:17px;">Environnement</p>
+                            <p style="margin:0; color:#2f2430; font-size:15px; line-height:22px; font-weight:bold;">{{ environment }}</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td class="stack-column" width="50%" valign="top" style="width:50%; padding:0 0 12px 8px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #eadde3; border-radius:12px;">
+                    <tr>
+                        <td style="padding:14px 16px;">
+                            <p style="margin:0 0 4px; color:#7b717a; font-size:12px; line-height:17px;">Date</p>
+                            <p style="margin:0; color:#2f2430; font-size:15px; line-height:22px; font-weight:bold;">{{ generated_at|date('Y-m-d H:i:s') }}</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="stack-column" width="50%" valign="top" style="width:50%; padding:0 8px 12px 0;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #eadde3; border-radius:12px;">
+                    <tr>
+                        <td style="padding:14px 16px;">
+                            <p style="margin:0 0 4px; color:#7b717a; font-size:12px; line-height:17px;">Route</p>
+                            <p style="margin:0; color:#2f2430; font-size:15px; line-height:22px; font-weight:bold;">{{ route }}</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td class="stack-column" width="50%" valign="top" style="width:50%; padding:0 0 12px 8px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #eadde3; border-radius:12px;">
+                    <tr>
+                        <td style="padding:14px 16px;">
+                            <p style="margin:0 0 4px; color:#7b717a; font-size:12px; line-height:17px;">Empreinte</p>
+                            <p style="margin:0; color:#2f2430; font-size:15px; line-height:22px; font-weight:bold;">{{ fingerprint }}</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <h2 style="margin:0 0 10px; color:#2f2430; font-size:18px; line-height:24px;">Requete</h2>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px; border:1px solid #eadde3; border-radius:12px;">
+        <tr>
+            <td style="padding:14px 16px; color:#5d4754; font-size:14px; line-height:22px;">
+                <strong style="color:#2f2430;">Methode :</strong> {{ request_method }}<br>
+                <strong style="color:#2f2430;">URL :</strong> <span style="word-break:break-all;">{{ request_uri }}</span><br>
+                <strong style="color:#2f2430;">IP :</strong> {{ client_ip }}<br>
+                <strong style="color:#2f2430;">Referer :</strong> <span style="word-break:break-all;">{{ referer }}</span><br>
+                <strong style="color:#2f2430;">Navigateur :</strong> <span style="word-break:break-all;">{{ user_agent }}</span>
+            </td>
+        </tr>
+    </table>
+
+    <h2 style="margin:0 0 10px; color:#2f2430; font-size:18px; line-height:24px;">Origine technique</h2>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px; border:1px solid #eadde3; border-radius:12px;">
+        <tr>
+            <td style="padding:14px 16px; color:#5d4754; font-size:14px; line-height:22px;">
+                <strong style="color:#2f2430;">Fichier :</strong> <span style="word-break:break-all;">{{ exception_file }}</span><br>
+                <strong style="color:#2f2430;">Ligne :</strong> {{ exception_line }}
+            </td>
+        </tr>
+    </table>
+
+    <h2 style="margin:0 0 10px; color:#2f2430; font-size:18px; line-height:24px;">Parametres nettoyes</h2>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
+        <tr>
+            <td style="padding:14px 16px; background-color:#2f2430; border-radius:12px; color:#fff7f9; font-family:Consolas, Monaco, monospace; font-size:12px; line-height:18px; white-space:pre-wrap; word-break:break-word;">Route params:
+{{ route_params }}
+
+Query params:
+{{ query_params }}</td>
+        </tr>
+    </table>
+
+    {% if trace_lines %}
+        <h2 style="margin:0 0 10px; color:#2f2430; font-size:18px; line-height:24px;">Trace courte</h2>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;">
+            <tr>
+                <td style="padding:14px 16px; background-color:#f8f4f6; border:1px solid #eadde3; border-radius:12px; color:#5d4754; font-family:Consolas, Monaco, monospace; font-size:12px; line-height:18px; white-space:pre-wrap; word-break:break-word;">{% for line in trace_lines %}{{ line }}
+{% endfor %}</td>
+            </tr>
+        </table>
+    {% endif %}
+{% endblock %}

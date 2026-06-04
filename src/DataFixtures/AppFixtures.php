@@ -200,12 +200,12 @@ class AppFixtures extends Fixture
     {
         // Admin user
         $admin = new User();
-        $admin->setEmail('admin@boutique-femme.com');
-        $admin->setFirstName('Sophie');
-        $admin->setLastName('Martin');
+        $admin->setEmail('admin@admin.com');
+        $admin->setFirstName('Admin');
+        $admin->setLastName('Zina');
         $admin->setIsAdmin(true);
         $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'Zina@2026'));
 
         $manager->persist($admin);
         $this->addReference('user_admin', $admin);

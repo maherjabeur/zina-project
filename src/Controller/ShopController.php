@@ -1,40 +1,30 @@
 <?php
-// src/Controller/ShopController.php
+
 namespace App\Controller;
 
 use App\Entity\Product;
-use App\Entity\Order;
-use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
 use App\Repository\PromotionRepository;
+use App\Repository\SizeRepository;
 use App\Repository\SliderImageRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\SizeRepository;
-use Knp\Component\Pager\PaginatorInterface;
 
 class ShopController extends AbstractController
 {
-// new 
-
- #[Route('/', name: 'home')]
-    public function index(ProductRepository $productRepository, SliderImageRepository $sliderImageRepository, PromotionRepository $promotionRepository): Response
-    {
+    #[Route('/', name: 'home')]
+    public function index(
+        ProductRepository $productRepository,
+        SliderImageRepository $sliderImageRepository,
+        PromotionRepository $promotionRepository
+    ): Response {
         $featuredProducts = $productRepository->findFeaturedHome(12);
         $sliderImages = $sliderImageRepository->findActiveSlides();
-
-        // Préparer les données avec les promotions
-        $productsWithPromotions = [];
-        foreach ($featuredProducts as $product) {
-            $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
-            $productsWithPromotions[] = [
-                'product' => $product,
-                'promotion' => $bestPromotion
-            ];
-        }
+        $productsWithPromotions = $this->buildProductsWithPromotions($featuredProducts, $promotionRepository);
 
         return $this->render('shop/index.html.twig', [
             'productsWithPromotions' => $productsWithPromotions,
@@ -54,37 +44,19 @@ class ShopController extends AbstractController
         $categorySlug = $request->query->get('category');
         $sizeCode = $request->query->get('size');
         $page = $request->query->getInt('page', 1);
-        
-        // Create the base query
-        $query = $productRepository->findPaginated($page, 12, $categorySlug, $sizeCode);
-        
-        // Paginate results
-        $products = $paginator->paginate(
-            $query,
-            $page,
-            10 // limit per page
-        );
-        
-        // Préparer les données avec les promotions
-        $productsWithPromotions = [];
-        foreach ($products as $product) {
-            $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
-            $productsWithPromotions[] = [
-                'product' => $product,
-                'promotion' => $bestPromotion
-            ];
-        }
 
-        $categories = $categoryRepository->findActiveCategories();
-        $sizes = $sizeRepository->findActiveSizes();
-        
+        $query = $productRepository->findPaginated($page, 12, $categorySlug, $sizeCode);
+        $products = $paginator->paginate($query, $page, 10);
+        $productsWithPromotions = $this->buildProductsWithPromotions($products, $promotionRepository);
+
         return $this->render('shop/products.html.twig', [
             'productsWithPromotions' => $productsWithPromotions,
-            'categories' => $categories,
-            'sizes' => $sizes,
+            'categories' => $categoryRepository->findActiveCategories(),
+            'categoryProductCounts' => $categoryRepository->countActiveProductsBySlug(),
+            'sizes' => $sizeRepository->findActiveSizes(),
             'currentCategory' => $categorySlug,
             'currentSize' => $sizeCode,
-            'products' => $products, // Garder pour la pagination
+            'products' => $products,
         ]);
     }
 
@@ -93,7 +65,7 @@ class ShopController extends AbstractController
     {
         $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
         $allPromotions = $promotionRepository->findActivePromotionsForProduct($product->getId());
-        
+
         return $this->render('shop/product_detail.html.twig', [
             'product' => $product,
             'bestPromotion' => $bestPromotion,
@@ -101,18 +73,31 @@ class ShopController extends AbstractController
         ]);
     }
 
-
-// old  
-   
-    #[Route('/search/quick', name: 'search_quick_redirect')]
+    #[Route('/search/quick', name: 'search_quick_redirect', methods: ['GET'])]
     public function quickSearchRedirect(Request $request): Response
     {
         $query = $request->query->get('q', '');
 
-        if (!empty($query)) {
+        if ($query !== '') {
             return $this->redirectToRoute('search', ['q' => $query]);
         }
 
         return $this->redirectToRoute('products');
+    }
+
+    private function buildProductsWithPromotions(iterable $products, PromotionRepository $promotionRepository): array
+    {
+        $productsArray = is_array($products) ? $products : iterator_to_array($products, false);
+        $promotionsByProductId = $promotionRepository->findBestPromotionsForProducts($productsArray);
+
+        $productsWithPromotions = [];
+        foreach ($productsArray as $product) {
+            $productsWithPromotions[] = [
+                'product' => $product,
+                'promotion' => $promotionsByProductId[$product->getId()] ?? null,
+            ];
+        }
+
+        return $productsWithPromotions;
     }
 }

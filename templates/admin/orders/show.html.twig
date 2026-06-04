@@ -113,6 +113,7 @@
                         </div>
                         <div class="card-body">
                             <form method="POST" action="{{ path('admin_order_update_status', {'id': order.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('admin_order_update_status_' ~ order.id) }}">
                                 <div class="mb-3">
                                     <select name="status" class="form-select">
                                         {% for statusValue, statusLabel in constant('App\\Entity\\Order::STATUSES') %}

@@ -8,6 +8,7 @@ use App\Repository\ProductRepository;
 use App\Repository\PromotionRepository;
 use App\Repository\SettingRepository;
 use App\Service\NotificationService;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,19 +36,17 @@ class CheckoutController extends AbstractController
         $total = 0;
         $totalDiscount = 0;
         $totalWithDiscount = 0;
+        $items = $this->getNormalizedCartItems($cart);
+        $productsById = $productRepository->findByIdsForCart(array_column($items, 'productId'));
+        $promotionsByProductId = $promotionRepository->findBestPromotionsForProducts($productsById);
 
-        foreach ($cart as $key => $rawItem) {
-            $item = $this->normalizeCartItem($key, $rawItem);
-            if (!$item) {
-                continue;
-            }
-
+        foreach ($items as $item) {
             if (!$item['size'] || !$item['color']) {
                 $this->addFlash('warning', 'Veuillez choisir une taille et une couleur pour chaque article.');
                 return $this->redirectToRoute('cart');
             }
 
-            $product = $productRepository->find($item['productId']);
+            $product = $productsById[$item['productId']] ?? null;
             if (!$product) {
                 continue;
             }
@@ -57,7 +56,7 @@ class CheckoutController extends AbstractController
                 return $this->redirectToRoute('cart');
             }
 
-            $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
+            $bestPromotion = $promotionsByProductId[$product->getId()] ?? null;
             $discount = 0;
             $discountedPrice = $product->getPrice();
 
@@ -118,6 +117,11 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('products');
         }
 
+        if (!$this->isCsrfTokenValid('checkout_process', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('checkout');
+        }
+
         $customerName = trim((string) $request->request->get('customer_name'));
         $customerPhone = trim((string) $request->request->get('customer_phone'));
         $customerEmail = trim((string) $request->request->get('customer_email'));
@@ -125,6 +129,11 @@ class CheckoutController extends AbstractController
 
         if ($customerName === '' || $customerPhone === '' || $shippingAddress === '') {
             $this->addFlash('error', 'Veuillez remplir tous les champs obligatoires.');
+            return $this->redirectToRoute('checkout');
+        }
+
+        if (!$request->request->getBoolean('terms')) {
+            $this->addFlash('error', 'Veuillez accepter les conditions generales de vente.');
             return $this->redirectToRoute('checkout');
         }
 
@@ -139,18 +148,17 @@ class CheckoutController extends AbstractController
         }
 
         $cartItems = [];
-        foreach ($cart as $key => $rawItem) {
-            $item = $this->normalizeCartItem($key, $rawItem);
-            if (!$item) {
-                continue;
-            }
+        $items = $this->getNormalizedCartItems($cart);
+        $productsById = $productRepository->findByIdsForCart(array_column($items, 'productId'));
+
+        foreach ($items as $item) {
 
             if (!$item['size'] || !$item['color']) {
                 $this->addFlash('error', 'Une taille et une couleur sont obligatoires pour chaque article.');
                 return $this->redirectToRoute('cart');
             }
 
-            $product = $productRepository->find($item['productId']);
+            $product = $productsById[$item['productId']] ?? null;
             if (!$product) {
                 $this->addFlash('error', 'Un produit de votre panier n est plus disponible.');
                 return $this->redirectToRoute('cart');
@@ -189,47 +197,70 @@ class CheckoutController extends AbstractController
         $itemsTotal = 0;
         $originalTotal = 0;
         $totalDiscount = 0;
+        $promotionsByProductId = $promotionRepository->findBestPromotionsForProducts(array_column($cartItems, 'product'));
 
-        foreach ($cartItems as $item) {
-            $product = $item['product'];
-            $quantity = $item['quantity'];
+        $connection = $entityManager->getConnection();
+        $connection->beginTransaction();
 
-            $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
-            $originalPrice = (float) $product->getPrice();
-            $unitPrice = $originalPrice;
-            $discount = 0;
+        try {
+            foreach ($cartItems as $item) {
+                $product = $item['product'];
+                $quantity = $item['quantity'];
 
-            if ($bestPromotion && $bestPromotion->isValid()) {
-                $discount = $bestPromotion->getDiscount();
-                $unitPrice = (float) $bestPromotion->calculateDiscountedPrice($product->getPrice());
+                $entityManager->lock($product, LockMode::PESSIMISTIC_WRITE);
+
+                if ($product->getQuantity() < $quantity) {
+                    throw new \RuntimeException(sprintf(
+                        'Le produit "%s" n est plus disponible en quantite suffisante.',
+                        $product->getName()
+                    ));
+                }
+
+                $bestPromotion = $promotionsByProductId[$product->getId()] ?? null;
+                $originalPrice = (float) $product->getPrice();
+                $unitPrice = $originalPrice;
+                $discount = 0;
+
+                if ($bestPromotion && $bestPromotion->isValid()) {
+                    $discount = $bestPromotion->getDiscount();
+                    $unitPrice = (float) $bestPromotion->calculateDiscountedPrice($product->getPrice());
+                }
+
+                $orderItem = new OrderItem();
+                $orderItem->setProduct($product);
+                $orderItem->setQuantity($quantity);
+                $orderItem->setUnitPrice(number_format($unitPrice, 2, '.', ''));
+                $orderItem->setOriginalPrice($originalPrice);
+                $orderItem->setDiscount($discount);
+                $orderItem->setPromotionTitle($bestPromotion && $bestPromotion->isValid() ? $bestPromotion->getTitle() : null);
+                $orderItem->setSize($item['size']);
+                $orderItem->setColor($item['color']);
+                $orderItem->setOrder($order);
+
+                $entityManager->persist($orderItem);
+
+                $itemsTotal += $unitPrice * $quantity;
+                $originalTotal += $originalPrice * $quantity;
+                $totalDiscount += ($originalPrice - $unitPrice) * $quantity;
+                $product->setQuantity($product->getQuantity() - $quantity);
             }
 
-            $orderItem = new OrderItem();
-            $orderItem->setProduct($product);
-            $orderItem->setQuantity($quantity);
-            $orderItem->setUnitPrice(number_format($unitPrice, 2, '.', ''));
-            $orderItem->setOriginalPrice($originalPrice);
-            $orderItem->setDiscount($discount);
-            $orderItem->setPromotionTitle($bestPromotion && $bestPromotion->isValid() ? $bestPromotion->getTitle() : null);
-            $orderItem->setSize($item['size']);
-            $orderItem->setColor($item['color']);
-            $orderItem->setOrder($order);
+            $finalTotal = $itemsTotal + $shippingFee;
+            $order->setOriginalTotal($originalTotal);
+            $order->setDiscount($totalDiscount);
+            $order->setShippingFee($shippingFee);
+            $order->setTotal(number_format($finalTotal, 2, '.', ''));
+            $entityManager->persist($order);
+            $entityManager->flush();
+            $connection->commit();
+        } catch (\Throwable $exception) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
 
-            $entityManager->persist($orderItem);
-
-            $itemsTotal += $unitPrice * $quantity;
-            $originalTotal += $originalPrice * $quantity;
-            $totalDiscount += ($originalPrice - $unitPrice) * $quantity;
-            $product->setQuantity($product->getQuantity() - $quantity);
+            $this->addFlash('error', $exception->getMessage());
+            return $this->redirectToRoute('cart');
         }
-
-        $finalTotal = $itemsTotal + $shippingFee;
-        $order->setOriginalTotal($originalTotal);
-        $order->setDiscount($totalDiscount);
-        $order->setShippingFee($shippingFee);
-        $order->setTotal(number_format($finalTotal, 2, '.', ''));
-        $entityManager->persist($order);
-        $entityManager->flush();
 
         if ($customerEmail !== '') {
             try {
@@ -259,6 +290,19 @@ class CheckoutController extends AbstractController
         return $this->render('checkout/success.html.twig', [
             'order' => $order,
         ]);
+    }
+
+    private function getNormalizedCartItems(array $cart): array
+    {
+        $items = [];
+        foreach ($cart as $key => $rawItem) {
+            $item = $this->normalizeCartItem($key, $rawItem);
+            if ($item) {
+                $items[] = $item;
+            }
+        }
+
+        return $items;
     }
 
     private function normalizeCartItem(string|int $key, mixed $rawItem): ?array

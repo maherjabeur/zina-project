@@ -24,6 +24,31 @@ class CategoryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<string, int>
+     */
+    public function countActiveProductsBySlug(): array
+    {
+        $rows = $this->createQueryBuilder('c')
+            ->select('c.slug AS slug')
+            ->addSelect('COUNT(p.id) AS productCount')
+            ->leftJoin('c.products', 'p', 'WITH', 'p.isActive = :productActive')
+            ->where('c.isActive = :active')
+            ->setParameter('active', true)
+            ->setParameter('productActive', true)
+            ->groupBy('c.id')
+            ->addGroupBy('c.slug')
+            ->getQuery()
+            ->getArrayResult();
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[(string) $row['slug']] = (int) $row['productCount'];
+        }
+
+        return $counts;
+    }
+
     public function findForNavigation(): array
     {
         return $this->createQueryBuilder('c')

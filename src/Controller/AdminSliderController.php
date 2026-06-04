@@ -103,8 +103,13 @@ class AdminSliderController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'admin_slider_delete', methods: ['POST'])]
-    public function delete(SliderImage $sliderImage, EntityManagerInterface $entityManager): Response
+    public function delete(SliderImage $sliderImage, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_slider_delete_' . $sliderImage->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_slider');
+        }
+
         // Supprimer le fichier physique
         if ($sliderImage->getFilename()) {
             $this->sliderUploader->delete($sliderImage->getFilename());
@@ -120,8 +125,13 @@ class AdminSliderController extends AbstractController
     }
 
     #[Route('/{id}/toggle', name: 'admin_slider_toggle', methods: ['POST'])]
-    public function toggle(SliderImage $sliderImage, EntityManagerInterface $entityManager): Response
+    public function toggle(SliderImage $sliderImage, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_slider_toggle_' . $sliderImage->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_slider');
+        }
+
         $sliderImage->setIsActive(!$sliderImage->isActive());
         $entityManager->flush();
         

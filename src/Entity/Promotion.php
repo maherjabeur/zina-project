@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PromotionRepository;
 
 #[ORM\Entity(repositoryClass: PromotionRepository::class)]
+#[ORM\Index(name: 'idx_promotion_product_active_discount', columns: ['product_id', 'is_active', 'discount'])]
+#[ORM\Index(name: 'idx_promotion_dates', columns: ['start_date', 'end_date'])]
 class Promotion
 {
     #[ORM\Id]

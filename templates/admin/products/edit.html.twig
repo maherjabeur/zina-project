@@ -134,6 +134,7 @@
         </a>
         
         <form method="POST" action="{{ path('admin_product_toggle', {'id': product.id}) }}" class="d-inline">
+            <input type="hidden" name="_token" value="{{ csrf_token('admin_product_toggle_' ~ product.id) }}">
             <button type="submit" class="btn btn-{{ product.isActive ? 'warning' : 'success' }} w-100">
                 <i class="fas fa-{{ product.isActive ? 'pause' : 'play' }}"></i>
                 {{ product.isActive ? 'Désactiver' : 'Activer' }}
@@ -143,6 +144,7 @@
         <form method="POST" action="{{ path('admin_product_delete', {'id': product.id}) }}" 
               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')"
               class="d-inline">
+            <input type="hidden" name="_token" value="{{ csrf_token('admin_product_delete_' ~ product.id) }}">
             <button type="submit" class="btn btn-outline-danger w-100">
                 <i class="fas fa-trash"></i> Supprimer
             </button>

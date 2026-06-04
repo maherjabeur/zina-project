@@ -115,6 +115,7 @@
                                                     </a>
                                                     <form method="POST" action="{{ path('admin_category_toggle', {'id': category.id}) }}" 
                                                           class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_category_toggle_' ~ category.id) }}">
                                                         <button type="submit" class="btn btn-{{ category.isActive ? 'warning' : 'success' }}" 
                                                                 title="{{ category.isActive ? 'Désactiver' : 'Activer' }}">
                                                             <i class="fas fa-{{ category.isActive ? 'pause' : 'play' }}"></i>
@@ -123,6 +124,7 @@
                                                     <form method="POST" action="{{ path('admin_category_delete', {'id': category.id}) }}" 
                                                           onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')"
                                                           class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_category_delete_' ~ category.id) }}">
                                                         <button type="submit" class="btn btn-outline-danger" title="Supprimer">
                                                             <i class="fas fa-trash"></i>
                                                         </button>

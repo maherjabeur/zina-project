@@ -1,5 +1,5 @@
 <?php
-// src/Controller/AdminSizeController.php
+
 namespace App\Controller;
 
 use App\Entity\Size;
@@ -7,25 +7,22 @@ use App\Form\SizeType;
 use App\Repository\OrderRepository;
 use App\Repository\SizeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 #[Route('/admin/sizes')]
 #[IsGranted('ROLE_ADMIN')]
 class AdminSizeController extends AbstractController
 {
     #[Route('/', name: 'admin_sizes')]
-    public function index(SizeRepository $sizeRepository,OrderRepository $orderRepository): Response
+    public function index(SizeRepository $sizeRepository, OrderRepository $orderRepository): Response
     {
-        $sizes = $sizeRepository->findWithProductCount();
-        $recentOrders = $orderRepository->findRecentOrders(10);
-
         return $this->render('admin/sizes/index.html.twig', [
-            'sizes' => $sizes,
-            'recentOrders' => $recentOrders,
+            'sizes' => $sizeRepository->findWithProductCount(),
+            'recentOrders' => $orderRepository->findRecentOrders(10),
         ]);
     }
 
@@ -40,7 +37,7 @@ class AdminSizeController extends AbstractController
             $entityManager->persist($size);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Taille créée avec succès!');
+            $this->addFlash('success', 'Taille creee avec succes!');
             return $this->redirectToRoute('admin_sizes');
         }
 
@@ -58,7 +55,7 @@ class AdminSizeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            $this->addFlash('success', 'Taille modifiée avec succès!');
+            $this->addFlash('success', 'Taille modifiee avec succes!');
             return $this->redirectToRoute('admin_sizes');
         }
 
@@ -69,29 +66,38 @@ class AdminSizeController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'admin_size_delete', methods: ['POST'])]
-    public function delete(Size $size, EntityManagerInterface $entityManager): Response
+    public function delete(Size $size, Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Vérifier s'il y a des produits utilisant cette taille
+        if (!$this->isCsrfTokenValid('admin_size_delete_' . $size->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_sizes');
+        }
+
         if ($size->getProducts()->count() > 0) {
-            $this->addFlash('error', 'Impossible de supprimer cette taille car elle est utilisée par des produits.');
+            $this->addFlash('error', 'Impossible de supprimer cette taille car elle est utilisee par des produits.');
             return $this->redirectToRoute('admin_sizes');
         }
 
         $entityManager->remove($size);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Taille supprimée avec succès!');
+        $this->addFlash('success', 'Taille supprimee avec succes!');
         return $this->redirectToRoute('admin_sizes');
     }
 
     #[Route('/{id}/toggle', name: 'admin_size_toggle', methods: ['POST'])]
-    public function toggle(Size $size, EntityManagerInterface $entityManager): Response
+    public function toggle(Size $size, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_size_toggle_' . $size->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_sizes');
+        }
+
         $size->setIsActive(!$size->isActive());
         $entityManager->flush();
 
-        $status = $size->isActive() ? 'activée' : 'désactivée';
-        $this->addFlash('success', "Taille {$status} avec succès!");
+        $status = $size->isActive() ? 'activee' : 'desactivee';
+        $this->addFlash('success', "Taille {$status} avec succes!");
 
         return $this->redirectToRoute('admin_sizes');
     }

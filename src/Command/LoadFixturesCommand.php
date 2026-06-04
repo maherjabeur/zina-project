@@ -41,14 +41,14 @@ class LoadFixturesCommand extends Command
 
         // Créer un admin
         $admin = new User();
-        $admin->setEmail('admin@boutique.com');
+        $admin->setEmail('admin@admin.com');
         $admin->setFirstName('Admin');
-        $admin->setLastName('System');
+        $admin->setLastName('Zina');
         $admin->setIsAdmin(true);
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'Zina@2026'));
         
         $this->entityManager->persist($admin);
-        $output->writeln('Admin créé: admin@boutique.com / admin123');
+        $output->writeln('Admin créé: admin@admin.com / Zina@2026');
 
         // Créer un utilisateur normal
         $user = new User();
@@ -95,7 +95,7 @@ class LoadFixturesCommand extends Command
         $output->writeln('');
         $output->writeln('Fixtures chargées avec succès!');
         $output->writeln('Comptes créés:');
-        $output->writeln('- Admin: admin@boutique.com / admin123');
+        $output->writeln('- Admin: admin@admin.com / Zina@2026');
         $output->writeln('- User: user@boutique.com / user123');
         $output->writeln('Produits: ' . count($productsData) . ' produits créés');
 

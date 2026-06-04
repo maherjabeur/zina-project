@@ -75,9 +75,12 @@
                                         {% else %}
                                             <span class="fw-bold">{{ (item.product.price * item.quantity)|number_format(2) }} DT</span>
                                         {% endif %}
-                                        <a href="{{ path('cart_remove', {'key': item.key}) }}" class="btn btn-sm btn-outline-danger mt-2" onclick="return confirm('Retirer ce produit du panier ?')">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                        <form method="POST" action="{{ path('cart_remove', {'key': item.key}) }}" class="d-inline" onsubmit="return confirm('Retirer ce produit du panier ?')">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('cart_remove_' ~ item.key) }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger mt-2" aria-label="Retirer ce produit du panier">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -145,12 +148,14 @@
     </div>
 
     <script>
+        const cartUpdateToken = {{ csrf_token('cart_update')|json_encode|raw }};
+
         function updateQuantity(cartKey, quantity) {
             if (quantity < 1) {
-                if (confirm('Retirer ce produit du panier ?')) {
-                    window.location.href = '{{ path('cart_remove', {'key': 'CART_KEY'}) }}'.replace('CART_KEY', encodeURIComponent(cartKey));
+                if (!confirm('Retirer ce produit du panier ?')) {
+                    window.location.reload();
+                    return;
                 }
-                return;
             }
 
             fetch('{{ path('cart_update') }}', {
@@ -159,7 +164,7 @@
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify({ cartKey: cartKey, quantity: quantity })
+                body: JSON.stringify({ cartKey: cartKey, quantity: quantity, _token: cartUpdateToken })
             }).then(function (response) {
                 return response.json();
             }).then(function (data) {

@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use App\Repository\SizeRepository;
 
 #[ORM\Entity(repositoryClass: SizeRepository::class)]
+#[ORM\Index(name: 'idx_size_active_position', columns: ['is_active', 'position'])]
+#[ORM\Index(name: 'idx_size_code_active', columns: ['code', 'is_active'])]
 class Size
 {
     #[ORM\Id]

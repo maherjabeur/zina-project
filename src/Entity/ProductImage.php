@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\ProductImageRepository;
 
 #[ORM\Entity(repositoryClass: ProductImageRepository::class)]
+#[ORM\Index(name: 'idx_product_image_product_position', columns: ['product_id', 'position'])]
 class ProductImage
 {
     #[ORM\Id]

@@ -9,6 +9,8 @@ use App\Repository\OrderRepository;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
+#[ORM\Index(name: 'idx_order_status_created', columns: ['status', 'created_at'])]
+#[ORM\Index(name: 'idx_order_number', columns: ['order_number'])]
 class Order
 {
     public const STATUS_PENDING = 'pending';

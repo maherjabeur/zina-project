@@ -145,6 +145,7 @@
                 {% if product.quantity > 0 %}
                     <form action="{{ path('cart_add', {'id': product.id}) }}" method="POST" class="card mb-4">
                         <div class="card-body">
+                            <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
                             <h5 class="mb-3">Choisir mes options</h5>
                             <div class="row g-3">
                                 <div class="col-sm-6">

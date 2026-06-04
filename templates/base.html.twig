@@ -79,6 +79,204 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
         <style>
+            .bella-page-loader {
+                position: fixed;
+                inset: 0;
+                z-index: 3000;
+                display: grid;
+                place-items: center;
+                padding: 1.5rem;
+                background:
+                    linear-gradient(135deg, rgba(255, 247, 249, 0.98) 0%, rgba(255, 255, 255, 0.97) 48%, rgba(247, 238, 242, 0.98) 100%);
+                color: #2f2430;
+                opacity: 1;
+                visibility: visible;
+                transition: opacity 0.35s ease, visibility 0.35s ease;
+            }
+
+            .admin-shell .bella-page-loader {
+                background:
+                    linear-gradient(135deg, rgba(255, 248, 251, 0.98) 0%, rgba(255, 255, 255, 0.97) 50%, rgba(247, 250, 249, 0.98) 100%);
+            }
+
+            .bella-page-loader.is-hidden {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+
+            .bella-page-loader.is-active {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .bella-loader-content {
+                width: min(100%, 430px);
+                text-align: center;
+            }
+
+            .bella-loader-mark {
+                position: relative;
+                width: 96px;
+                height: 96px;
+                display: grid;
+                place-items: center;
+                margin: 0 auto 1.25rem;
+            }
+
+            .bella-loader-mark::before,
+            .bella-loader-mark::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border: 1px solid rgba(178, 58, 99, 0.22);
+                border-radius: 50%;
+                animation: bellaLoaderRing 1.8s ease-in-out infinite;
+            }
+
+            .bella-loader-mark::after {
+                inset: 10px;
+                border-color: rgba(195, 154, 75, 0.34);
+                animation-delay: -0.55s;
+            }
+
+            .bella-loader-mark img {
+                position: relative;
+                z-index: 1;
+                width: 64px;
+                max-height: 64px;
+                object-fit: contain;
+                filter: drop-shadow(0 10px 18px rgba(87, 49, 65, 0.16));
+                animation: bellaLoaderLogo 1.8s ease-in-out infinite;
+            }
+
+            .bella-loader-title {
+                margin: 0;
+                background: linear-gradient(90deg, #8f2f52, #b23a63, #c39a4b, #8f2f52);
+                background-size: 260% 100%;
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                font-family: Georgia, "Times New Roman", serif;
+                font-size: 3.35rem;
+                font-weight: 700;
+                line-height: 1;
+                letter-spacing: 0;
+                animation: bellaLoaderText 2.4s ease-in-out infinite;
+            }
+
+            .bella-loader-subtitle {
+                margin: 0.85rem auto 1.35rem;
+                max-width: 330px;
+                color: #5d4754;
+                font-size: 0.98rem;
+                line-height: 1.55;
+                font-weight: 650;
+            }
+
+            .bella-loader-track {
+                position: relative;
+                width: min(100%, 260px);
+                height: 4px;
+                margin: 0 auto;
+                overflow: hidden;
+                border-radius: 999px;
+                background: rgba(234, 221, 227, 0.92);
+            }
+
+            .bella-loader-track::before {
+                content: "";
+                position: absolute;
+                inset: 0 auto 0 0;
+                width: 42%;
+                border-radius: inherit;
+                background: linear-gradient(90deg, #b23a63, #c39a4b);
+                animation: bellaLoaderTrack 1.25s ease-in-out infinite;
+            }
+
+            .bella-loader-note {
+                display: block;
+                margin-top: 1rem;
+                color: #7b717a;
+                font-size: 0.78rem;
+                font-weight: 800;
+                text-transform: uppercase;
+            }
+
+            body.bella-loader-lock {
+                overflow: hidden;
+            }
+
+            @keyframes bellaLoaderRing {
+                0% {
+                    transform: scale(0.86);
+                    opacity: 0.28;
+                }
+
+                50% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+
+                100% {
+                    transform: scale(0.86);
+                    opacity: 0.28;
+                }
+            }
+
+            @keyframes bellaLoaderLogo {
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-4px);
+                }
+            }
+
+            @keyframes bellaLoaderText {
+                0%,
+                100% {
+                    background-position: 0% 50%;
+                }
+
+                50% {
+                    background-position: 100% 50%;
+                }
+            }
+
+            @keyframes bellaLoaderTrack {
+                0% {
+                    transform: translateX(-110%);
+                }
+
+                100% {
+                    transform: translateX(260%);
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .bella-loader-mark::before,
+                .bella-loader-mark::after,
+                .bella-loader-mark img,
+                .bella-loader-title,
+                .bella-loader-track::before {
+                    animation: none;
+                }
+            }
+
+            @media (max-width: 575.98px) {
+                .bella-loader-title {
+                    font-size: 2.45rem;
+                }
+
+                .bella-loader-subtitle {
+                    font-size: 0.94rem;
+                }
+            }
+
             .swal2-popup.bella-alert {
                 border: 1px solid #eadde3;
                 border-radius: 18px;
@@ -138,6 +336,18 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body class="{{ is_admin_area ? 'admin-shell' : 'front-shell' }}">
+        <div id="bellaPageLoader" class="bella-page-loader" role="status" aria-live="polite" aria-label="Chargement">
+            <div class="bella-loader-content">
+                <div class="bella-loader-mark">
+                    <img src="{{ asset('logo/logo.webp') }}" alt="Bella Couture">
+                </div>
+                <p class="bella-loader-title">Bella Couture</p>
+                <p class="bella-loader-subtitle">La boutique se prepare avec elegance.</p>
+                <div class="bella-loader-track" aria-hidden="true"></div>
+                <span class="bella-loader-note">Nouvelle allure en cours</span>
+            </div>
+        </div>
+
         {% if is_admin_area %}
         <nav class="admin-topbar">
             <div class="container-fluid">
@@ -319,6 +529,120 @@
         <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            (function () {
+                const loader = document.getElementById('bellaPageLoader');
+                if (!loader) {
+                    return;
+                }
+
+                let showTimer = null;
+                let hideTimer = null;
+
+                function showLoader(delay) {
+                    window.clearTimeout(hideTimer);
+                    window.clearTimeout(showTimer);
+
+                    showTimer = window.setTimeout(function () {
+                        loader.classList.remove('is-hidden');
+                        loader.classList.add('is-active');
+                        document.body.classList.add('bella-loader-lock');
+                    }, delay || 0);
+                }
+
+                function hideLoader(delay) {
+                    window.clearTimeout(showTimer);
+                    window.clearTimeout(hideTimer);
+
+                    hideTimer = window.setTimeout(function () {
+                        loader.classList.add('is-hidden');
+                        loader.classList.remove('is-active');
+                        document.body.classList.remove('bella-loader-lock');
+                    }, delay || 0);
+                }
+
+                function isPlainNavigationLink(link) {
+                    if (!link || !link.href) {
+                        return false;
+                    }
+
+                    const href = link.getAttribute('href') || '';
+                    if (
+                        href === '' ||
+                        href.startsWith('#') ||
+                        href.startsWith('mailto:') ||
+                        href.startsWith('tel:') ||
+                        href.startsWith('javascript:') ||
+                        link.hasAttribute('download') ||
+                        link.target === '_blank' ||
+                        link.dataset.noLoader !== undefined ||
+                        link.dataset.bsToggle ||
+                        link.getAttribute('role') === 'button'
+                    ) {
+                        return false;
+                    }
+
+                    try {
+                        const targetUrl = new URL(link.href, window.location.href);
+                        return targetUrl.origin === window.location.origin && targetUrl.href !== window.location.href;
+                    } catch (error) {
+                        return false;
+                    }
+                }
+
+                window.addEventListener('load', function () {
+                    hideLoader(350);
+                });
+
+                document.addEventListener('pageshow', function () {
+                    hideLoader(150);
+                });
+
+                document.addEventListener('click', function (event) {
+                    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+                        return;
+                    }
+
+                    const link = event.target.closest('a');
+                    if (isPlainNavigationLink(link)) {
+                        showLoader(120);
+                    }
+                });
+
+                document.addEventListener('submit', function (event) {
+                    if (event.defaultPrevented) {
+                        return;
+                    }
+
+                    const form = event.target;
+                    if (!form || form.dataset.noLoader !== undefined || form.target === '_blank') {
+                        return;
+                    }
+
+                    showLoader(80);
+                });
+
+                document.addEventListener('turbo:before-visit', function () {
+                    showLoader(80);
+                });
+
+                document.addEventListener('turbo:load', function () {
+                    hideLoader(120);
+                });
+
+                document.addEventListener('turbo:submit-end', function () {
+                    hideLoader(120);
+                });
+
+                window.addEventListener('beforeunload', function () {
+                    showLoader(0);
+                });
+
+                window.setTimeout(function () {
+                    hideLoader(0);
+                }, 5000);
+            })();
+        </script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const flashes = [

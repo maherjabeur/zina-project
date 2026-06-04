@@ -97,6 +97,7 @@
 													Dt</td>
 												<td>
 													<form method="POST" action="{{ path('admin_order_update_status', {'id': order.id}) }}" class="d-inline">
+														<input type="hidden" name="_token" value="{{ csrf_token('admin_order_update_status_' ~ order.id) }}">
 														<select name="status" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
 															{% for statusValue, statusLabel in constant('App\\Entity\\Order::STATUSES') %}
 																<option value="{{ statusValue }}" {{ order.status == statusValue ? 'selected' : '' }}>
@@ -113,6 +114,7 @@
 															<i class="fas fa-eye"></i>
 														</a>
 														<form method="POST" action="{{ path('admin_order_delete', {'id': order.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')" class="d-inline">
+															<input type="hidden" name="_token" value="{{ csrf_token('admin_order_delete_' ~ order.id) }}">
 															<button type="submit" class="btn btn-outline-danger" title="Supprimer">
 																<i class="fas fa-trash"></i>
 															</button>

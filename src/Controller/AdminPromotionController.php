@@ -75,8 +75,13 @@ class AdminPromotionController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'admin_promotion_delete', methods: ['POST'])]
-    public function delete(Promotion $promotion, EntityManagerInterface $entityManager): Response
+    public function delete(Promotion $promotion, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_promotion_delete_' . $promotion->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_promotion_index');
+        }
+
         try {
             $entityManager->remove($promotion);
             $entityManager->flush();
@@ -90,8 +95,13 @@ class AdminPromotionController extends AbstractController
     }
 
     #[Route('/{id}/toggle', name: 'admin_promotion_toggle', methods: ['POST'])]
-    public function toggle(Promotion $promotion, EntityManagerInterface $entityManager): Response
+    public function toggle(Promotion $promotion, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_promotion_toggle_' . $promotion->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_promotion_index');
+        }
+
         $promotion->setIsActive(!$promotion->isActive());
         $entityManager->flush();
 

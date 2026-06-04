@@ -152,6 +152,11 @@ class AdminController extends AbstractController
         EntityManagerInterface $entityManager,
         NotificationService $notificationService
     ): Response {
+        if (!$this->isCsrfTokenValid('admin_order_update_status_' . $order->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_orders');
+        }
+
         $newStatus = $request->request->get('status');
 
         // Validation du statut
@@ -200,8 +205,13 @@ class AdminController extends AbstractController
     }
 
     #[Route('/order/{id}/delete', name: 'admin_order_delete', methods: ['POST'])]
-    public function deleteOrder(Order $order, EntityManagerInterface $entityManager): Response
+    public function deleteOrder(Order $order, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_order_delete_' . $order->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_orders');
+        }
+
         try {
             $entityManager->remove($order);
             $entityManager->flush();
@@ -235,8 +245,13 @@ class AdminController extends AbstractController
     }
 
     #[Route('/product/{id}/toggle', name: 'admin_product_toggle', methods: ['POST'])]
-    public function toggleProduct(Product $product, EntityManagerInterface $entityManager): Response
+    public function toggleProduct(Product $product, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_product_toggle_' . $product->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_products');
+        }
+
         // Utilisez soit getIsActive() soit isActive()
         $product->setIsActive(!$product->isActive());
         $entityManager->flush();
@@ -248,8 +263,13 @@ class AdminController extends AbstractController
     }
 
     #[Route('/product/{id}/delete', name: 'admin_product_delete', methods: ['POST'])]
-    public function deleteProduct(Product $product, EntityManagerInterface $entityManager): Response
+    public function deleteProduct(Product $product, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_product_delete_' . $product->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_products');
+        }
+
         try {
             $entityManager->remove($product);
             $entityManager->flush();

@@ -85,6 +85,7 @@ class ProductRepository extends ServiceEntityRepository
     public function findFeaturedHome(int $maxResults = 8): array
     {
         return $this->createQueryBuilder('p')
+            ->addSelect('c')
             ->join('p.category', 'c')
             ->leftJoin('p.sizes', 's') // Changer 'size' par 'sizes'
             ->where('p.isActive = :active')
@@ -116,6 +117,7 @@ class ProductRepository extends ServiceEntityRepository
     public function search(string $query, ?string $categorySlug = null): array
     {
         $qb = $this->createQueryBuilder('p')
+            ->addSelect('c')
             ->join('p.category', 'c')
             ->leftJoin('p.sizes', 's') // Changer ici
             ->where('p.isActive = :active')
@@ -186,6 +188,7 @@ class ProductRepository extends ServiceEntityRepository
     public function findPaginated(int $page = 1, int $limit = 12, ?string $categorySlug = null, ?string $sizeCode = null)
     {
         $qb = $this->createQueryBuilder('p')
+            ->addSelect('c')
             ->join('p.category', 'c')
             ->leftJoin('p.sizes', 's') // Changer ici
             ->where('p.isActive = :active')
@@ -205,5 +208,36 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         return $qb;
+    }
+
+    /**
+     * @return array<int, Product>
+     */
+    public function findByIdsForCart(array $productIds): array
+    {
+        $productIds = array_values(array_unique(array_map('intval', $productIds)));
+        if ($productIds === []) {
+            return [];
+        }
+
+        $products = $this->createQueryBuilder('p')
+            ->addSelect('c', 's', 'i')
+            ->leftJoin('p.category', 'c')
+            ->leftJoin('p.sizes', 's')
+            ->leftJoin('p.images', 'i')
+            ->where('p.id IN (:productIds)')
+            ->setParameter('productIds', $productIds)
+            ->orderBy('i.position', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $productsById = [];
+        foreach ($products as $product) {
+            if ($product->getId()) {
+                $productsById[$product->getId()] = $product;
+            }
+        }
+
+        return $productsById;
     }
 }

@@ -52,6 +52,7 @@
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ path('checkout_process') }}" id="checkoutForm">
+                            <input type="hidden" name="_token" value="{{ csrf_token('checkout_process') }}">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="customer_name" class="form-label">Nom complet *</label>
@@ -78,7 +79,7 @@
                             <input type="hidden" name="shipping_cost" value="{{ shipping }}">
 
                             <div class="form-check mb-4">
-                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <input class="form-check-input" type="checkbox" id="terms" name="terms" value="1" required>
                                 <label class="form-check-label" for="terms">
                                     J'accepte les conditions generales de vente *
                                 </label>

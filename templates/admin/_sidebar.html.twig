@@ -50,6 +50,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {{ current_route starts with 'admin_contact_' or current_route == 'admin_contacts' ? 'active' : '' }}" href="{{ path('admin_contacts') }}">
+                    <i class="fas fa-envelope"></i>
+                    Messages
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {{ current_route starts with 'admin_promotion_' ? 'active' : '' }}" href="{{ path('admin_promotion_index') }}">
                     <i class="fas fa-gift"></i>
                     Promotions

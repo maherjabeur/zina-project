@@ -34,6 +34,11 @@ class AdminProductImageController extends AbstractController
     #[Route('/{id}/images/add', name: 'admin_product_image_add', methods: ['POST'])]
     public function addImage(Product $product, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_product_image_add_' . $product->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_product_images', ['id' => $product->getId()]);
+        }
+
         $file = $request->files->get('file');
         $position = $request->request->get('position', 0);
         
@@ -57,9 +62,14 @@ class AdminProductImageController extends AbstractController
     }
 
     #[Route('/image/{id}/delete', name: 'admin_product_image_delete', methods: ['POST'])]
-    public function deleteImage(ProductImage $image, EntityManagerInterface $entityManager): Response
+    public function deleteImage(ProductImage $image, Request $request, EntityManagerInterface $entityManager): Response
     {
         $productId = $image->getProduct()->getId();
+
+        if (!$this->isCsrfTokenValid('admin_product_image_delete_' . $image->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_product_images', ['id' => $productId]);
+        }
         
         // Supprimer le fichier physique
         $this->productImageUploader->delete($image->getFilename());
@@ -74,8 +84,13 @@ class AdminProductImageController extends AbstractController
     }
 
     #[Route('/image/{id}/move-up', name: 'admin_product_image_move_up', methods: ['POST'])]
-    public function moveImageUp(ProductImage $image, EntityManagerInterface $entityManager): Response
+    public function moveImageUp(ProductImage $image, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_product_image_move_' . $image->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_product_images', ['id' => $image->getProduct()->getId()]);
+        }
+
         $currentPosition = $image->getPosition();
         $image->setPosition($currentPosition - 1);
         
@@ -85,8 +100,13 @@ class AdminProductImageController extends AbstractController
     }
 
     #[Route('/image/{id}/move-down', name: 'admin_product_image_move_down', methods: ['POST'])]
-    public function moveImageDown(ProductImage $image, EntityManagerInterface $entityManager): Response
+    public function moveImageDown(ProductImage $image, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_product_image_move_' . $image->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_product_images', ['id' => $image->getProduct()->getId()]);
+        }
+
         $currentPosition = $image->getPosition();
         $image->setPosition($currentPosition + 1);
         

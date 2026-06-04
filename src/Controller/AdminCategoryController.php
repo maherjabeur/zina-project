@@ -1,5 +1,5 @@
 <?php
-// src/Controller/AdminCategoryController.php
+
 namespace App\Controller;
 
 use App\Entity\Category;
@@ -7,12 +7,12 @@ use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 #[Route('/admin/categories')]
 #[IsGranted('ROLE_ADMIN')]
@@ -21,13 +21,9 @@ class AdminCategoryController extends AbstractController
     #[Route('/', name: 'admin_categories')]
     public function index(CategoryRepository $categoryRepository, OrderRepository $orderRepository): Response
     {
-        $categories = $categoryRepository->findWithProductCount();
-        $recentOrders = $orderRepository->findRecentOrders(10);
-
-        
         return $this->render('admin/categories/index.html.twig', [
-            'categories' => $categories,
-            'recentOrders' => $recentOrders,
+            'categories' => $categoryRepository->findWithProductCount(),
+            'recentOrders' => $orderRepository->findRecentOrders(10),
         ]);
     }
 
@@ -39,16 +35,14 @@ class AdminCategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Générer le slug si vide
             if (!$category->getSlug()) {
-                $slug = $slugger->slug($category->getName())->lower();
-                $category->setSlug($slug);
+                $category->setSlug($slugger->slug($category->getName())->lower());
             }
 
             $entityManager->persist($category);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Catégorie créée avec succès!');
+            $this->addFlash('success', 'Categorie creee avec succes!');
             return $this->redirectToRoute('admin_categories');
         }
 
@@ -64,15 +58,13 @@ class AdminCategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Générer le slug si vide
             if (!$category->getSlug()) {
-                $slug = $slugger->slug($category->getName())->lower();
-                $category->setSlug($slug);
+                $category->setSlug($slugger->slug($category->getName())->lower());
             }
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Catégorie modifiée avec succès!');
+            $this->addFlash('success', 'Categorie modifiee avec succes!');
             return $this->redirectToRoute('admin_categories');
         }
 
@@ -83,29 +75,38 @@ class AdminCategoryController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'admin_category_delete', methods: ['POST'])]
-    public function delete(Category $category, EntityManagerInterface $entityManager): Response
+    public function delete(Category $category, Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Vérifier s'il y a des produits dans cette catégorie
+        if (!$this->isCsrfTokenValid('admin_category_delete_' . $category->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_categories');
+        }
+
         if ($category->getProducts()->count() > 0) {
-            $this->addFlash('error', 'Impossible de supprimer cette catégorie car elle contient des produits.');
+            $this->addFlash('error', 'Impossible de supprimer cette categorie car elle contient des produits.');
             return $this->redirectToRoute('admin_categories');
         }
 
         $entityManager->remove($category);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Catégorie supprimée avec succès!');
+        $this->addFlash('success', 'Categorie supprimee avec succes!');
         return $this->redirectToRoute('admin_categories');
     }
 
     #[Route('/{id}/toggle', name: 'admin_category_toggle', methods: ['POST'])]
-    public function toggle(Category $category, EntityManagerInterface $entityManager): Response
+    public function toggle(Category $category, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_category_toggle_' . $category->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_categories');
+        }
+
         $category->setIsActive(!$category->isActive());
         $entityManager->flush();
 
-        $status = $category->isActive() ? 'activée' : 'désactivée';
-        $this->addFlash('success', "Catégorie {$status} avec succès!");
+        $status = $category->isActive() ? 'activee' : 'desactivee';
+        $this->addFlash('success', "Categorie {$status} avec succes!");
 
         return $this->redirectToRoute('admin_categories');
     }

@@ -104,6 +104,7 @@
                                                     </a>
                                                     <form method="POST" action="{{ path('admin_slider_toggle', {'id': sliderImage.id}) }}" 
                                                           class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_slider_toggle_' ~ sliderImage.id) }}">
                                                         <button type="submit" class="btn btn-{{ sliderImage.isActive ? 'warning' : 'success' }}" 
                                                                 title="{{ sliderImage.isActive ? 'Désactiver' : 'Activer' }}">
                                                             <i class="fas fa-{{ sliderImage.isActive ? 'pause' : 'play' }}"></i>
@@ -112,6 +113,7 @@
                                                     <form method="POST" action="{{ path('admin_slider_delete', {'id': sliderImage.id}) }}" 
                                                           onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette image du diaporama ?')"
                                                           class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_slider_delete_' ~ sliderImage.id) }}">
                                                         <button type="submit" class="btn btn-outline-danger" title="Supprimer">
                                                             <i class="fas fa-trash"></i>
                                                         </button>

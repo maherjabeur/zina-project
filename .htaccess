@@ -1,0 +1,19 @@
+DirectoryIndex public/index.php
+
+<FilesMatch "^(\.env|\.env\..*|composer\.(json|lock)|symfony\.lock|phpunit\.dist\.xml|compose.*\.ya?ml|importmap\.php|server-router\.php)$">
+    Require all denied
+</FilesMatch>
+
+RedirectMatch 404 ^/(bin|config|migrations|src|templates|tests|translations|var|vendor)(/|$)
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^$ public/ [L]
+
+    RewriteCond public/$1 -f [OR]
+    RewriteCond public/$1 -d
+    RewriteRule ^(.+)$ public/$1 [L]
+
+    RewriteRule ^ public/index.php [L]
+</IfModule>

@@ -68,7 +68,7 @@
                                             {% endif %}
                                             {{ category.name }}
                                         </span>
-                                        <span class="badge bg-light text-dark">{{ category.products|length }}</span>
+                                        <span class="badge bg-light text-dark">{{ categoryProductCounts[category.slug]|default(0) }}</span>
                                     </a>
                                 {% endfor %}
                             </div>

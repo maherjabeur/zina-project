@@ -42,8 +42,13 @@ class AdminContactController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'admin_contact_delete', methods: ['POST'])]
-    public function delete(Contact $contact, EntityManagerInterface $entityManager): Response
+    public function delete(Contact $contact, Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isCsrfTokenValid('admin_contact_delete_' . $contact->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('admin_contacts');
+        }
+
         $entityManager->remove($contact);
         $entityManager->flush();
 

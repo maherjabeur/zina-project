@@ -99,6 +99,7 @@
                         <div class="card-body">
                             <div class="d-grid gap-2">
                                 <form method="POST" action="{{ path('admin_size_toggle', {'id': size.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('admin_size_toggle_' ~ size.id) }}">
                                     <button type="submit" class="btn btn-{{ size.isActive ? 'warning' : 'success' }} w-100">
                                         <i class="fas fa-{{ size.isActive ? 'pause' : 'play' }}"></i>
                                         {{ size.isActive ? 'Désactiver' : 'Activer' }}
@@ -109,6 +110,7 @@
                                     <form method="POST" action="{{ path('admin_size_delete', {'id': size.id}) }}" 
                                           onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette taille ?')"
                                           class="d-inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_size_delete_' ~ size.id) }}">
                                         <button type="submit" class="btn btn-outline-danger w-100">
                                             <i class="fas fa-trash"></i> Supprimer
                                         </button>

@@ -27,19 +27,17 @@ class CartController extends AbstractController
         $total = 0;
         $totalDiscount = 0;
         $totalWithDiscount = 0;
+        $items = $this->getNormalizedCartItems($cart);
+        $productsById = $productRepository->findByIdsForCart(array_column($items, 'productId'));
+        $promotionsByProductId = $promotionRepository->findBestPromotionsForProducts($productsById);
 
-        foreach ($cart as $key => $rawItem) {
-            $item = $this->normalizeCartItem($key, $rawItem);
-            if (!$item) {
-                continue;
-            }
-
-            $product = $productRepository->find($item['productId']);
+        foreach ($items as $item) {
+            $product = $productsById[$item['productId']] ?? null;
             if (!$product) {
                 continue;
             }
 
-            $bestPromotion = $promotionRepository->findBestPromotionForProduct($product->getId());
+            $bestPromotion = $promotionsByProductId[$product->getId()] ?? null;
             $discount = 0;
             $discountedPrice = $product->getPrice();
 
@@ -78,9 +76,14 @@ class CartController extends AbstractController
         ]);
     }
 
-    #[Route('/cart/add/{id}', name: 'cart_add')]
+    #[Route('/cart/add/{id}', name: 'cart_add', methods: ['POST'])]
     public function add(Product $product, Request $request, SessionInterface $session): Response
     {
+        if (!$this->isCsrfTokenValid('cart_add_' . $product->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToReferer($request);
+        }
+
         if ((int) $product->getQuantity() <= 0) {
             $this->addFlash('warning', 'Ce produit est actuellement indisponible.');
             return $this->redirectToReferer($request);
@@ -140,9 +143,14 @@ class CartController extends AbstractController
         return $this->redirectToReferer($request);
     }
 
-    #[Route('/cart/remove/{key}', name: 'cart_remove', requirements: ['key' => '.+'])]
-    public function remove(string $key, SessionInterface $session): Response
+    #[Route('/cart/remove/{key}', name: 'cart_remove', requirements: ['key' => '.+'], methods: ['POST'])]
+    public function remove(string $key, Request $request, SessionInterface $session): Response
     {
+        if (!$this->isCsrfTokenValid('cart_remove_' . $key, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('cart');
+        }
+
         $cart = $session->get('cart', []);
 
         if (isset($cart[$key])) {
@@ -171,6 +179,13 @@ class CartController extends AbstractController
             return new JsonResponse(['success' => false], Response::HTTP_BAD_REQUEST);
         }
 
+        if (!$this->isCsrfTokenValid('cart_update', (string) ($data['_token'] ?? ''))) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Action non autorisee.',
+            ], Response::HTTP_FORBIDDEN);
+        }
+
         if ($quantity <= 0) {
             unset($cart[$cartKey]);
         } elseif (($item = $this->normalizeCartItem($cartKey, $cart[$cartKey])) && ($product = $productRepository->find($item['productId'])) && $quantity > (int) $product->getQuantity()) {
@@ -189,9 +204,14 @@ class CartController extends AbstractController
         return new JsonResponse(['success' => true]);
     }
 
-    #[Route('/cart/clear', name: 'cart_clear')]
-    public function clear(SessionInterface $session): Response
+    #[Route('/cart/clear', name: 'cart_clear', methods: ['POST'])]
+    public function clear(Request $request, SessionInterface $session): Response
     {
+        if (!$this->isCsrfTokenValid('cart_clear', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisee.');
+            return $this->redirectToRoute('cart');
+        }
+
         $session->remove('cart');
 
         $this->addFlash('success', 'Panier vide.');
@@ -206,14 +226,11 @@ class CartController extends AbstractController
         $cartData = [];
         $total = 0;
         $itemCount = 0;
+        $items = $this->getNormalizedCartItems($cart);
+        $productsById = $productRepository->findByIdsForCart(array_column($items, 'productId'));
 
-        foreach ($cart as $key => $rawItem) {
-            $item = $this->normalizeCartItem($key, $rawItem);
-            if (!$item) {
-                continue;
-            }
-
-            $product = $productRepository->find($item['productId']);
+        foreach ($items as $item) {
+            $product = $productsById[$item['productId']] ?? null;
             if (!$product) {
                 continue;
             }
@@ -235,6 +252,19 @@ class CartController extends AbstractController
             'total' => $total,
             'itemCount' => $itemCount,
         ]);
+    }
+
+    private function getNormalizedCartItems(array $cart): array
+    {
+        $items = [];
+        foreach ($cart as $key => $rawItem) {
+            $item = $this->normalizeCartItem($key, $rawItem);
+            if ($item) {
+                $items[] = $item;
+            }
+        }
+
+        return $items;
     }
 
     private function normalizeCartItem(string|int $key, mixed $rawItem): ?array

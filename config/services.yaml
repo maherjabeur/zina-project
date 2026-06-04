@@ -14,6 +14,7 @@ parameters:
     app.phpmailer_encryption: '%env(PHPMAILER_ENCRYPTION)%'
     app.phpmailer_auth: '%env(bool:PHPMAILER_AUTH)%'
     app.phpmailer_dry_run: '%env(bool:PHPMAILER_DRY_RUN)%'
+    app.critical_error_email: '%env(CRITICAL_ERROR_EMAIL)%'
 
 services:
     # default configuration for services in *this* file
@@ -58,6 +59,12 @@ services:
     App\Command\ConvertImagesToWebpCommand:
         arguments:
             $projectDir: '%kernel.project_dir%'
+
+    App\EventSubscriber\CriticalErrorAlertSubscriber:
+        arguments:
+            $alertRecipient: '%app.critical_error_email%'
+            $projectDir: '%kernel.project_dir%'
+            $environment: '%kernel.environment%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Product;
 use App\Entity\Promotion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -99,19 +100,64 @@ class PromotionRepository extends ServiceEntityRepository
     // Find the best promotion for a product
     public function findBestPromotionForProduct(int $productId): ?Promotion
     {
-        $promotions = $this->findActivePromotionsForProduct($productId);
+        $now = new \DateTimeImmutable();
 
-        if (empty($promotions)) {
-            return null;
+        return $this->createQueryBuilder('p')
+            ->where('p.product = :productId')
+            ->andWhere('p.isActive = :isActive')
+            ->andWhere('(p.startDate IS NULL OR p.startDate <= :now)')
+            ->andWhere('(p.endDate IS NULL OR p.endDate >= :now)')
+            ->setParameter('productId', $productId)
+            ->setParameter('isActive', true)
+            ->setParameter('now', $now)
+            ->orderBy('p.discount', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @param iterable<Product> $products
+     * @return array<int, Promotion>
+     */
+    public function findBestPromotionsForProducts(iterable $products): array
+    {
+        $productIds = [];
+        foreach ($products as $product) {
+            if ($product instanceof Product && $product->getId()) {
+                $productIds[] = $product->getId();
+            }
         }
 
-        // Return the promotion with the highest discount
-        return array_reduce($promotions, function ($best, $current) {
-            if ($best === null) {
-                return $current;
+        $productIds = array_values(array_unique($productIds));
+        if ($productIds === []) {
+            return [];
+        }
+
+        $now = new \DateTimeImmutable();
+        $promotions = $this->createQueryBuilder('p')
+            ->addSelect('prod')
+            ->join('p.product', 'prod')
+            ->where('prod.id IN (:productIds)')
+            ->andWhere('p.isActive = :isActive')
+            ->andWhere('(p.startDate IS NULL OR p.startDate <= :now)')
+            ->andWhere('(p.endDate IS NULL OR p.endDate >= :now)')
+            ->setParameter('productIds', $productIds)
+            ->setParameter('isActive', true)
+            ->setParameter('now', $now)
+            ->orderBy('p.discount', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        $bestByProductId = [];
+        foreach ($promotions as $promotion) {
+            $productId = $promotion->getProduct()->getId();
+            if ($productId && !isset($bestByProductId[$productId])) {
+                $bestByProductId[$productId] = $promotion;
             }
-            return $current->getDiscount() > $best->getDiscount() ? $current : $best;
-        });
+        }
+
+        return $bestByProductId;
     }
 
     // Count promotions by status

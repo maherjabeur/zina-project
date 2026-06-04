@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Repository\CategoryRepository;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ORM\Index(name: 'idx_category_active_position', columns: ['is_active', 'position'])]
 class Category
 {
     #[ORM\Id]
