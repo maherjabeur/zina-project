@@ -6,16 +6,16 @@
 					<div class="d-flex align-items-center">
 						<div class="flex-shrink-0">
 							{% if item.product.images|length > 0 %}
-								<img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" class="rounded" alt="{{ item.product.name }}" style="width: 40px; height: 40px; object-fit: cover;">
+								<img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" class="rounded" alt="{{ item.product|localized('name') }}" style="width: 40px; height: 40px; object-fit: cover;">
 							{% endif %}
 						</div>
 						<div class="flex-grow-1 ms-3">
-							<h6 class="mb-0 small">{{ item.product.name }}</h6>
+							<h6 class="mb-0 small">{{ item.product|localized('name') }}</h6>
 							<small class="text-muted d-block">
 								{{ item.quantity }} x {{ item.product.price }} Dt
 							</small>
 							<small class="text-muted d-block">
-								{{ item.size ?? 'Taille a choisir' }} - {{ item.color ?? 'Couleur a choisir' }}
+								{{ item.size ? item.product|localized_size(item.size) : 'Taille a choisir' }} - {{ item.color ? item.product|localized_color(item.color) : 'Couleur a choisir' }}
 							</small>
 						</div>
 					</div>

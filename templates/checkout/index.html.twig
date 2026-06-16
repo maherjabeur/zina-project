@@ -1,15 +1,49 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Commande - Bella Couture{% endblock %}
+{% block title %}{{ app.request.locale == 'ar' ? 'إتمام الطلب' : 'Commande' }} - Bella Couture{% endblock %}
 {% block robots %}noindex, nofollow{% endblock %}
-{% block canonical_url %}{{ app.request.schemeAndHttpHost ~ path('checkout') }}{% endblock %}
+{% block canonical_url %}{{ app.request.schemeAndHttpHost ~ path('checkout', {'locale': app.request.locale}) }}{% endblock %}
 
 {% block body %}
+    {% set is_ar = app.request.locale == 'ar' %}
+    {% set copy = {
+        kicker: is_ar ? 'المرحلة الأخيرة' : 'Derniere etape',
+        heading: is_ar ? 'إتمام الطلب' : 'Finaliser ma commande',
+        intro: is_ar ? 'أدخل معلومات التوصيل وسنؤكد طلبك بعناية.' : 'Renseignez vos informations de livraison. Nous confirmerons votre commande avec soin.',
+        orderedItems: is_ar ? 'المنتجات المطلوبة' : 'Articles commandes',
+        unavailableImage: is_ar ? 'الصورة غير متوفرة' : 'Image non disponible',
+        quantity: is_ar ? 'الكمية' : 'x',
+        size: is_ar ? 'المقاس' : 'Taille',
+        color: is_ar ? 'اللون' : 'Couleur',
+        shippingInfo: is_ar ? 'معلومات التوصيل' : 'Informations de livraison',
+        fullName: is_ar ? 'الاسم الكامل *' : 'Nom complet *',
+        phone: is_ar ? 'الهاتف *' : 'Telephone *',
+        phoneTitle: is_ar ? 'يرجى إدخال رقم هاتف صحيح من 8 أرقام' : 'Veuillez entrer un numero de telephone valide (8 chiffres)',
+        phoneHelp: is_ar ? 'الصيغة: 12345678' : 'Format : 12345678',
+        email: is_ar ? 'البريد الإلكتروني (اختياري)' : 'Email (optionnel)',
+        emailHelp: is_ar ? 'لاستلام تأكيد الطلب.' : 'Pour recevoir une confirmation de commande.',
+        address: is_ar ? 'عنوان التوصيل *' : 'Adresse de livraison *',
+        addressPlaceholder: is_ar ? 'الرقم، الشارع، المدينة...' : 'Numero, rue, ville...',
+        terms: is_ar ? 'أوافق على شروط البيع العامة *' : "J'accepte les conditions generales de vente *",
+        confirm: is_ar ? 'تأكيد الطلب' : 'Confirmer la commande',
+        backCart: is_ar ? 'العودة إلى السلة' : 'Retour panier',
+        orderSummary: is_ar ? 'طلبك' : 'Votre commande',
+        subtotal: is_ar ? 'المجموع الفرعي' : 'Sous-total',
+        reduction: is_ar ? 'التخفيض' : 'Reduction',
+        afterReduction: is_ar ? 'بعد التخفيض' : 'Apres reduction',
+        shipping: is_ar ? 'التوصيل' : 'Livraison',
+        total: is_ar ? 'المجموع' : 'Total',
+        secureTitle: is_ar ? 'طلب آمن' : 'Commande securisee',
+        secureText: is_ar ? 'تستعمل معلوماتك فقط لتحضير طلبك وتوصيله.' : 'Vos informations sont utilisees uniquement pour preparer et livrer votre commande.',
+        phoneError: is_ar ? 'يرجى إدخال رقم هاتف صحيح من 8 أرقام.' : 'Veuillez entrer un numero de telephone valide (8 chiffres).',
+        emailError: is_ar ? 'يرجى إدخال بريد إلكتروني صحيح أو ترك الحقل فارغا.' : 'Veuillez entrer un email valide ou laisser le champ vide.',
+        processing: is_ar ? 'جار معالجة الطلب...' : 'Traitement en cours...'
+    } %}
     <section class="bc-page-hero pb-3">
         <div class="container">
-            <span class="page-kicker">Derniere etape</span>
-            <h1 class="display-6 mb-2">Finaliser ma commande</h1>
-            <p class="section-subtitle mb-0">Renseignez vos informations de livraison. Nous confirmerons votre commande avec soin.</p>
+            <span class="page-kicker">{{ copy.kicker }}</span>
+            <h1 class="display-6 mb-2">{{ copy.heading }}</h1>
+            <p class="section-subtitle mb-0">{{ copy.intro }}</p>
         </div>
     </section>
 
@@ -22,21 +56,25 @@
             <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0">Articles commandes</h5>
+                        <h5 class="mb-0">{{ copy.orderedItems }}</h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex flex-column gap-3">
                             {% for item in cartData %}
                                 <div class="checkout-line d-flex align-items-center gap-3 pb-3 border-bottom">
                                     {% if item.product.images|length > 0 %}
-                                        <img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" alt="{{ item.product.name }}">
+                                        <img src="{{ asset('uploads/products/' ~ item.product.images.first.filename) }}" alt="{{ item.product|localized('name') }}">
                                     {% else %}
-                                        <img src="{{ asset('images/placeholder.webp') }}" alt="Image non disponible">
+                                        <img src="{{ asset('images/placeholder.webp') }}" alt="{{ copy.unavailableImage }}">
                                     {% endif %}
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-1">{{ item.product.name }}</h6>
+                                        <h6 class="mb-1">{{ item.product|localized('name') }}</h6>
                                         <p class="text-muted small mb-0">
-                                            x{{ item.quantity }} - Taille {{ item.size }} - Couleur {{ item.color }}
+                                            {% if is_ar %}
+                                                {{ copy.quantity }} {{ item.quantity }} - {{ copy.size }} {{ item.size ? item.product|localized_size(item.size) : '' }} - {{ copy.color }} {{ item.color ? item.product|localized_color(item.color) : '' }}
+                                            {% else %}
+                                                x{{ item.quantity }} - {{ copy.size }} {{ item.size ? item.product|localized_size(item.size) : '' }} - {{ copy.color }} {{ item.color ? item.product|localized_color(item.color) : '' }}
+                                            {% endif %}
                                         </p>
                                     </div>
                                     <strong>{{ (item.discountedPrice * item.quantity)|number_format(2) }} DT</strong>
@@ -48,32 +86,33 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Informations de livraison</h5>
+                        <h5 class="mb-0">{{ copy.shippingInfo }}</h5>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ path('checkout_process') }}" id="checkoutForm">
+                        <form method="POST" action="{{ path('checkout_process', {'locale': app.request.locale}) }}" id="checkoutForm">
                             <input type="hidden" name="_token" value="{{ csrf_token('checkout_process') }}">
+                            <input type="hidden" name="locale" value="{{ app.request.locale }}">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="customer_name" class="form-label">Nom complet *</label>
+                                    <label for="customer_name" class="form-label">{{ copy.fullName }}</label>
                                     <input type="text" class="form-control" id="customer_name" name="customer_name" autocomplete="name" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="customer_phone" class="form-label">Telephone *</label>
-                                    <input type="tel" class="form-control" id="customer_phone" name="customer_phone" inputmode="numeric" pattern="[0-9]{8}" title="Veuillez entrer un numero de telephone valide (8 chiffres)" autocomplete="tel" required>
-                                    <div class="form-text">Format : 12345678</div>
+                                    <label for="customer_phone" class="form-label">{{ copy.phone }}</label>
+                                    <input type="tel" class="form-control" id="customer_phone" name="customer_phone" inputmode="numeric" pattern="[0-9]{8}" title="{{ copy.phoneTitle }}" autocomplete="tel" required>
+                                    <div class="form-text">{{ copy.phoneHelp }}</div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="customer_email" class="form-label">Email (optionnel)</label>
+                                <label for="customer_email" class="form-label">{{ copy.email }}</label>
                                 <input type="email" class="form-control" id="customer_email" name="customer_email" placeholder="email@exemple.com" autocomplete="email">
-                                <div class="form-text">Pour recevoir une confirmation de commande.</div>
+                                <div class="form-text">{{ copy.emailHelp }}</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="shipping_address" class="form-label">Adresse de livraison *</label>
-                                <textarea class="form-control" id="shipping_address" name="shipping_address" rows="4" placeholder="Numero, rue, ville..." autocomplete="street-address" required></textarea>
+                                <label for="shipping_address" class="form-label">{{ copy.address }}</label>
+                                <textarea class="form-control" id="shipping_address" name="shipping_address" rows="4" placeholder="{{ copy.addressPlaceholder }}" autocomplete="street-address" required></textarea>
                             </div>
 
                             <input type="hidden" name="shipping_cost" value="{{ shipping }}">
@@ -81,16 +120,16 @@
                             <div class="form-check mb-4">
                                 <input class="form-check-input" type="checkbox" id="terms" name="terms" value="1" required>
                                 <label class="form-check-label" for="terms">
-                                    J'accepte les conditions generales de vente *
+                                    {{ copy.terms }}
                                 </label>
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex">
                                 <button type="submit" class="btn btn-primary btn-lg flex-grow-1" id="payButton">
-                                    <i class="fas fa-check me-2"></i> Confirmer la commande
+                                    <i class="fas fa-check me-2"></i> {{ copy.confirm }}
                                 </button>
                                 <a href="{{ path('cart') }}" class="btn btn-outline-primary btn-lg">
-                                    Retour panier
+                                    {{ copy.backCart }}
                                 </a>
                             </div>
                         </form>
@@ -101,39 +140,39 @@
             <aside class="col-lg-4">
                 <div class="card summary-card">
                     <div class="card-header">
-                        <h5 class="mb-0">Votre commande</h5>
+                        <h5 class="mb-0">{{ copy.orderSummary }}</h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Sous-total</span>
+                            <span>{{ copy.subtotal }}</span>
                             <span>{{ total|number_format(2) }} DT</span>
                         </div>
                         {% if totalDiscount > 0 %}
                             <div class="d-flex justify-content-between mb-2 text-success">
-                                <span>Reduction</span>
+                                <span>{{ copy.reduction }}</span>
                                 <span>-{{ totalDiscount|number_format(2) }} DT</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Apres reduction</span>
+                                <span>{{ copy.afterReduction }}</span>
                                 <span>{{ baseAmount|number_format(2) }} DT</span>
                             </div>
                         {% endif %}
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Livraison</span>
+                            <span>{{ copy.shipping }}</span>
                             <span>{{ shipping|number_format(2) }} DT</span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <strong>Total</strong>
+                            <strong>{{ copy.total }}</strong>
                             <strong class="summary-total" id="totalSidebar">{{ totalWithShipping|number_format(2) }} DT</strong>
                         </div>
 
                         <div class="alert alert-light border small rounded-3">
                             <div class="d-flex align-items-center mb-2">
                                 <i class="fas fa-lock text-success me-2"></i>
-                                <strong>Commande securisee</strong>
+                                <strong>{{ copy.secureTitle }}</strong>
                             </div>
-                            <p class="mb-0">Vos informations sont utilisees uniquement pour preparer et livrer votre commande.</p>
+                            <p class="mb-0">{{ copy.secureText }}</p>
                         </div>
                     </div>
                 </div>
@@ -146,8 +185,14 @@
             const form = document.getElementById('checkoutForm');
             const submitButton = document.getElementById('payButton');
             const totalWithShipping = {{ totalWithShipping }};
+            const checkoutCopy = {
+                confirm: {{ copy.confirm|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }},
+                phoneError: {{ copy.phoneError|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }},
+                emailError: {{ copy.emailError|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }},
+                processing: {{ copy.processing|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }}
+            };
 
-            submitButton.innerHTML = `<i class="fas fa-check me-2"></i> Confirmer ${totalWithShipping.toFixed(2)} DT`;
+            submitButton.innerHTML = `<i class="fas fa-check me-2"></i> ${checkoutCopy.confirm} ${totalWithShipping.toFixed(2)} DT`;
 
             document.getElementById('customer_phone').addEventListener('input', function () {
                 this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);
@@ -159,19 +204,19 @@
 
                 if (phone.length !== 8) {
                     event.preventDefault();
-                    alert('Veuillez entrer un numero de telephone valide (8 chiffres).');
+                    alert(checkoutCopy.phoneError);
                     return;
                 }
 
                 if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                     event.preventDefault();
-                    alert('Veuillez entrer un email valide ou laisser le champ vide.');
+                    alert(checkoutCopy.emailError);
                     return;
                 }
 
                 if (form.checkValidity()) {
                     submitButton.disabled = true;
-                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Traitement en cours...';
+                    submitButton.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i> ${checkoutCopy.processing}`;
                 }
             });
         });

@@ -191,8 +191,16 @@
                             </thead>
                             <tbody>
                                 {% for order in recentOrders %}
-                                    <tr>
-                                        <td><strong>{{ order.orderNumber }}</strong></td>
+                                    <tr class="{{ order.isNew ? 'new-order-row' : '' }}">
+                                        <td>
+                                            <strong>{{ order.orderNumber }}</strong>
+                                            {% if order.isNew %}
+                                                <span class="new-order-badge" title="{{ app.request.locale == 'ar' ? 'طلب جديد' : 'Nouvelle commande' }}">
+                                                    <i class="fas fa-bell"></i>
+                                                    {{ app.request.locale == 'ar' ? 'جديد' : 'Nouveau' }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
                                         <td>{{ order.customerName }}</td>
                                         <td>{{ order.total|number_format(2) }} DT</td>
                                         <td>

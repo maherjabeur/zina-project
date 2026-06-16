@@ -52,9 +52,9 @@ class ProductRepository extends ServiceEntityRepository
     public function findSearchSuggestions(string $query, int $limit = 5): array
     {
         return $this->createQueryBuilder('p')
-            ->select('p.name')
+            ->select('p.name, p.nameAr')
             ->where('p.isActive = :active')
-            ->andWhere('LOWER(p.name) LIKE LOWER(:query)')
+            ->andWhere('LOWER(p.name) LIKE LOWER(:query) OR LOWER(p.nameAr) LIKE LOWER(:query)')
             ->setParameter('active', true)
             ->setParameter('query', '%' . $query . '%')
             ->groupBy('p.name')
@@ -129,8 +129,13 @@ class ProductRepository extends ServiceEntityRepository
         $qb->andWhere(
             $qb->expr()->orX(
                 $qb->expr()->like('LOWER(p.name)', 'LOWER(:query)'),
+                $qb->expr()->like('LOWER(p.nameAr)', 'LOWER(:query)'),
                 $qb->expr()->like('LOWER(p.description)', 'LOWER(:query)'),
-                $qb->expr()->like('LOWER(p.color)', 'LOWER(:query)')
+                $qb->expr()->like('LOWER(p.descriptionAr)', 'LOWER(:query)'),
+                $qb->expr()->like('LOWER(p.color)', 'LOWER(:query)'),
+                $qb->expr()->like('LOWER(p.colorAr)', 'LOWER(:query)'),
+                $qb->expr()->like('LOWER(c.name)', 'LOWER(:query)'),
+                $qb->expr()->like('LOWER(c.nameAr)', 'LOWER(:query)')
             )
         )
             ->setParameter('query', '%' . $query . '%');

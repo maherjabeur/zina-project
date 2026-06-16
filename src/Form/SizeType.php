@@ -23,6 +23,15 @@ class SizeType extends AbstractType
                     'placeholder' => 'Ex: Small, Medium, 38, 40...'
                 ]
             ])
+            ->add('nameAr', TextType::class, [
+                'label' => 'Nom de la taille (AR) *',
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'مثال: صغير، متوسط، 38، 40...',
+                    'dir' => 'rtl'
+                ]
+            ])
             ->add('code', TextType::class, [
                 'label' => 'Code *',
                 'attr' => [

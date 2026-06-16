@@ -43,10 +43,10 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <h5 class="mb-1">{{ item.product.name }}</h5>
+                                        <h5 class="mb-1">{{ item.product|localized('name') }}</h5>
                                         <div class="d-flex flex-wrap gap-1">
-                                            <span class="badge bg-primary">Taille: {{ item.size ?? 'A choisir' }}</span>
-                                            <span class="badge bg-info text-dark">Couleur: {{ item.color ?? 'A choisir' }}</span>
+                                            <span class="badge bg-primary">Taille: {{ item.size ? item.product|localized_size(item.size) : 'A choisir' }}</span>
+                                            <span class="badge bg-info text-dark">Couleur: {{ item.color ? item.product|localized_color(item.color) : 'A choisir' }}</span>
                                             {% if item.size is empty or item.color is empty %}
                                                 <a href="{{ path('product_detail', {'id': item.product.id}) }}" class="badge bg-warning text-dark text-decoration-none">Completer</a>
                                             {% endif %}
@@ -126,7 +126,7 @@
                             {% endif %}
 
                             <div class="d-grid gap-2">
-                                <a href="{{ path('checkout') }}" class="btn btn-primary btn-lg">
+                                <a href="{{ path('checkout', {'locale': app.request.locale}) }}" class="btn btn-primary btn-lg">
                                     Commander
                                 </a>
                                 <a href="{{ path('products') }}" class="btn btn-outline-primary">

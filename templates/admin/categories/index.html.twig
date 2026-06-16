@@ -73,10 +73,10 @@
                                                     {% if category.icon %}
                                                         <i class="{{ category.icon }} me-2" style="color: {{ category.color ?? '#6c757d' }}"></i>
                                                     {% endif %}
-                                                    <strong>{{ category.name }}</strong>
+                                                    <strong>{{ category|localized('name') }}</strong>
                                                 </div>
                                                 {% if category.description %}
-                                                    <small class="text-muted">{{ category.description|slice(0, 50) }}...</small>
+                                                    <small class="text-muted">{{ category|localized('description')|slice(0, 50) }}...</small>
                                                 {% endif %}
                                             </td>
                                             <td>

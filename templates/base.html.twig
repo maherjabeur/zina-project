@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app.request.locale }}" dir="{{ app.request.locale == 'ar' ? 'rtl' : 'ltr' }}">
     {% set current_route = app.request.attributes.get('_route')|default('') %}
     {% set is_admin_area = current_route starts with 'admin_' %}
     {% set settings = site_settings() %}
-    {% set default_seo_title = settings and settings.seoTitle ? settings.seoTitle : 'Bella Couture - Mode feminine elegante' %}
-    {% set default_seo_description = settings and settings.seoDescription ? settings.seoDescription : 'Boutique de mode feminine a Sousse: vetements elegants, collections tendance, tailles et couleurs au choix avec livraison en Tunisie.' %}
-    {% set default_seo_keywords = settings and settings.seoKeywords ? settings.seoKeywords : 'mode feminine, boutique femme, vetements femme, Bella Couture, Sousse, Tunisie' %}
+    {% set default_seo_title = settings and settings|localized('seoTitle') ? settings|localized('seoTitle') : 'Bella Couture - Mode feminine elegante' %}
+    {% set default_seo_description = settings and settings|localized('seoDescription') ? settings|localized('seoDescription') : 'Boutique de mode feminine a Sousse: vetements elegants, collections tendance, tailles et couleurs au choix avec livraison en Tunisie.' %}
+    {% set default_seo_keywords = settings and settings|localized('seoKeywords') ? settings|localized('seoKeywords') : 'mode feminine, boutique femme, vetements femme, Bella Couture, Sousse, Tunisie' %}
     {% set default_seo_author = settings and settings.seoAuthor ? settings.seoAuthor : 'Bella Couture' %}
     {% set default_seo_image = settings and settings.seoImage ? settings.seoImage : 'logo/logo.webp' %}
     {% set default_robots = is_admin_area or (settings and not settings.seoIndexingEnabled) ? 'noindex, nofollow' : 'index, follow' %}
@@ -27,7 +27,7 @@
         <meta name="author" content="{{ default_seo_author }}">
         <meta name="robots" content="{{ seo_robots|striptags|trim }}">
         <link rel="canonical" href="{{ seo_canonical|striptags|trim }}">
-        <meta property="og:locale" content="fr_TN">
+        <meta property="og:locale" content="{{ app.request.locale == 'ar' ? 'ar_TN' : 'fr_TN' }}">
         <meta property="og:type" content="{{ seo_type|striptags|trim }}">
         <meta property="og:site_name" content="Bella Couture">
         <meta property="og:title" content="{{ seo_title }}">
@@ -38,6 +38,7 @@
         <meta name="twitter:title" content="{{ seo_title }}">
         <meta name="twitter:description" content="{{ seo_description|striptags|trim }}">
         <meta name="twitter:image" content="{{ seo_image_url }}">
+        <link rel="icon" href="{{ asset('logo/logo.png') }}" />
         {% block structured_data %}
             {% if not is_admin_area %}
                 <script type="application/ld+json">
@@ -76,8 +77,7 @@
         {% endblock %}
         <title>{% block title %}{{ default_seo_title }}{% endblock %}</title>
         <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+        <link href="{{ asset('css/all.min.css') }}" rel="stylesheet">
         <style>
             .bella-page-loader {
                 position: fixed;
@@ -89,8 +89,9 @@
                 background:
                     linear-gradient(135deg, rgba(255, 247, 249, 0.98) 0%, rgba(255, 255, 255, 0.97) 48%, rgba(247, 238, 242, 0.98) 100%);
                 color: #2f2430;
-                opacity: 1;
-                visibility: visible;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
                 transition: opacity 0.35s ease, visibility 0.35s ease;
             }
 
@@ -327,16 +328,86 @@
                     border-radius: 16px;
                 }
             }
+
+            .language-switcher {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                padding: 0.2rem;
+                border: 1px solid rgba(178, 58, 99, 0.18);
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.76);
+            }
+
+            .language-switcher a {
+                min-width: 2.25rem;
+                padding: 0.28rem 0.58rem;
+                border-radius: 999px;
+                color: #5d4754;
+                font-size: 0.78rem;
+                font-weight: 850;
+                line-height: 1;
+                text-align: center;
+                text-decoration: none;
+            }
+
+            .language-switcher a.active {
+                background: #b23a63;
+                color: #fff;
+            }
+
+            html[dir="rtl"] body {
+                text-align: right;
+            }
+
+            html[dir="rtl"] .navbar-nav,
+            html[dir="rtl"] .admin-topbar-actions,
+            html[dir="rtl"] .d-flex {
+                direction: rtl;
+            }
+
+            html[dir="rtl"] .dropdown-menu {
+                text-align: right;
+            }
+
+            html[dir="rtl"] .me-1,
+            html[dir="rtl"] .me-2,
+            html[dir="rtl"] .me-3 {
+                margin-right: 0 !important;
+            }
+
+            html[dir="rtl"] .me-1 {
+                margin-left: 0.25rem !important;
+            }
+
+            html[dir="rtl"] .me-2 {
+                margin-left: 0.5rem !important;
+            }
+
+            html[dir="rtl"] .me-3 {
+                margin-left: 1rem !important;
+            }
+
+            html[dir="rtl"] .ms-auto {
+                margin-left: 0 !important;
+                margin-right: auto !important;
+            }
         </style>
         {% if is_admin_area %}
-            <link href="{{ asset('css/admin-ux.css') }}?v=admin-fem-5" rel="stylesheet">
+            <link href="{{ asset('css/select2.min.css') }}?v=select2-admin-1" rel="stylesheet">
+            <link href="{{ asset('css/admin-ux.css') }}?v=admin-fem-7" rel="stylesheet">
         {% else %}
-            <link href="{{ asset('css/front-ux.css') }}?v=front-mobile-3" rel="stylesheet">
+            <link href="{{ asset('css/front-ux.css') }}?v=front-mobile-4" rel="stylesheet">
+        {% endif %}
+        {% if app.request.locale == 'ar' %}
+            <link href="{{ asset('css/rtl.css') }}?v=rtl-1" rel="stylesheet">
         {% endif %}
         {% block stylesheets %}{% endblock %}
     </head>
-    <body class="{{ is_admin_area ? 'admin-shell' : 'front-shell' }}">
-        <div id="bellaPageLoader" class="bella-page-loader" role="status" aria-live="polite" aria-label="Chargement">
+    <body class="{{ is_admin_area ? 'admin-shell' : 'front-shell' }} {{ app.request.locale == 'ar' ? 'rtl-locale' : 'ltr-locale' }}">
+        {% set locale_query_ar = app.request.query.all|merge({'locale': 'ar'}) %}
+        {% set locale_query_fr = app.request.query.all|merge({'locale': 'fr'}) %}
+        <div id="bellaPageLoader" class="bella-page-loader is-hidden" role="status" aria-live="polite" aria-label="Chargement">
             <div class="bella-loader-content">
                 <div class="bella-loader-mark">
                     <img src="{{ asset('logo/logo.webp') }}" alt="Bella Couture">
@@ -347,6 +418,30 @@
                 <span class="bella-loader-note">Nouvelle allure en cours</span>
             </div>
         </div>
+        <script>
+            (function () {
+                var loader = document.getElementById('bellaPageLoader');
+                if (!loader) return;
+
+                function hideLoader(delay) {
+                    window.setTimeout(function () {
+                        loader.classList.add('is-hidden');
+                        loader.classList.remove('is-active');
+                        document.body.classList.remove('bella-loader-lock');
+                    }, delay || 0);
+                }
+
+                if (document.readyState === 'interactive' || document.readyState === 'complete') {
+                    hideLoader(120);
+                } else {
+                    document.addEventListener('DOMContentLoaded', function () { hideLoader(120); }, { once: true });
+                    window.addEventListener('load', function () { hideLoader(120); }, { once: true });
+                    window.addEventListener('pageshow', function () { hideLoader(120); });
+                }
+
+                window.setTimeout(function () { hideLoader(0); }, 3000);
+            })();
+        </script>
 
         {% if is_admin_area %}
         <nav class="admin-topbar">
@@ -357,6 +452,10 @@
                 </a>
 
                 <div class="admin-topbar-actions">
+                    <div class="language-switcher" aria-label="Langue">
+                        <a href="{{ path(current_route, app.request.attributes.get('_route_params')|default({})|merge(locale_query_ar)) }}" class="{{ app.request.locale == 'ar' ? 'active' : '' }}" lang="ar" hreflang="ar" data-turbo="false">{{ app.request.locale == 'ar' ? 'العربية' : 'AR' }}</a>
+                        <a href="{{ path(current_route, app.request.attributes.get('_route_params')|default({})|merge(locale_query_fr)) }}" class="{{ app.request.locale == 'fr' ? 'active' : '' }}" lang="fr" hreflang="fr" data-turbo="false">{{ app.request.locale == 'ar' ? 'الفرنسية' : 'FR' }}</a>
+                    </div>
                     <a class="btn btn-outline-secondary btn-sm" href="{{ path('home') }}" target="_blank">
                         <i class="fas fa-store me-1"></i> Voir la boutique
                     </a>
@@ -393,6 +492,11 @@
                             <span class="badge">{{ cart_count }}</span>
                         {% endif %}
                     </a>
+                </div>
+
+                <div class="language-switcher order-lg-3 ms-2" aria-label="Langue">
+                    <a href="{{ path(current_route, app.request.attributes.get('_route_params')|default({})|merge(locale_query_ar)) }}" class="{{ app.request.locale == 'ar' ? 'active' : '' }}" lang="ar" hreflang="ar" data-turbo="false">{{ app.request.locale == 'ar' ? 'العربية' : 'AR' }}</a>
+                    <a href="{{ path(current_route, app.request.attributes.get('_route_params')|default({})|merge(locale_query_fr)) }}" class="{{ app.request.locale == 'fr' ? 'active' : '' }}" lang="fr" hreflang="fr" data-turbo="false">{{ app.request.locale == 'ar' ? 'الفرنسية' : 'FR' }}</a>
                 </div>
 
                 <button class="navbar-toggler order-lg-4" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Menu">
@@ -528,7 +632,87 @@
 
         <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+        {% if is_admin_area %}
+            <script src="{{ asset('js/select2.min.js') }}?v=select2-admin-1"></script>
+        {% endif %}
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if is_admin_area %}
+        <script>
+            (function () {
+                const isArabic = {{ app.request.locale == 'ar' ? 'true' : 'false' }};
+                const select2Copy = isArabic ? {
+                    placeholder: 'اختر...',
+                    noResults: 'لا توجد نتائج',
+                    searching: 'جاري البحث...',
+                    removeAll: 'إفراغ الاختيار',
+                    removeItem: 'إزالة',
+                    search: 'بحث'
+                } : {
+                    placeholder: 'Selectionner...',
+                    noResults: 'Aucun resultat',
+                    searching: 'Recherche...',
+                    removeAll: 'Vider la selection',
+                    removeItem: 'Retirer',
+                    search: 'Rechercher'
+                };
+
+                window.initBellaSelect2 = function (root) {
+                    if (!window.jQuery || !window.jQuery.fn || !window.jQuery.fn.select2) {
+                        return;
+                    }
+
+                    const $ = window.jQuery;
+                    const context = root || document;
+                    const dir = document.documentElement.getAttribute('dir') === 'rtl' ? 'rtl' : 'ltr';
+
+                    $(context).find('select.form-select, select.form-control, select.product-size-select, select.js-select2')
+                        .addBack('select.form-select, select.form-control, select.product-size-select, select.js-select2')
+                        .not('.form-select-sm')
+                        .not('[data-no-select2]')
+                        .not(function () {
+                            return $(this).closest('table, .table-responsive, .input-group').length > 0;
+                        })
+                        .each(function () {
+                            const $select = $(this);
+                            const isMultiple = $select.prop('multiple');
+                            const hasEmptyOption = $select.find('option[value=""]').length > 0;
+                            const placeholder = $select.data('placeholder') || select2Copy.placeholder;
+
+                            if ($select.data('select2')) {
+                                $select.select2('destroy');
+                            }
+
+                            $select.select2({
+                                width: '100%',
+                                dir: dir,
+                                closeOnSelect: !isMultiple,
+                                placeholder: placeholder,
+                                allowClear: isMultiple || (!$select.prop('required') && hasEmptyOption),
+                                language: {
+                                    noResults: function () { return select2Copy.noResults; },
+                                    searching: function () { return select2Copy.searching; },
+                                    removeAllItems: function () { return select2Copy.removeAll; },
+                                    removeItem: function () { return select2Copy.removeItem; },
+                                    search: function () { return select2Copy.search; }
+                                }
+                            });
+                        });
+                };
+
+                function init() {
+                    window.initBellaSelect2(document);
+                }
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', init);
+                } else {
+                    init();
+                }
+
+                document.addEventListener('turbo:load', init);
+            })();
+        </script>
+        {% endif %}
         <script>
             (function () {
                 const loader = document.getElementById('bellaPageLoader');
@@ -645,19 +829,120 @@
         </script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                const isArabic = {{ app.request.locale == 'ar' ? 'true' : 'false' }};
+                const alertCopy = isArabic ? {
+                    info: 'معلومة',
+                    success: 'نجاح',
+                    error: 'خطأ',
+                    warning: 'تنبيه',
+                    question: 'تأكيد',
+                    ok: 'حسنا'
+                } : {
+                    info: 'Information',
+                    success: 'Succes',
+                    error: 'Erreur',
+                    warning: 'Attention',
+                    question: 'Confirmation',
+                    ok: 'OK'
+                };
+                const arabicFlashMessages = {
+                    'Action non autorisee.': 'عملية غير مسموح بها.',
+                    'Statut invalide': 'الحالة غير صالحة.',
+                    'Statut de commande mis à jour!': 'تم تحديث حالة الطلب!',
+                    'Statut de commande mis a jour!': 'تم تحديث حالة الطلب!',
+                    'Commande supprimée avec succès!': 'تم حذف الطلب بنجاح!',
+                    'Commande supprimee avec succes!': 'تم حذف الطلب بنجاح!',
+                    'Produit créé avec succès!': 'تم إنشاء المنتج بنجاح!',
+                    'Produit cree avec succes!': 'تم إنشاء المنتج بنجاح!',
+                    'Produit modifié avec succès!': 'تم تعديل المنتج بنجاح!',
+                    'Produit modifie avec succes!': 'تم تعديل المنتج بنجاح!',
+                    'Produit supprimé avec succès!': 'تم حذف المنتج بنجاح!',
+                    'Produit supprime avec succes!': 'تم حذف المنتج بنجاح!',
+                    'Image ajoutée avec succès!': 'تمت إضافة الصورة بنجاح!',
+                    'Image supprimée avec succès!': 'تم حذف الصورة بنجاح!',
+                    'Veuillez sélectionner une image.': 'يرجى اختيار صورة.',
+                    'Promotion créée avec succès!': 'تم إنشاء العرض بنجاح!',
+                    'Promotion modifiée avec succès!': 'تم تعديل العرض بنجاح!',
+                    'Promotion supprimée avec succès!': 'تم حذف العرض بنجاح!',
+                    'Categorie creee avec succes!': 'تم إنشاء القسم بنجاح!',
+                    'Categorie modifiee avec succes!': 'تم تعديل القسم بنجاح!',
+                    'Categorie supprimee avec succes!': 'تم حذف القسم بنجاح!',
+                    'Taille creee avec succes!': 'تم إنشاء المقاس بنجاح!',
+                    'Taille modifiee avec succes!': 'تم تعديل المقاس بنجاح!',
+                    'Taille supprimee avec succes!': 'تم حذف المقاس بنجاح!',
+                    'Produit retire du panier.': 'تم حذف المنتج من السلة.',
+                    'Panier vide.': 'تم إفراغ السلة.',
+                    'Votre panier est vide.': 'سلتك فارغة.',
+                    'Ce produit est actuellement indisponible.': 'هذا المنتج غير متوفر حاليا.',
+                    'Veuillez choisir une taille disponible avant d ajouter ce produit.': 'يرجى اختيار مقاس متاح قبل إضافة هذا المنتج.',
+                    'Veuillez choisir une couleur disponible avant d ajouter ce produit.': 'يرجى اختيار لون متاح قبل إضافة هذا المنتج.',
+                    'Veuillez remplir tous les champs obligatoires.': 'يرجى تعمير كل الحقول الإجبارية.',
+                    'Veuillez accepter les conditions generales de vente.': 'يرجى قبول شروط البيع العامة.',
+                    'Veuillez entrer un numero de telephone valide (8 chiffres).': 'يرجى إدخال رقم هاتف صحيح من 8 أرقام.',
+                    'Veuillez entrer un email valide ou laisser le champ vide.': 'يرجى إدخال بريد إلكتروني صحيح أو ترك الحقل فارغا.',
+                    'Votre commande a ete passee avec succes !': 'تم تسجيل طلبك بنجاح!',
+                    'Votre commande a été passée avec succès !': 'تم تسجيل طلبك بنجاح!',
+                    'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.': 'تم إرسال رسالتك بنجاح! سنرد عليك في أقرب وقت.',
+                    'Votre message a été enregistré ! Nous vous contacterons rapidement.': 'تم تسجيل رسالتك! سنتصل بك قريبا.',
+                    'Les parametres ont ete mis a jour avec succes.': 'تم تحديث الإعدادات بنجاح.',
+                    'Retirer ce produit du panier ?': 'هل تريد حذف هذا المنتج من السلة؟',
+                    'Supprimer ce message ?': 'هل تريد حذف هذه الرسالة؟',
+                    'Êtes-vous sûr de vouloir supprimer cette commande ?': 'هل أنت متأكد من حذف هذا الطلب؟',
+                    'Êtes-vous sûr de vouloir supprimer ce produit ?': 'هل أنت متأكد من حذف هذا المنتج؟',
+                    'Êtes-vous sûr de vouloir supprimer cette image ?': 'هل أنت متأكد من حذف هذه الصورة؟',
+                    'Êtes-vous sûr de vouloir supprimer cette image du diaporama ?': 'هل أنت متأكد من حذف هذه الصورة من العرض؟',
+                    'Êtes-vous sûr de vouloir supprimer cette catégorie ?': 'هل أنت متأكد من حذف هذا القسم؟',
+                    'Êtes-vous sûr de vouloir supprimer cette taille ?': 'هل أنت متأكد من حذف هذا المقاس؟',
+                    'Êtes-vous sûr de vouloir supprimer cette promotion ?': 'هل أنت متأكد من حذف هذا العرض؟'
+                };
+
+                function translateFlashMessage(message) {
+                    if (!isArabic) {
+                        return message;
+                    }
+
+                    const text = String(message || '');
+                    if (arabicFlashMessages[text]) {
+                        return arabicFlashMessages[text];
+                    }
+
+                    const prefixMap = [
+                        ['Erreur lors de la suppression de la commande:', 'حدث خطأ أثناء حذف الطلب:'],
+                        ['Erreur lors de la suppression du produit:', 'حدث خطأ أثناء حذف المنتج:'],
+                        ['Erreur lors de la suppression de la promotion:', 'حدث خطأ أثناء حذف العرض:'],
+                        ["Commande mise à jour mais erreur lors de l'envoi de l'email:", 'تم تحديث الطلب لكن حدث خطأ أثناء إرسال البريد:'],
+                        ["Commande mise a jour mais erreur lors de l'envoi de l'email:", 'تم تحديث الطلب لكن حدث خطأ أثناء إرسال البريد:']
+                    ];
+
+                    for (const pair of prefixMap) {
+                        if (text.startsWith(pair[0])) {
+                            return pair[1] + text.slice(pair[0].length);
+                        }
+                    }
+
+                    return text;
+                }
+
+                if (isArabic && typeof window.confirm === 'function') {
+                    const nativeConfirm = window.confirm.bind(window);
+                    window.confirm = function (message) {
+                        return nativeConfirm(translateFlashMessage(message));
+                    };
+                }
+
                 const flashes = [
                     {% for label, messages in app.flashes %}
                         {% set normalized_label = label == 'danger' ? 'error' : (label == 'notice' ? 'info' : label) %}
                         {% set alert_icon = normalized_label in ['success', 'error', 'warning', 'info', 'question'] ? normalized_label : 'info' %}
-                        {% set alert_title = 'Information' %}
+                        {% set alert_title = app.request.locale == 'ar' ? 'معلومة' : 'Information' %}
                         {% if alert_icon == 'success' %}
-                            {% set alert_title = 'Succes' %}
+                            {% set alert_title = app.request.locale == 'ar' ? 'نجاح' : 'Succes' %}
                         {% elseif alert_icon == 'error' %}
-                            {% set alert_title = 'Erreur' %}
+                            {% set alert_title = app.request.locale == 'ar' ? 'خطأ' : 'Erreur' %}
                         {% elseif alert_icon == 'warning' %}
-                            {% set alert_title = 'Attention' %}
+                            {% set alert_title = app.request.locale == 'ar' ? 'تنبيه' : 'Attention' %}
                         {% elseif alert_icon == 'question' %}
-                            {% set alert_title = 'Confirmation' %}
+                            {% set alert_title = app.request.locale == 'ar' ? 'تأكيد' : 'Confirmation' %}
                         {% endif %}
                         {% for message in messages %}
                             {
@@ -683,7 +968,7 @@
                     }
 
                     const flash = flashes[index];
-                    const text = String(flash.message || '');
+                    const text = translateFlashMessage(flash.message || '');
 
                     if (!window.Swal) {
                         showFallback(text);
@@ -692,10 +977,10 @@
                     }
 
                     Swal.fire({
-                        title: flash.title || 'Information',
+                        title: flash.title || alertCopy.info,
                         text: text,
                         icon: flash.icon || 'info',
-                        confirmButtonText: 'OK',
+                        confirmButtonText: alertCopy.ok,
                         customClass: {
                             popup: 'bella-alert'
                         },
@@ -789,5 +1074,38 @@
         {% endif %}
         {% block javascripts %}{% endblock %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
+        <script>
+            (function () {
+                try {
+                    var loader = document.getElementById('bellaPageLoader');
+                    if (!loader) return;
+
+                    var hidden = false;
+                    function hideFallback(delay) {
+                        if (hidden) return;
+                        hidden = true;
+                        window.setTimeout(function () {
+                            loader.classList.add('is-hidden');
+                            loader.classList.remove('is-active');
+                            document.body.classList.remove('bella-loader-lock');
+                            if (window.console && console.info) console.info('bellaPageLoader: fallback hidden');
+                        }, delay || 0);
+                    }
+
+                    // If page becomes interactive/complete, hide shortly after
+                    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+                        hideFallback(120);
+                    } else {
+                        window.addEventListener('load', function () { hideFallback(120); }, {once: true});
+                        document.addEventListener && document.addEventListener('turbo:load', function () { hideFallback(120); }, {once: true});
+                    }
+
+                    // Final safety: always hide after 10s to avoid permanent blocking
+                    window.setTimeout(function () { hideFallback(0); }, 10000);
+                } catch (e) {
+                    try { console.error('bellaPageLoader fallback error', e); } catch (__){}
+                }
+            })();
+        </script>
     </body>
 </html>

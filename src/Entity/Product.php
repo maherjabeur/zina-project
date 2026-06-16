@@ -21,8 +21,14 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nameAr = null;
+
     #[ORM\Column(type: 'text')]
     private ?string $description = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $descriptionAr = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private ?string $price = null;
@@ -36,6 +42,9 @@ class Product
 
     #[ORM\Column(length: 255)]
     private ?string $color = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $colorAr = null;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: true)]
@@ -82,6 +91,22 @@ class Product
         $this->name = $name;
         return $this;
     }
+
+    public function getNameAr(): ?string
+    {
+        return $this->nameAr;
+    }
+
+    public function setNameAr(?string $nameAr): self
+    {
+        $this->nameAr = $nameAr;
+        return $this;
+    }
+
+    public function getLocalizedName(string $locale): ?string
+    {
+        return $locale === 'ar' && $this->nameAr ? $this->nameAr : $this->name;
+    }
   
 
     public function setPromotions(array $promotions): self
@@ -98,6 +123,22 @@ class Product
     {
         $this->description = $description;
         return $this;
+    }
+
+    public function getDescriptionAr(): ?string
+    {
+        return $this->descriptionAr;
+    }
+
+    public function setDescriptionAr(?string $descriptionAr): self
+    {
+        $this->descriptionAr = $descriptionAr;
+        return $this;
+    }
+
+    public function getLocalizedDescription(string $locale): ?string
+    {
+        return $locale === 'ar' && $this->descriptionAr ? $this->descriptionAr : $this->description;
     }
 
     public function getPrice(): ?string
@@ -157,8 +198,25 @@ class Product
     }
     public function setColor(string $color): self
     {
-        $colors = array_filter(array_map('trim', preg_split('/[,;\n]+/', $color)));
+        $colors = array_filter(array_map('trim', preg_split('/[,،;\n]+/u', $color)));
         $this->color = implode(', ', array_unique($colors));
+        return $this;
+    }
+
+    public function getColorAr(): ?string
+    {
+        return $this->colorAr;
+    }
+
+    public function setColorAr(?string $colorAr): self
+    {
+        if ($colorAr === null || trim($colorAr) === '') {
+            $this->colorAr = null;
+            return $this;
+        }
+
+        $colors = array_filter(array_map('trim', preg_split('/[,،;\n]+/u', $colorAr)));
+        $this->colorAr = implode(', ', array_unique($colors));
         return $this;
     }
 
@@ -168,7 +226,56 @@ class Product
             return [];
         }
 
-        return array_values(array_filter(array_map('trim', preg_split('/[,;\n]+/', $this->color))));
+        return array_values(array_filter(array_map('trim', preg_split('/[,،;\n]+/u', $this->color))));
+    }
+
+    public function getColorsAr(): array
+    {
+        if (!$this->colorAr) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map('trim', preg_split('/[,،;\n]+/u', $this->colorAr))));
+    }
+
+    public function getLocalizedColors(string $locale): array
+    {
+        return $locale === 'ar' && $this->getColorsAr() ? $this->getColorsAr() : $this->getColors();
+    }
+
+    public function getLocalizedColor(string $color, string $locale): string
+    {
+        if ($locale !== 'ar') {
+            return $color;
+        }
+
+        $colors = $this->getColors();
+        $colorsAr = $this->getColorsAr();
+        foreach ($colors as $index => $availableColor) {
+            if (strcasecmp($availableColor, trim($color)) === 0 && isset($colorsAr[$index])) {
+                return $colorsAr[$index];
+            }
+        }
+
+        return $color;
+    }
+
+    public function getLocalizedSize(string $sizeName, string $locale): string
+    {
+        if ($locale !== 'ar') {
+            return $sizeName;
+        }
+
+        foreach ($this->sizes as $size) {
+            if (
+                strcasecmp((string) $size->getName(), trim($sizeName)) === 0
+                || strcasecmp((string) $size->getCode(), trim($sizeName)) === 0
+            ) {
+                return $size->getLocalizedName($locale) ?? $sizeName;
+            }
+        }
+
+        return $sizeName;
     }
 
     public function hasColor(string $color): bool

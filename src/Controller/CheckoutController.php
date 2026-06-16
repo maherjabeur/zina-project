@@ -20,6 +20,7 @@ class CheckoutController extends AbstractController
 {
     #[Route('/checkout', name: 'checkout')]
     public function index(
+        Request $request,
         SettingRepository $settingRepository,
         SessionInterface $session,
         ProductRepository $productRepository,
@@ -29,7 +30,7 @@ class CheckoutController extends AbstractController
 
         if (empty($cart)) {
             $this->addFlash('warning', 'Votre panier est vide.');
-            return $this->redirectToRoute('products');
+            return $this->redirectToRoute('products', $this->withLocale($request));
         }
 
         $cartData = [];
@@ -43,7 +44,7 @@ class CheckoutController extends AbstractController
         foreach ($items as $item) {
             if (!$item['size'] || !$item['color']) {
                 $this->addFlash('warning', 'Veuillez choisir une taille et une couleur pour chaque article.');
-                return $this->redirectToRoute('cart');
+                return $this->redirectToRoute('cart', $this->withLocale($request));
             }
 
             $product = $productsById[$item['productId']] ?? null;
@@ -53,7 +54,7 @@ class CheckoutController extends AbstractController
 
             if ($product->getQuantity() < $item['quantity']) {
                 $this->addFlash('warning', "Le produit \"{$product->getName()}\" n est plus disponible en quantite suffisante. Stock restant: {$product->getQuantity()}");
-                return $this->redirectToRoute('cart');
+                return $this->redirectToRoute('cart', $this->withLocale($request));
             }
 
             $bestPromotion = $promotionsByProductId[$product->getId()] ?? null;
@@ -83,7 +84,7 @@ class CheckoutController extends AbstractController
 
         if (empty($cartData)) {
             $this->addFlash('warning', 'Votre panier ne contient aucun produit disponible.');
-            return $this->redirectToRoute('cart');
+            return $this->redirectToRoute('cart', $this->withLocale($request));
         }
 
         $settings = $settingRepository->findOneBy([], ['id' => 'DESC']);
@@ -114,12 +115,12 @@ class CheckoutController extends AbstractController
 
         if (empty($cart)) {
             $this->addFlash('error', 'Votre panier est vide.');
-            return $this->redirectToRoute('products');
+            return $this->redirectToRoute('products', $this->withLocale($request));
         }
 
         if (!$this->isCsrfTokenValid('checkout_process', (string) $request->request->get('_token'))) {
             $this->addFlash('error', 'Action non autorisee.');
-            return $this->redirectToRoute('checkout');
+            return $this->redirectToRoute('checkout', $this->withLocale($request));
         }
 
         $customerName = trim((string) $request->request->get('customer_name'));
@@ -129,22 +130,22 @@ class CheckoutController extends AbstractController
 
         if ($customerName === '' || $customerPhone === '' || $shippingAddress === '') {
             $this->addFlash('error', 'Veuillez remplir tous les champs obligatoires.');
-            return $this->redirectToRoute('checkout');
+            return $this->redirectToRoute('checkout', $this->withLocale($request));
         }
 
         if (!$request->request->getBoolean('terms')) {
             $this->addFlash('error', 'Veuillez accepter les conditions generales de vente.');
-            return $this->redirectToRoute('checkout');
+            return $this->redirectToRoute('checkout', $this->withLocale($request));
         }
 
         if (!preg_match('/^[0-9]{8}$/', $customerPhone)) {
             $this->addFlash('error', 'Veuillez entrer un numero de telephone valide (8 chiffres).');
-            return $this->redirectToRoute('checkout');
+            return $this->redirectToRoute('checkout', $this->withLocale($request));
         }
 
         if ($customerEmail !== '' && !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
             $this->addFlash('error', 'Veuillez entrer un email valide ou laisser le champ vide.');
-            return $this->redirectToRoute('checkout');
+            return $this->redirectToRoute('checkout', $this->withLocale($request));
         }
 
         $cartItems = [];
@@ -155,18 +156,18 @@ class CheckoutController extends AbstractController
 
             if (!$item['size'] || !$item['color']) {
                 $this->addFlash('error', 'Une taille et une couleur sont obligatoires pour chaque article.');
-                return $this->redirectToRoute('cart');
+                return $this->redirectToRoute('cart', $this->withLocale($request));
             }
 
             $product = $productsById[$item['productId']] ?? null;
             if (!$product) {
                 $this->addFlash('error', 'Un produit de votre panier n est plus disponible.');
-                return $this->redirectToRoute('cart');
+                return $this->redirectToRoute('cart', $this->withLocale($request));
             }
 
             if ($product->getQuantity() < $item['quantity']) {
                 $this->addFlash('error', "Le produit \"{$product->getName()}\" n est plus disponible en quantite suffisante.");
-                return $this->redirectToRoute('cart');
+                return $this->redirectToRoute('cart', $this->withLocale($request));
             }
 
             $cartItems[] = [
@@ -179,7 +180,7 @@ class CheckoutController extends AbstractController
 
         if (empty($cartItems)) {
             $this->addFlash('error', 'Votre panier ne contient aucun produit disponible.');
-            return $this->redirectToRoute('cart');
+            return $this->redirectToRoute('cart', $this->withLocale($request));
         }
 
         $order = new Order();
@@ -259,7 +260,7 @@ class CheckoutController extends AbstractController
             }
 
             $this->addFlash('error', $exception->getMessage());
-            return $this->redirectToRoute('cart');
+            return $this->redirectToRoute('cart', $this->withLocale($request));
         }
 
         if ($customerEmail !== '') {
@@ -281,7 +282,7 @@ class CheckoutController extends AbstractController
 
         $this->addFlash('success', 'Votre commande a ete passee avec succes !');
 
-        return $this->redirectToRoute('checkout_success', ['id' => $order->getId()]);
+        return $this->redirectToRoute('checkout_success', $this->withLocale($request, ['id' => $order->getId()]));
     }
 
     #[Route('/checkout/success/{id}', name: 'checkout_success')]
@@ -303,6 +304,11 @@ class CheckoutController extends AbstractController
         }
 
         return $items;
+    }
+
+    private function withLocale(Request $request, array $parameters = []): array
+    {
+        return $parameters + ['locale' => $request->getLocale()];
     }
 
     private function normalizeCartItem(string|int $key, mixed $rawItem): ?array

@@ -1,0 +1,216 @@
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] input,
+html[dir="rtl"] textarea,
+html[dir="rtl"] select {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] input[type="email"],
+html[dir="rtl"] input[type="tel"],
+html[dir="rtl"] input[type="number"],
+html[dir="rtl"] input[inputmode="numeric"] {
+  direction: ltr;
+  text-align: right;
+}
+
+html[dir="rtl"] .text-start,
+html[dir="rtl"] .text-md-start,
+html[dir="rtl"] .text-lg-start {
+  text-align: right !important;
+}
+
+html[dir="rtl"] .text-end,
+html[dir="rtl"] .text-md-end,
+html[dir="rtl"] .text-lg-end {
+  text-align: left !important;
+}
+
+html[dir="rtl"] .start-0 {
+  right: 0 !important;
+  left: auto !important;
+}
+
+html[dir="rtl"] .end-0 {
+  right: auto !important;
+  left: 0 !important;
+}
+
+html[dir="rtl"] .ms-1 { margin-right: 0.25rem !important; margin-left: 0 !important; }
+html[dir="rtl"] .ms-2 { margin-right: 0.5rem !important; margin-left: 0 !important; }
+html[dir="rtl"] .ms-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+html[dir="rtl"] .me-1 { margin-left: 0.25rem !important; margin-right: 0 !important; }
+html[dir="rtl"] .me-2 { margin-left: 0.5rem !important; margin-right: 0 !important; }
+html[dir="rtl"] .me-3 { margin-left: 1rem !important; margin-right: 0 !important; }
+html[dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
+html[dir="rtl"] .me-auto { margin-left: auto !important; margin-right: 0 !important; }
+
+html[dir="rtl"] .ps-1 { padding-right: 0.25rem !important; padding-left: 0 !important; }
+html[dir="rtl"] .ps-2 { padding-right: 0.5rem !important; padding-left: 0 !important; }
+html[dir="rtl"] .ps-3 { padding-right: 1rem !important; padding-left: 0 !important; }
+html[dir="rtl"] .pe-1 { padding-left: 0.25rem !important; padding-right: 0 !important; }
+html[dir="rtl"] .pe-2 { padding-left: 0.5rem !important; padding-right: 0 !important; }
+html[dir="rtl"] .pe-3 { padding-left: 1rem !important; padding-right: 0 !important; }
+
+html[dir="rtl"] .dropdown-menu {
+  text-align: right;
+}
+
+html[dir="rtl"] .breadcrumb-item + .breadcrumb-item {
+  padding-right: var(--bs-breadcrumb-item-padding-x);
+  padding-left: 0;
+}
+
+html[dir="rtl"] .breadcrumb-item + .breadcrumb-item::before {
+  float: right;
+  padding-left: var(--bs-breadcrumb-item-padding-x);
+  padding-right: 0;
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .search-form .form-control {
+  border-radius: 0 999px 999px 0 !important;
+}
+
+html[dir="rtl"] .search-form .input-group {
+  direction: rtl;
+}
+
+html[dir="rtl"] .search-suggestions,
+html[dir="rtl"] .suggestion-item {
+  text-align: right;
+}
+
+html[dir="rtl"] .suggestion-item {
+  justify-content: flex-start;
+}
+
+html[dir="rtl"] .hero-slider .carousel-item::after {
+  background: linear-gradient(270deg, rgba(47, 36, 48, 0.7) 0%, rgba(47, 36, 48, 0.34) 42%, rgba(47, 36, 48, 0.04) 100%);
+}
+
+html[dir="rtl"] .hero-slider .carousel-caption {
+  right: 7%;
+  left: auto;
+  text-align: right;
+}
+
+html[dir="rtl"] .hero-slider .carousel-caption p {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+html[dir="rtl"] .bc-feature-item,
+html[dir="rtl"] .product-card,
+html[dir="rtl"] .cart-line,
+html[dir="rtl"] .checkout-line,
+html[dir="rtl"] .contact-card,
+html[dir="rtl"] .summary-card {
+  direction: rtl;
+}
+
+html[dir="rtl"] .form-check {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+html[dir="rtl"] .form-check-input {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
+html[dir="rtl"] input[type="file"].form-control::file-selector-button {
+  margin: -0.58rem -0.75rem -0.58rem 0.8rem;
+  border-left: 1px solid var(--bc-line, #eadde3);
+  border-right: 0;
+}
+
+html[dir="rtl"] .admin-shell .sidebar {
+  border-right: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html[dir="rtl"] .admin-shell .sidebar .nav-link.active {
+  box-shadow: inset -4px 0 0 #f0a3bd, 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+html[dir="rtl"] .admin-shell .table,
+html[dir="rtl"] .admin-shell .table-responsive {
+  direction: rtl;
+}
+
+html[dir="rtl"] .admin-shell .table th,
+html[dir="rtl"] .admin-shell .table td {
+  text-align: right;
+}
+
+html[dir="rtl"] .select2-container,
+html[dir="rtl"] .select2-dropdown {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .select2-container {
+  width: 100% !important;
+}
+
+html[dir="rtl"] .select2-container .select2-search--inline .select2-search__field,
+html[dir="rtl"] .select2-container .select2-search--dropdown .select2-search__field {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .select2-container--default .select2-selection--multiple {
+  padding-right: 0.45rem;
+  padding-left: 0.25rem;
+}
+
+html[dir="rtl"] .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  padding: 0.2rem 0.35rem 0.2rem 0.65rem;
+}
+
+html[dir="rtl"] .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  margin-left: 0.25rem;
+  margin-right: 0;
+}
+
+html[dir="rtl"] .admin-shell input[type="file"].form-control::file-selector-button {
+  margin: -0.55rem -0.75rem -0.55rem 0.8rem;
+  border-left: 1px solid #d8cbd3;
+  border-right: 0;
+}
+
+@media (max-width: 991.98px) {
+  html[dir="rtl"] .hero-slider .carousel-caption {
+    right: 1.25rem;
+    left: 1.25rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  html[dir="rtl"] .navbar-toggler {
+    right: auto;
+    left: 1rem;
+  }
+
+  html[dir="rtl"] .cart-container {
+    right: auto !important;
+    left: 4.6rem !important;
+  }
+
+  html[dir="rtl"] .cart-line {
+    text-align: right;
+  }
+
+  html[dir="rtl"] .admin-shell .sidebar {
+    border-left: 0;
+  }
+}

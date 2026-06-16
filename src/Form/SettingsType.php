@@ -34,7 +34,7 @@ class SettingsType extends AbstractType
                 ],
             ])
             ->add('seoDescription', TextareaType::class, [
-                'label' => 'Description SEO',
+                'label' => 'Description SEO (FR)',
                 'required' => false,
                 'attr' => [
                     'rows' => 4,
@@ -42,12 +42,40 @@ class SettingsType extends AbstractType
                     'placeholder' => 'Decrivez la boutique en 150 a 160 caracteres environ.',
                 ],
             ])
+            ->add('seoTitleAr', TextType::class, [
+                'label' => 'Titre SEO du site (AR)',
+                'required' => false,
+                'attr' => [
+                    'maxlength' => 255,
+                    'placeholder' => 'Bella Couture - أزياء نسائية أنيقة',
+                    'dir' => 'rtl',
+                ],
+            ])
+            ->add('seoDescriptionAr', TextareaType::class, [
+                'label' => 'Description SEO (AR)',
+                'required' => false,
+                'attr' => [
+                    'rows' => 4,
+                    'maxlength' => 320,
+                    'placeholder' => 'صف المتجر في حوالي 150 إلى 160 حرفا.',
+                    'dir' => 'rtl',
+                ],
+            ])
             ->add('seoKeywords', TextareaType::class, [
-                'label' => 'Mots-cles',
+                'label' => 'Mots-cles (FR)',
                 'required' => false,
                 'attr' => [
                     'rows' => 3,
                     'placeholder' => 'mode feminine, vetements femme, boutique Sousse',
+                ],
+            ])
+            ->add('seoKeywordsAr', TextareaType::class, [
+                'label' => 'Mots-cles (AR)',
+                'required' => false,
+                'attr' => [
+                    'rows' => 3,
+                    'placeholder' => 'أزياء نسائية، ملابس نسائية، متجر سوسة',
+                    'dir' => 'rtl',
                 ],
             ])
             ->add('seoImage', TextType::class, [

@@ -2,14 +2,14 @@
 
 {% block title %}
     {% if currentCategory %}
-        {{ categories|filter(c => c.slug == currentCategory)|first.name }} - Boutique
+        {{ categories|filter(c => c.slug == currentCategory)|first|localized('name') }} - Boutique
     {% else %}
         Collection - Bella Couture
     {% endif %}
 {% endblock %}
 {% block meta_description %}
     {% if currentCategory %}
-        Decouvrez la selection {{ categories|filter(c => c.slug == currentCategory)|first.name }} chez Bella Couture: vetements femme, tailles disponibles, couleurs au choix et livraison en Tunisie.
+        Decouvrez la selection {{ categories|filter(c => c.slug == currentCategory)|first|localized('name') }} chez Bella Couture: vetements femme, tailles disponibles, couleurs au choix et livraison en Tunisie.
     {% else %}
         Explorez la collection Bella Couture: vetements feminins elegants, articles tendance, tailles et couleurs au choix avec livraison en Tunisie.
     {% endif %}
@@ -24,7 +24,7 @@
                     <span class="page-kicker">Boutique</span>
                     <h1 class="display-5 mb-3">
                         {% if currentCategory %}
-                            {{ categories|filter(c => c.slug == currentCategory)|first.name }}
+                            {{ categories|filter(c => c.slug == currentCategory)|first|localized('name') }}
                         {% else %}
                             Collection Bella Couture
                         {% endif %}
@@ -66,7 +66,7 @@
                                             {% if category.icon %}
                                                 <i class="{{ category.icon }} me-2" style="color: {{ category.color ?? '#b23a63' }}"></i>
                                             {% endif %}
-                                            {{ category.name }}
+                                            {{ category|localized('name') }}
                                         </span>
                                         <span class="badge bg-light text-dark">{{ categoryProductCounts[category.slug]|default(0) }}</span>
                                     </a>
@@ -80,7 +80,7 @@
                                 <a href="{{ path('products', {'category': currentCategory}) }}" class="btn btn-sm {{ not currentSize ? 'btn-primary' : 'btn-outline-primary' }}">Toutes</a>
                                 {% for size in sizes %}
                                     <a href="{{ path('products', {'category': currentCategory, 'size': size.code}) }}" class="btn btn-sm {{ currentSize == size.code ? 'btn-primary' : 'btn-outline-primary' }}">
-                                        {{ size.name }}
+                                        {{ size|localized('name') }}
                                     </a>
                                 {% endfor %}
                             </div>
@@ -117,16 +117,16 @@
                                     {% endif %}
 
                                     {% if product.images|length > 0 %}
-                                        <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="card-img-top" alt="{{ product.name }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
+                                        <img src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="card-img-top" alt="{{ product|localized('name') }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
                                     {% else %}
                                         <img src="{{ asset('images/placeholder.webp') }}" class="card-img-top" alt="Image non disponible">
                                     {% endif %}
 
                                     <div class="card-body d-flex flex-column">
                                         <div class="d-flex justify-content-between gap-2 align-items-start mb-2">
-                                            <h5 class="card-title mb-0">{{ product.name }}</h5>
+                                            <h5 class="card-title mb-0">{{ product|localized('name') }}</h5>
                                             {% if product.category %}
-                                                <span class="badge bg-info">{{ product.category.name }}</span>
+                                                <span class="badge bg-info">{{ product.category|localized('name') }}</span>
                                             {% endif %}
                                         </div>
 
@@ -134,21 +134,22 @@
                                             {% if promotion and promotion.isValid() %}
                                                 <span class="text-muted text-decoration-line-through me-2">{{ product.price }} DT</span>
                                                 <span class="h5 text-primary mb-0">{{ promotion.calculateDiscountedPrice(product.price)|number_format(2) }} DT</span>
-                                                <small class="d-block text-success fw-bold mt-1">{{ promotion.title }}</small>
+                                                    <small class="d-block text-success fw-bold mt-1">{{ promotion|localized('title') }}</small>
                                             {% else %}
                                                 <span class="h5 text-primary">{{ product.price }} DT</span>
                                             {% endif %}
                                         </div>
 
                                         <p class="card-text text-muted small flex-grow-1">
-                                            {{ product.description|length > 96 ? product.description|slice(0, 96) ~ '...' : product.description }}
+                                            {% set productDescription = product|localized('description') %}
+                                            {{ productDescription|length > 96 ? productDescription|slice(0, 96) ~ '...' : productDescription }}
                                         </p>
 
                                         <div class="d-flex flex-wrap gap-1 mb-3">
                                             {% for size in product.sizes|slice(0, 4) %}
-                                                <span class="badge bg-light text-dark">{{ size.name }}</span>
+                                                <span class="badge bg-light text-dark">{{ size|localized('name') }}</span>
                                             {% endfor %}
-                                            {% for color in product.colors|slice(0, 3) %}
+                                            {% for color in product|localized_colors|slice(0, 3) %}
                                                 <span class="badge bg-light text-dark">{{ color }}</span>
                                             {% endfor %}
                                         </div>

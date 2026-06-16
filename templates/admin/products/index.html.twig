@@ -81,9 +81,9 @@
 													{% endif %}
 												</td>
 												<td>
-													<strong>{{ product.name }}</strong>
+													<strong>{{ product|localized('name') }}</strong>
 													<br>
-													<small class="text-muted">{{ product.description|slice(0, 50) }}...</small>
+													<small class="text-muted">{{ product|localized('description')|slice(0, 50) }}...</small>
 												</td>
 												<td>{{ product.price }}
 													Dt</td>
@@ -95,7 +95,7 @@
 												<td>
 													{% if product.sizes|length > 0 %}
 														{% for size in product.sizes %}
-															<span class="badge bg-light text-dark me-1">{{ size.name }}</span>
+														<span class="badge bg-light text-dark me-1">{{ size|localized('name') }}</span>
 														{% endfor %}
 													{% else %}
 														<span class="text-muted">Aucune</span>
@@ -103,13 +103,13 @@
 												</td>
 												<td>
 													{% for color in product.colors %}
-														<span class="badge bg-light text-dark me-1">{{ color }}</span>
+														<span class="badge bg-light text-dark me-1">{{ product|localized_color(color) }}</span>
 													{% else %}
 														<span class="text-muted">Aucune</span>
 													{% endfor %}
 												</td>
 												<td>
-													<span class="badge bg-info">{{ product.category }}</span>
+													<span class="badge bg-info">{{ product.category ? product.category|localized('name') : '' }}</span>
 												</td>
 												<td>
 													{% if product.isActive %}

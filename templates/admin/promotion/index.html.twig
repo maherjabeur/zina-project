@@ -56,10 +56,10 @@
                                         {% for promotion in promotions %}
                                             <tr>
                                                 <td>
-                                                    <strong>{{ promotion.title }}</strong>
+                                                    <strong>{{ promotion|localized('title') }}</strong>
                                                 </td>
                                                 <td>
-                                                    <small class="text-muted">{{ promotion.description|slice(0, 50) }}{% if promotion.description|length > 50 %}...{% endif %}</small>
+                                                    <small class="text-muted">{{ promotion|localized('description')|slice(0, 50) }}{% if promotion|localized('description')|length > 50 %}...{% endif %}</small>
                                                 </td>
                                                 <td>
                                                     <span class="badge bg-danger fs-6">{{ promotion.discount }}%</span>
@@ -73,7 +73,7 @@
                                                                  style="width: 40px; height: 40px; object-fit: cover;"
                                                                  onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
                                                         {% endif %}
-                                                        <span>{{ promotion.product.name }}</span>
+                                                        <span>{{ promotion.product|localized('name') }}</span>
                                                     </div>
                                                 </td>
                                                 <td>

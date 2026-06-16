@@ -1,9 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Commande confirmee - Bella Couture{% endblock %}
+{% block title %}{{ app.request.locale == 'ar' ? 'تم تأكيد الطلب' : 'Commande confirmee' }} - Bella Couture{% endblock %}
 {% block robots %}noindex, nofollow{% endblock %}
 
 {% block body %}
+    {% set is_ar = app.request.locale == 'ar' %}
+    {% set copy = {
+        thanks: is_ar ? 'شكرا' : 'Merci',
+        heading: is_ar ? 'تم تأكيد الطلب' : 'Commande confirmee',
+        leadPrefix: is_ar ? 'شكرا' : 'Merci',
+        leadSuffix: is_ar ? '، تم تسجيل طلبك بنجاح.' : ', votre commande a bien ete enregistree.',
+        orderNumber: is_ar ? 'رقم الطلب' : 'Numero de commande',
+        date: is_ar ? 'التاريخ' : 'Date',
+        status: is_ar ? 'الحالة' : 'Statut',
+        emailText: is_ar ? 'يمكن إرسال تأكيد إلى' : 'Une confirmation peut etre envoyee a',
+        confirmedItems: is_ar ? 'المنتجات المؤكدة' : 'Articles confirmes',
+        size: is_ar ? 'المقاس' : 'Taille',
+        color: is_ar ? 'اللون' : 'Couleur',
+        notSpecified: is_ar ? 'غير محدد' : 'Non specifiee',
+        subtotal: is_ar ? 'مجموع المنتجات' : 'Sous-total articles',
+        reduction: is_ar ? 'التخفيض' : 'Remise',
+        shipping: is_ar ? 'التوصيل' : 'Livraison',
+        finalTotal: is_ar ? 'المجموع النهائي' : 'Total final',
+        home: is_ar ? 'العودة إلى الرئيسية' : "Retour a l'accueil",
+        products: is_ar ? 'متابعة التسوق' : 'Continuer mes achats'
+    } %}
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -13,45 +34,45 @@
                             <i class="fas fa-check fa-2x"></i>
                         </span>
 
-                        <span class="page-kicker">Merci</span>
-                        <h1 class="h2 section-title mb-3">Commande confirmee</h1>
+                        <span class="page-kicker">{{ copy.thanks }}</span>
+                        <h1 class="h2 section-title mb-3">{{ copy.heading }}</h1>
 
                         <p class="lead mb-4">
-                            Merci <strong>{{ order.customerName }}</strong>, votre commande a bien ete enregistree.
+                            {{ copy.leadPrefix }} <strong>{{ order.customerName }}</strong>{{ copy.leadSuffix }}
                         </p>
 
                         <div class="card bg-light border-0 mb-4 text-start">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between border-bottom py-2">
-                                    <span>Numero de commande</span>
+                                    <span>{{ copy.orderNumber }}</span>
                                     <strong>{{ order.orderNumber }}</strong>
                                 </div>
                                 <div class="d-flex justify-content-between border-bottom py-2">
-                                    <span>Date</span>
+                                    <span>{{ copy.date }}</span>
                                     <strong>{{ order.createdAt|date('d/m/Y H:i') }}</strong>
                                 </div>
                                 <div class="d-flex justify-content-between py-2">
-                                    <span>Statut</span>
+                                    <span>{{ copy.status }}</span>
                                     <span class="badge bg-warning text-dark">{{ order.statusLabel }}</span>
                                 </div>
                             </div>
                         </div>
 
                         {% if order.customerEmail %}
-                            <p class="text-muted mb-4">Une confirmation peut etre envoyee a <strong>{{ order.customerEmail }}</strong>.</p>
+                            <p class="text-muted mb-4">{{ copy.emailText }} <strong>{{ order.customerEmail }}</strong>.</p>
                         {% endif %}
 
                         <div class="card bg-white border mb-4 text-start">
                             <div class="card-header">
-                                <h2 class="h6 mb-0">Articles confirmes</h2>
+                                <h2 class="h6 mb-0">{{ copy.confirmedItems }}</h2>
                             </div>
                             <div class="card-body">
                                 {% for item in order.items %}
                                     <div class="d-flex justify-content-between gap-3 py-2 {% if not loop.last %}border-bottom{% endif %}">
                                         <div>
-                                            <strong>{{ item.product.name }}</strong>
+                                            <strong>{{ item.product|localized('name') }}</strong>
                                             <div class="text-muted small">
-                                                Taille {{ item.size ?? 'Non specifiee' }} - Couleur {{ item.color ?? 'Non specifiee' }} - x{{ item.quantity }}
+                                                {{ copy.size }} {{ item.size ? item.product|localized_size(item.size) : copy.notSpecified }} - {{ copy.color }} {{ item.color ? item.product|localized_color(item.color) : copy.notSpecified }} - x{{ item.quantity }}
                                             </div>
                                         </div>
                                         <strong>{{ item.total|number_format(2) }} DT</strong>
@@ -63,29 +84,29 @@
                         <div class="card bg-light border-0 mb-4 text-start">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between border-bottom py-2">
-                                    <span>Sous-total articles</span>
+                                    <span>{{ copy.subtotal }}</span>
                                     <strong>{{ order.itemsTotal|number_format(2) }} DT</strong>
                                 </div>
                                 {% if order.discount and order.discount > 0 %}
                                     <div class="d-flex justify-content-between border-bottom py-2 text-success">
-                                        <span>Remise</span>
+                                        <span>{{ copy.reduction }}</span>
                                         <strong>-{{ order.discount|number_format(2) }} DT</strong>
                                     </div>
                                 {% endif %}
                                 <div class="d-flex justify-content-between border-bottom py-2">
-                                    <span>Livraison</span>
+                                    <span>{{ copy.shipping }}</span>
                                     <strong>{{ (order.shippingFee ?? 0)|number_format(2) }} DT</strong>
                                 </div>
                                 <div class="d-flex justify-content-between py-2">
-                                    <span>Total final</span>
+                                    <span>{{ copy.finalTotal }}</span>
                                     <strong>{{ order.total|number_format(2) }} DT</strong>
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                            <a href="{{ path('home') }}" class="btn btn-primary btn-lg">Retour a l'accueil</a>
-                            <a href="{{ path('products') }}" class="btn btn-outline-primary btn-lg">Continuer mes achats</a>
+                            <a href="{{ path('home', {'locale': app.request.locale}) }}" class="btn btn-primary btn-lg">{{ copy.home }}</a>
+                            <a href="{{ path('products', {'locale': app.request.locale}) }}" class="btn btn-outline-primary btn-lg">{{ copy.products }}</a>
                         </div>
                     </div>
                 </div>

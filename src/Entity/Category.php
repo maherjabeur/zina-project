@@ -19,11 +19,17 @@ class Category
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nameAr = null;
+
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $descriptionAr = null;
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $color = null;
@@ -63,6 +69,18 @@ class Category
         return $this;
     }
 
+    public function getNameAr(): ?string { return $this->nameAr; }
+    public function setNameAr(?string $nameAr): self {
+        $this->nameAr = $nameAr;
+        $this->updatedAt = new \DateTime();
+        return $this;
+    }
+
+    public function getLocalizedName(string $locale): ?string
+    {
+        return $locale === 'ar' && $this->nameAr ? $this->nameAr : $this->name;
+    }
+
     public function getSlug(): ?string { return $this->slug; }
     public function setSlug(string $slug): self { 
         $this->slug = $slug;
@@ -74,6 +92,18 @@ class Category
         $this->description = $description;
         $this->updatedAt = new \DateTime();
         return $this;
+    }
+
+    public function getDescriptionAr(): ?string { return $this->descriptionAr; }
+    public function setDescriptionAr(?string $descriptionAr): self {
+        $this->descriptionAr = $descriptionAr;
+        $this->updatedAt = new \DateTime();
+        return $this;
+    }
+
+    public function getLocalizedDescription(string $locale): ?string
+    {
+        return $locale === 'ar' && $this->descriptionAr ? $this->descriptionAr : $this->description;
     }
 
     public function getColor(): ?string { return $this->color; }

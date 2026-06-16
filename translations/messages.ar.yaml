@@ -1,0 +1,5 @@
+knp_pagination:
+  previous: 'السابق'
+  next: 'التالي'
+  first: 'الأول'
+  last: 'الأخير'

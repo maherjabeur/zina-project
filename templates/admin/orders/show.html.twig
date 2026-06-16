@@ -39,13 +39,13 @@
                                         {% for item in order.items %}
                                             <tr>
                                                 <td>
-                                                    <strong>{{ item.product.name }}</strong>
+                                                    <strong>{{ item.product|localized('name') }}</strong>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-primary">{{ item.size ?? 'Non specifiee' }}</span>
+                                                    <span class="badge bg-primary">{{ item.size ? item.product|localized_size(item.size) : 'Non specifiee' }}</span>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-info text-dark">{{ item.color ?? 'Non specifiee' }}</span>
+                                                    <span class="badge bg-info text-dark">{{ item.color ? item.product|localized_color(item.color) : 'Non specifiee' }}</span>
                                                 </td>
                                                 <td>{{ item.unitPrice }} Dt</td>
                                                 <td>{{ item.quantity }}</td>

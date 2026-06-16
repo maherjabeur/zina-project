@@ -1,0 +1,54 @@
+<script>
+    (function () {
+        function initProductSizeActions() {
+            if (!window.jQuery) {
+                return;
+            }
+
+            const $ = window.jQuery;
+            const $sizeSelect = $('.product-size-select');
+
+            if (!$sizeSelect.length) {
+                return;
+            }
+
+            if (typeof window.initBellaSelect2 === 'function') {
+                window.initBellaSelect2(document);
+            }
+
+            function getSelectableValues($select) {
+                return $select.find('option').filter(function () {
+                    return this.value !== '' && !this.disabled;
+                }).map(function () {
+                    return this.value;
+                }).get();
+            }
+
+            function updateSizeSelect($select, values) {
+                $select.val(values);
+                $select.trigger('change');
+                if ($.fn.select2) {
+                    $select.trigger('change.select2');
+                }
+            }
+
+            $('.js-select-all-sizes').off('click.productSizeSelect2').on('click.productSizeSelect2', function () {
+                const $select = $(this).closest('form').find('.product-size-select');
+                updateSizeSelect($select, getSelectableValues($select));
+            });
+
+            $('.js-clear-sizes').off('click.productSizeSelect2').on('click.productSizeSelect2', function () {
+                const $select = $(this).closest('form').find('.product-size-select');
+                updateSizeSelect($select, []);
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initProductSizeActions);
+        } else {
+            initProductSizeActions();
+        }
+
+        document.addEventListener('turbo:load', initProductSizeActions);
+    })();
+</script>

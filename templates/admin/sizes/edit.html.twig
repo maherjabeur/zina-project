@@ -33,6 +33,12 @@
                                     }) }}
                                 </div>
                                 <div class="col-md-6">
+                                    {{ form_row(form.nameAr, {
+                                        'attr': {'class': 'form-control', 'dir': 'rtl'},
+                                        'label': 'Nom de la taille (AR) *'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
                                     {{ form_row(form.code, {
                                         'attr': {'class': 'form-control'},
                                         'label': 'Code *'

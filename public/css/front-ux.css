@@ -412,6 +412,7 @@ a:hover {
 
 .form-control,
 .form-select {
+  width: 100%;
   min-height: 48px;
   border: 1px solid var(--bc-line);
   border-radius: 14px;
@@ -510,6 +511,10 @@ form label {
   row-gap: 0.85rem;
 }
 
+.front-shell form:not(.search-form) .row > [class*="col-"] {
+  min-width: 0;
+}
+
 .contact-card form,
 .summary-card form,
 .checkout-line + form {
@@ -593,7 +598,7 @@ footer img {
     min-width: 100%;
   }
 
-.navbar-collapse {
+  .navbar-collapse {
     border: 1px solid var(--bc-line);
     border-radius: 18px;
     background: #fff;
@@ -677,10 +682,41 @@ footer img {
     min-width: 0;
   }
 
+  .front-shell form:not(.search-form) .row {
+    row-gap: 1rem;
+  }
+
+  .front-shell form:not(.search-form) .row > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+
   .btn,
   .form-control,
   .form-select {
     min-height: 44px;
+  }
+
+  textarea.form-control {
+    min-height: 132px;
+  }
+
+  .front-shell form:not(.search-form) .d-flex,
+  .front-shell form:not(.search-form) .d-grid {
+    width: 100%;
+  }
+
+  .front-shell form:not(.search-form) .d-flex .btn,
+  .front-shell form:not(.search-form) .d-grid .btn,
+  .front-shell form:not(.search-form) button[type="submit"],
+  .front-shell form:not(.search-form) .btn[type="submit"] {
+    width: 100%;
+  }
+
+  .input-group {
+    flex-wrap: nowrap;
+    width: 100%;
   }
 
   .d-flex.gap-2,

@@ -45,8 +45,9 @@ class SearchController extends AbstractController
 
         $suggestions = $productRepository->findSearchSuggestions($query);
         
-        $results = array_map(function($item) {
-            return $item['name'];
+        $locale = $request->getLocale();
+        $results = array_map(function($item) use ($locale) {
+            return $locale === 'ar' && !empty($item['nameAr']) ? $item['nameAr'] : $item['name'];
         }, $suggestions);
 
         return new JsonResponse($results);

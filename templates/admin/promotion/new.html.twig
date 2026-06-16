@@ -26,7 +26,13 @@
                                 <div class="col-md-6">
                                     {{ form_row(form.title, {
                                         'attr': {'class': 'form-control'},
-                                        'label': 'Titre de la promotion'
+                                        'label': 'Titre de la promotion (FR)'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.titleAr, {
+                                        'attr': {'class': 'form-control', 'dir': 'rtl'},
+                                        'label': 'Titre de la promotion (AR)'
                                     }) }}
                                 </div>
                                 <div class="col-md-6">
@@ -39,7 +45,12 @@
 
                             {{ form_row(form.description, {
                                 'attr': {'class': 'form-control', 'rows': 4},
-                                'label': 'Description'
+                                'label': 'Description (FR)'
+                            }) }}
+
+                            {{ form_row(form.descriptionAr, {
+                                'attr': {'class': 'form-control', 'rows': 4, 'dir': 'rtl'},
+                                'label': 'Description (AR)'
                             }) }}
 
                             {{ form_row(form.product, {

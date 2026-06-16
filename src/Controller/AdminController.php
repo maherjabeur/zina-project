@@ -115,7 +115,8 @@ class AdminController extends AbstractController
         
         // Créer la requête de base
         $queryBuilder = $orderRepository->createQueryBuilder('o')
-            ->orderBy('o.createdAt', 'DESC');
+            ->orderBy('o.isNew', 'DESC')
+            ->addOrderBy('o.createdAt', 'DESC');
     
         // Filtre par statut
         if ($status) {
@@ -169,6 +170,10 @@ class AdminController extends AbstractController
 
         $oldStatus = $order->getStatus();
         $order->setStatus($newStatus);
+
+        if ($oldStatus !== $newStatus) {
+            $order->setNew(false);
+        }
 
         // Envoyer une notification si c'est une nouvelle commande
         if (!$order->isNotified() && $newStatus === 'confirmed') {

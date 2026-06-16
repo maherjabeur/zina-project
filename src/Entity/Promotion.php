@@ -18,8 +18,14 @@ class Promotion
     #[ORM\Column(type: "string", length: 255)]
     private string $title;
 
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $titleAr = null;
+
     #[ORM\Column(type: "text")]
     private string $description;
+
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $descriptionAr = null;
 
     #[ORM\Column(type: "decimal", precision: 5, scale: 2)]
     private string $discount;
@@ -64,6 +70,22 @@ class Promotion
         return $this;
     }
 
+    public function getTitleAr(): ?string
+    {
+        return $this->titleAr;
+    }
+
+    public function setTitleAr(?string $titleAr): self
+    {
+        $this->titleAr = $titleAr;
+        return $this;
+    }
+
+    public function getLocalizedTitle(string $locale): string
+    {
+        return $locale === 'ar' && $this->titleAr ? $this->titleAr : $this->title;
+    }
+
     public function getDescription(): string
     {
         return $this->description;
@@ -73,6 +95,22 @@ class Promotion
     {
         $this->description = $description;
         return $this;
+    }
+
+    public function getDescriptionAr(): ?string
+    {
+        return $this->descriptionAr;
+    }
+
+    public function setDescriptionAr(?string $descriptionAr): self
+    {
+        $this->descriptionAr = $descriptionAr;
+        return $this;
+    }
+
+    public function getLocalizedDescription(string $locale): string
+    {
+        return $locale === 'ar' && $this->descriptionAr ? $this->descriptionAr : $this->description;
     }
 
     public function getDiscount(): float

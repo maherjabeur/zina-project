@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ product.name }} - Bella Couture{% endblock %}
-{% block meta_description %}{{ product.description|striptags|slice(0, 155) }}{% if product.description|striptags|length > 155 %}...{% endif %}{% endblock %}
-{% block meta_keywords %}{{ product.name }}, {{ product.category ? product.category.name ~ ', ' : '' }}mode femme, Bella Couture{% endblock %}
+{% block title %}{{ product|localized('name') }} - Bella Couture{% endblock %}
+{% block meta_description %}{{ product|localized('description')|striptags|slice(0, 155) }}{% if product|localized('description')|striptags|length > 155 %}...{% endif %}{% endblock %}
+{% block meta_keywords %}{{ product|localized('name') }}, {{ product.category ? product.category|localized('name') ~ ', ' : '' }}mode femme, Bella Couture{% endblock %}
 {% block og_type %}product{% endblock %}
 {% block canonical_url %}{{ app.request.schemeAndHttpHost ~ path('product_detail', {'id': product.id}) }}{% endblock %}
 {% block meta_image %}
@@ -17,14 +17,14 @@
         {{ {
             '@context': 'https://schema.org',
             '@type': 'Product',
-            name: product.name,
-            description: product.description|striptags,
+            name: product|localized('name'),
+            description: product|localized('description')|striptags,
             image: product.images|length > 0 ? absolute_url(asset('uploads/products/' ~ product.images.first.filename)) : absolute_url(asset('images/placeholder.webp')),
             brand: {
                 '@type': 'Brand',
                 name: 'Bella Couture'
             },
-            category: product.category ? product.category.name : 'Mode femme',
+            category: product.category ? product.category|localized('name') : 'Mode femme',
             offers: {
                 '@type': 'Offer',
                 url: app.request.schemeAndHttpHost ~ path('product_detail', {'id': product.id}),
@@ -43,7 +43,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ path('home') }}">Accueil</a></li>
                 <li class="breadcrumb-item"><a href="{{ path('products') }}">Boutique</a></li>
-                <li class="breadcrumb-item active">{{ product.name }}</li>
+                <li class="breadcrumb-item active">{{ product|localized('name') }}</li>
             </ol>
         </nav>
 
@@ -56,14 +56,14 @@
                                 <span class="badge bg-danger fs-6 px-3 py-2">-{{ bestPromotion.discount }}%</span>
                             </div>
                         {% endif %}
-                        <img id="mainImage" src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-fluid product-gallery-main" alt="{{ product.name }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
+                        <img id="mainImage" src="{{ asset('uploads/products/' ~ product.images.first.filename) }}" class="img-fluid product-gallery-main" alt="{{ product|localized('name') }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
                     </div>
 
                     {% if product.images|length > 1 %}
                         <div class="row g-3">
                             {% for image in product.images %}
                                 <div class="col-3">
-                                    <img src="{{ asset('uploads/products/' ~ image.filename) }}" class="img-thumbnail thumbnail-image {% if loop.first %}active{% endif %}" alt="{{ product.name }} - vue {{ loop.index }}" onclick="changeMainImage(this)" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
+                                    <img src="{{ asset('uploads/products/' ~ image.filename) }}" class="img-thumbnail thumbnail-image {% if loop.first %}active{% endif %}" alt="{{ product|localized('name') }} - vue {{ loop.index }}" onclick="changeMainImage(this)" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.webp') }}';">
                                 </div>
                             {% endfor %}
                         </div>
@@ -75,9 +75,9 @@
 
             <div class="col-lg-6">
                 {% if product.category %}
-                    <span class="badge bg-info mb-3">{{ product.category.name }}</span>
+                    <span class="badge bg-info mb-3">{{ product.category|localized('name') }}</span>
                 {% endif %}
-                <h1 class="display-6 section-title mb-3">{{ product.name }}</h1>
+                <h1 class="display-6 section-title mb-3">{{ product|localized('name') }}</h1>
 
                 <div class="price-section mb-4">
                     {% if bestPromotion and bestPromotion.isValid() %}
@@ -89,8 +89,8 @@
                             <div class="d-flex gap-3">
                                 <i class="fas fa-tag mt-1"></i>
                                 <div>
-                                    <strong class="d-block">{{ bestPromotion.title }}</strong>
-                                    <small>{{ bestPromotion.description }}</small>
+                                    <strong class="d-block">{{ bestPromotion|localized('title') }}</strong>
+                                    <small>{{ bestPromotion|localized('description') }}</small>
                                 </div>
                             </div>
                         </div>
@@ -102,7 +102,7 @@
                     {% endif %}
                 </div>
 
-                <p class="lead text-muted mb-4">{{ product.description }}</p>
+                <p class="lead text-muted mb-4">{{ product|localized('description') }}</p>
 
                 <div class="card mb-4">
                     <div class="card-body">
@@ -113,7 +113,7 @@
                                 <span class="text-end">
                                     {% if product.sizes|length > 0 %}
                                         {% for size in product.sizes %}
-                                            <span class="badge bg-light text-dark">{{ size.name }}</span>
+                                            <span class="badge bg-light text-dark">{{ size|localized('name') }}</span>
                                         {% endfor %}
                                     {% else %}
                                         <span class="text-muted">Non precise</span>
@@ -124,7 +124,7 @@
                                 <strong>Couleurs</strong>
                                 <span class="text-end">
                                     {% for color in product.colors %}
-                                        <span class="badge bg-light text-dark">{{ color }}</span>
+                                        <span class="badge bg-light text-dark">{{ product|localized_color(color) }}</span>
                                     {% else %}
                                         <span class="text-muted">Non precise</span>
                                     {% endfor %}
@@ -154,7 +154,7 @@
                                         <select id="size" name="size" class="form-select" required>
                                             <option value="">Selectionner une taille</option>
                                             {% for size in product.sizes %}
-                                                <option value="{{ size.name }}">{{ size.name }}</option>
+                                                <option value="{{ size.name }}">{{ size|localized('name') }}</option>
                                             {% endfor %}
                                         </select>
                                     {% else %}
@@ -167,7 +167,7 @@
                                     <select id="color" name="color" class="form-select" required>
                                         <option value="">Selectionner une couleur</option>
                                         {% for color in product.colors %}
-                                            <option value="{{ color }}">{{ color }}</option>
+                                            <option value="{{ color }}">{{ product|localized_color(color) }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -196,7 +196,7 @@
                 <div class="pt-3 border-top">
                     <p class="text-muted mb-2">Partager ce produit</p>
                     {% set currentUrl = app.request.schemeAndHttpHost ~ app.request.requestUri %}
-                    {% set productTitle = product.name ?? 'Produit' %}
+                    {% set productTitle = (product|localized('name')) ?: 'Produit' %}
                     <div class="btn-group" role="group">
                         <a href="https://www.facebook.com/sharer/sharer.php?u={{ currentUrl|url_encode }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://twitter.com/intent/tweet?url={{ currentUrl|url_encode }}&text={{ productTitle|url_encode }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Twitter"><i class="fab fa-twitter"></i></a>
@@ -222,10 +222,10 @@
                                 <div class="card h-100">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="mb-0">{{ promotion.title }}</h6>
+                                            <h6 class="mb-0">{{ promotion|localized('title') }}</h6>
                                             <span class="badge bg-danger">-{{ promotion.discount }}%</span>
                                         </div>
-                                        <p class="text-muted small mb-0">{{ promotion.description }}</p>
+                                        <p class="text-muted small mb-0">{{ promotion|localized('description') }}</p>
                                     </div>
                                 </div>
                             </div>

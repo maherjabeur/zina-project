@@ -35,19 +35,34 @@ class SliderImageType extends AbstractType
                 ]
             ])
             ->add('title', TextType::class, [
-                'label' => 'Titre',
-                'required' => false,
+                'label' => 'Titre (FR)',
+                'required' => true,
                 'attr' => ['class' => 'form-control']
+            ])
+            ->add('titleAr', TextType::class, [
+                'label' => 'Titre (AR)',
+                'required' => true,
+                'attr' => ['class' => 'form-control', 'dir' => 'rtl']
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Description',
-                'required' => false,
+                'label' => 'Description (FR)',
+                'required' => true,
                 'attr' => ['class' => 'form-control', 'rows' => 3]
             ])
+            ->add('descriptionAr', TextareaType::class, [
+                'label' => 'Description (AR)',
+                'required' => true,
+                'attr' => ['class' => 'form-control', 'rows' => 3, 'dir' => 'rtl']
+            ])
             ->add('buttonText', TextType::class, [
-                'label' => 'Texte du bouton',
+                'label' => 'Texte du bouton (FR)',
                 'required' => false,
                 'attr' => ['class' => 'form-control']
+            ])
+            ->add('buttonTextAr', TextType::class, [
+                'label' => 'Texte du bouton (AR)',
+                'required' => false,
+                'attr' => ['class' => 'form-control', 'dir' => 'rtl']
             ])
             ->add('buttonUrl', TextType::class, [
                 'label' => 'URL du bouton',

@@ -20,11 +20,20 @@ class SliderImage
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $title = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $titleAr = null;
+
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $descriptionAr = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $buttonText = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $buttonTextAr = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $buttonUrl = null;
@@ -52,10 +61,19 @@ class SliderImage
     public function setFilename(string $filename): self { $this->filename = $filename; return $this; }
     public function getTitle(): ?string { return $this->title; }
     public function setTitle(?string $title): self { $this->title = $title; return $this; }
+    public function getTitleAr(): ?string { return $this->titleAr; }
+    public function setTitleAr(?string $titleAr): self { $this->titleAr = $titleAr; return $this; }
+    public function getLocalizedTitle(string $locale): ?string { return $locale === 'ar' && $this->titleAr ? $this->titleAr : $this->title; }
     public function getDescription(): ?string { return $this->description; }
     public function setDescription(?string $description): self { $this->description = $description; return $this; }
+    public function getDescriptionAr(): ?string { return $this->descriptionAr; }
+    public function setDescriptionAr(?string $descriptionAr): self { $this->descriptionAr = $descriptionAr; return $this; }
+    public function getLocalizedDescription(string $locale): ?string { return $locale === 'ar' && $this->descriptionAr ? $this->descriptionAr : $this->description; }
     public function getButtonText(): ?string { return $this->buttonText; }
     public function setButtonText(?string $buttonText): self { $this->buttonText = $buttonText; return $this; }
+    public function getButtonTextAr(): ?string { return $this->buttonTextAr; }
+    public function setButtonTextAr(?string $buttonTextAr): self { $this->buttonTextAr = $buttonTextAr; return $this; }
+    public function getLocalizedButtonText(string $locale): ?string { return $locale === 'ar' && $this->buttonTextAr ? $this->buttonTextAr : $this->buttonText; }
     public function getButtonUrl(): ?string { return $this->buttonUrl; }
     public function setButtonUrl(?string $buttonUrl): self { $this->buttonUrl = $buttonUrl; return $this; }
     public function getPosition(): int { return $this->position; }

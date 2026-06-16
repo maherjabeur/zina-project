@@ -3,6 +3,43 @@
 {% block title %}Gestion des commandes - Admin
 {% endblock %}
 
+{% block stylesheets %}
+	{{ parent() }}
+	<style>
+		.new-order-row {
+			background: linear-gradient(90deg, rgba(255, 248, 225, 0.92), rgba(255, 255, 255, 0.98)) !important;
+			box-shadow: inset 4px 0 0 #ffc107;
+		}
+
+		.new-order-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.3rem;
+			margin-left: 0.45rem;
+			padding: 0.35rem 0.55rem;
+			border-radius: 999px;
+			background: #ffc107;
+			color: #2f2430;
+			font-size: 0.72rem;
+			font-weight: 900;
+			line-height: 1;
+			animation: newOrderPulse 1.15s ease-in-out infinite;
+		}
+
+		@keyframes newOrderPulse {
+			0%, 100% {
+				transform: translateY(0);
+				box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.42);
+			}
+
+			50% {
+				transform: translateY(-1px);
+				box-shadow: 0 0 0 0.45rem rgba(255, 193, 7, 0);
+			}
+		}
+	</style>
+{% endblock %}
+
 {% block body %}
 	<div class="container-fluid">
 		<div
@@ -83,11 +120,14 @@
 									</thead>
 									<tbody>
 										{% for order in orders %}
-											<tr>
+											<tr class="{{ order.isNew ? 'new-order-row' : '' }}">
 												<td>
 													<strong>{{ order.orderNumber }}</strong>
-													{% if not order.notified %}
-														<span class="badge bg-warning" title="Non notifié">N</span>
+													{% if order.isNew %}
+														<span class="new-order-badge" title="{{ app.request.locale == 'ar' ? 'طلب جديد' : 'Nouvelle commande' }}">
+															<i class="fas fa-bell"></i>
+															{{ app.request.locale == 'ar' ? 'جديد' : 'Nouveau' }}
+														</span>
 													{% endif %}
 												</td>
 												<td>{{ order.customerName }}</td>

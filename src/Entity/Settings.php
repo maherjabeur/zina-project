@@ -18,11 +18,20 @@ class Settings
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $seoTitle = 'Bella Couture - Mode feminine elegante';
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $seoTitleAr = 'Bella Couture - أزياء نسائية أنيقة';
+
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $seoDescription = 'Boutique de mode feminine a Sousse: vetements elegants, collections tendance, tailles et couleurs au choix avec livraison en Tunisie.';
 
     #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $seoDescriptionAr = 'متجر أزياء نسائية في سوسة: ملابس أنيقة، تشكيلات عصرية، مقاسات وألوان متنوعة مع التوصيل في تونس.';
+
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $seoKeywords = 'mode feminine, boutique femme, vetements femme, Bella Couture, Sousse, Tunisie';
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $seoKeywordsAr = 'أزياء نسائية، متجر نسائي، ملابس نسائية، Bella Couture، سوسة، تونس';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $seoImage = 'logo/logo.webp';
@@ -57,6 +66,23 @@ class Settings
         return $this;
     }
 
+    public function getSeoTitleAr(): ?string
+    {
+        return $this->seoTitleAr;
+    }
+
+    public function setSeoTitleAr(?string $seoTitleAr): self
+    {
+        $this->seoTitleAr = $seoTitleAr;
+
+        return $this;
+    }
+
+    public function getLocalizedSeoTitle(string $locale): ?string
+    {
+        return $locale === 'ar' && $this->seoTitleAr ? $this->seoTitleAr : $this->seoTitle;
+    }
+
     public function getSeoDescription(): ?string
     {
         return $this->seoDescription;
@@ -69,6 +95,23 @@ class Settings
         return $this;
     }
 
+    public function getSeoDescriptionAr(): ?string
+    {
+        return $this->seoDescriptionAr;
+    }
+
+    public function setSeoDescriptionAr(?string $seoDescriptionAr): self
+    {
+        $this->seoDescriptionAr = $seoDescriptionAr;
+
+        return $this;
+    }
+
+    public function getLocalizedSeoDescription(string $locale): ?string
+    {
+        return $locale === 'ar' && $this->seoDescriptionAr ? $this->seoDescriptionAr : $this->seoDescription;
+    }
+
     public function getSeoKeywords(): ?string
     {
         return $this->seoKeywords;
@@ -79,6 +122,23 @@ class Settings
         $this->seoKeywords = $seoKeywords;
 
         return $this;
+    }
+
+    public function getSeoKeywordsAr(): ?string
+    {
+        return $this->seoKeywordsAr;
+    }
+
+    public function setSeoKeywordsAr(?string $seoKeywordsAr): self
+    {
+        $this->seoKeywordsAr = $seoKeywordsAr;
+
+        return $this;
+    }
+
+    public function getLocalizedSeoKeywords(string $locale): ?string
+    {
+        return $locale === 'ar' && $this->seoKeywordsAr ? $this->seoKeywordsAr : $this->seoKeywords;
     }
 
     public function getSeoImage(): ?string

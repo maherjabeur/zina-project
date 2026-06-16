@@ -2,11 +2,6 @@
 
 {% block title %}Nouveau produit - Admin{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet">
-{% endblock %}
-
 {% block body %}
 <div class="container-fluid">
     <div class="row">
@@ -31,7 +26,13 @@
                                 <div class="col-md-6">
                                     {{ form_row(form.name, {
                                         'attr': {'class': 'form-control'},
-                                        'label': 'Nom du produit'
+                                        'label': 'Nom du produit (FR)'
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.nameAr, {
+                                        'attr': {'class': 'form-control', 'dir': 'rtl'},
+                                        'label': 'Nom du produit (AR)'
                                     }) }}
                                 </div>
                                 <div class="col-md-6">
@@ -45,7 +46,7 @@
                             <div class="row">
                               <div class="col-md-12">
     {{ form_row(form.sizes, {
-        'attr': {'class': 'form-select product-size-select', 'data-placeholder': 'Rechercher et choisir plusieurs tailles'},
+        'attr': {'class': 'form-select product-size-select', 'data-placeholder': app.request.locale == 'ar' ? 'ابحث واختر عدة مقاسات' : 'Rechercher et choisir plusieurs tailles'},
         'label': 'Tailles disponibles'
     }) }}
     <div class="d-flex flex-wrap gap-2 mt-2 mb-3">
@@ -60,7 +61,13 @@
                                 <div class="col-md-4">
                                     {{ form_row(form.color, {
                                         'attr': {'class': 'form-control', 'rows': 2, 'placeholder': 'Noir, Blanc, Rose poudre'},
-                                        'label': 'Couleurs disponibles'
+                                        'label': 'Couleurs disponibles (FR)'
+                                    }) }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form_row(form.colorAr, {
+                                        'attr': {'class': 'form-control', 'rows': 2, 'placeholder': 'أسود، أبيض، وردي باهت', 'dir': 'rtl'},
+                                        'label': 'Couleurs disponibles (AR)'
                                     }) }}
                                 </div>
                                 <div class="col-md-4">
@@ -78,7 +85,12 @@
 
                             {{ form_row(form.description, {
                                 'attr': {'class': 'form-control', 'rows': 4},
-                                'label': 'Description'
+                                'label': 'Description (FR)'
+                            }) }}
+
+                            {{ form_row(form.descriptionAr, {
+                                'attr': {'class': 'form-control', 'rows': 4, 'dir': 'rtl'},
+                                'label': 'Description (AR)'
                             }) }}
 
                             <div class="form-check mb-3">
@@ -140,68 +152,5 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/select2.min.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (!window.jQuery) {
-                return;
-            }
-
-            const $ = window.jQuery;
-            const $sizeSelect = $('.product-size-select');
-
-            if (!$sizeSelect.length) {
-                return;
-            }
-
-            function getSelectableValues($select) {
-                return $select.find('option').filter(function () {
-                    return this.value !== '' && !this.disabled;
-                }).map(function () {
-                    return this.value;
-                }).get();
-            }
-
-            function updateSizeSelect($select, values) {
-                $select.val(values);
-                $select.trigger('change');
-                if ($.fn.select2) {
-                    $select.trigger('change.select2');
-                }
-            }
-
-            if ($.fn.select2) {
-                $sizeSelect.each(function () {
-                    const $select = $(this);
-                    if ($select.data('select2')) {
-                        $select.select2('destroy');
-                    }
-
-                    $select.select2({
-                        width: '100%',
-                        closeOnSelect: false,
-                        placeholder: $select.data('placeholder') || 'Rechercher et choisir plusieurs tailles',
-                        allowClear: true,
-                        language: {
-                            noResults: function () { return 'Aucune taille trouvee'; },
-                            searching: function () { return 'Recherche...'; },
-                            removeAllItems: function () { return 'Vider la selection'; },
-                            removeItem: function () { return 'Retirer'; },
-                            search: function () { return 'Rechercher'; }
-                        }
-                    });
-                });
-            }
-
-            $('.js-select-all-sizes').on('click', function () {
-                const $select = $(this).closest('form').find('.product-size-select');
-                updateSizeSelect($select, getSelectableValues($select));
-            });
-
-            $('.js-clear-sizes').on('click', function () {
-                const $select = $(this).closest('form').find('.product-size-select');
-                updateSizeSelect($select, []);
-            });
-        });
-    </script>
+    {% include 'admin/products/_size_select2.html.twig' %}
 {% endblock %}

@@ -25,6 +25,15 @@ class CategoryType extends AbstractType
                     'placeholder' => 'Ex: Robes, Jupes, Pantalons...'
                 ]
             ])
+            ->add('nameAr', TextType::class, [
+                'label' => 'Nom de la categorie (AR) *',
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'مثال: فساتين، تنانير، سراويل...',
+                    'dir' => 'rtl'
+                ]
+            ])
             ->add('slug', TextType::class, [
                 'label' => 'Slug (URL) *',
                 'attr' => [
@@ -40,6 +49,16 @@ class CategoryType extends AbstractType
                     'class' => 'form-control',
                     'rows' => 3,
                     'placeholder' => 'Description de la catégorie...'
+                ]
+            ])
+            ->add('descriptionAr', TextareaType::class, [
+                'label' => 'Description (AR)',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 3,
+                    'placeholder' => 'وصف القسم...',
+                    'dir' => 'rtl'
                 ]
             ])
             ->add('color', ColorType::class, [

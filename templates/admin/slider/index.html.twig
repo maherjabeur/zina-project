@@ -70,18 +70,24 @@
                                                      style="width: 100px; height: 60px; object-fit: cover;">
                                             </td>
                                             <td>
-                                                <strong>{{ sliderImage.title ?? 'Sans titre' }}</strong>
+                                                    <strong>{{ (sliderImage|localized('title')) ?: 'Sans titre' }}</strong>
                                             </td>
                                             <td>
                                                 <small class="text-muted">
-                                                    {{ sliderImage.description ? (sliderImage.description|slice(0, 50) ~ '...') : 'Aucune description' }}
+                                                    {{ sliderImage|localized('description') ? (sliderImage|localized('description')|slice(0, 50) ~ '...') : 'Aucune description' }}
                                                 </small>
                                             </td>
                                             <td>
                                                 {% if sliderImage.buttonText %}
-                                                    <span class="badge bg-info">{{ sliderImage.buttonText }}</span>
+                                                    <span class="badge bg-info">{{ sliderImage|localized('buttonText') }}</span>
                                                     <br>
-                                                    <small class="text-muted">{{ sliderImage.buttonUrl }}</small>
+                                                    <small class="text-muted">
+                                                        {% if app.request.locale == 'ar' and sliderImage.buttonUrl starts with '/' %}
+                                                            رابط داخلي
+                                                        {% else %}
+                                                            {{ sliderImage.buttonUrl }}
+                                                        {% endif %}
+                                                    </small>
                                                 {% else %}
                                                     <span class="badge bg-secondary">Aucun</span>
                                                 {% endif %}

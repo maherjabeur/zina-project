@@ -309,6 +309,7 @@ class CartController extends AbstractController
             if (
                 strcasecmp((string) $size->getName(), $selectedSize) === 0
                 || strcasecmp((string) $size->getCode(), $selectedSize) === 0
+                || strcasecmp((string) $size->getNameAr(), $selectedSize) === 0
             ) {
                 return (string) $size->getName();
             }
@@ -325,8 +326,14 @@ class CartController extends AbstractController
             return null;
         }
 
-        foreach ($product->getColors() as $availableColor) {
-            if (strcasecmp($availableColor, $selectedColor) === 0) {
+        $colors = $product->getColors();
+        $colorsAr = $product->getColorsAr();
+
+        foreach ($colors as $index => $availableColor) {
+            if (
+                strcasecmp($availableColor, $selectedColor) === 0
+                || (isset($colorsAr[$index]) && strcasecmp($colorsAr[$index], $selectedColor) === 0)
+            ) {
                 return $availableColor;
             }
         }

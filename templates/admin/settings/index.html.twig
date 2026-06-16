@@ -94,11 +94,22 @@
                                     <div class="form-text">Idealement entre 50 et 60 caracteres.</div>
                                 </div>
                                 <div class="mb-3">
+                                    {{ form_row(form.seoTitleAr) }}
+                                    <div class="form-text">Version arabe utilisee quand la langue du site est arabe.</div>
+                                </div>
+                                <div class="mb-3">
                                     {{ form_row(form.seoDescription) }}
                                     <div class="form-text">Description recommandee: environ 150 a 160 caracteres.</div>
                                 </div>
                                 <div class="mb-3">
+                                    {{ form_row(form.seoDescriptionAr) }}
+                                    <div class="form-text">Description arabe recommandee pour le referencement.</div>
+                                </div>
+                                <div class="mb-3">
                                     {{ form_row(form.seoKeywords) }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form_row(form.seoKeywordsAr) }}
                                 </div>
                                 <div class="row g-3">
                                     <div class="col-md-7">

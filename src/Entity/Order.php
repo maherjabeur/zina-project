@@ -11,6 +11,7 @@ use App\Repository\OrderRepository;
 #[ORM\Table(name: '`order`')]
 #[ORM\Index(name: 'idx_order_status_created', columns: ['status', 'created_at'])]
 #[ORM\Index(name: 'idx_order_number', columns: ['order_number'])]
+#[ORM\Index(name: 'idx_order_new_created', columns: ['is_new', 'created_at'])]
 class Order
 {
     public const STATUS_PENDING = 'pending';
@@ -61,6 +62,9 @@ class Order
 
     #[ORM\Column(type: 'boolean')]
     private bool $notified = false;
+
+    #[ORM\Column(name: 'is_new', type: 'boolean', options: ['default' => true])]
+    private bool $isNew = true;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $shippingAddress = null;
@@ -280,6 +284,17 @@ class Order
     public function setNotified(bool $notified): self
     {
         $this->notified = $notified;
+        return $this;
+    }
+
+    public function isNew(): bool
+    {
+        return $this->isNew;
+    }
+
+    public function setNew(bool $new): self
+    {
+        $this->isNew = $new;
         return $this;
     }
 

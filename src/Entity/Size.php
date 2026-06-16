@@ -20,6 +20,9 @@ class Size
     #[ORM\Column(length: 50)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $nameAr = null;
+
     #[ORM\Column(length: 20)]
     private ?string $code = null;
 
@@ -56,6 +59,18 @@ class Size
         $this->name = $name;
         $this->updatedAt = new \DateTime();
         return $this;
+    }
+
+    public function getNameAr(): ?string { return $this->nameAr; }
+    public function setNameAr(?string $nameAr): self {
+        $this->nameAr = $nameAr;
+        $this->updatedAt = new \DateTime();
+        return $this;
+    }
+
+    public function getLocalizedName(string $locale): ?string
+    {
+        return $locale === 'ar' && $this->nameAr ? $this->nameAr : $this->name;
     }
 
     public function getCode(): ?string { return $this->code; }
