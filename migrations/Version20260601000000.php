@@ -74,6 +74,7 @@ final class Version20260601000000 extends AbstractMigration
         $dump = (string) file_get_contents($dumpPath);
         $dump = preg_replace('/\/\*![\s\S]*?\*\/;/m', '', $dump) ?? $dump;
         $dump = preg_replace('/--\s*Structure de la table `doctrine_migration_versions`[\s\S]*?-- --------------------------------------------------------/m', '-- --------------------------------------------------------', $dump) ?? $dump;
+        $dump = $this->makeMysqlDumpCompatibleWithSmallIndexLimits($dump);
 
         foreach ($this->splitSqlStatements($dump) as $statement) {
             $statement = $this->stripSqlComments($statement);
@@ -87,6 +88,17 @@ final class Version20260601000000 extends AbstractMigration
 
             $this->addSql($statement);
         }
+    }
+
+    private function makeMysqlDumpCompatibleWithSmallIndexLimits(string $dump): string
+    {
+        $replacements = [
+            '`slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL' => '`slug` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL',
+            '`email` varchar(180) COLLATE utf8mb4_unicode_ci NOT NULL' => '`email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL',
+            'KEY `IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750` (`queue_name`,`available_at`,`delivered_at`,`id`)' => 'KEY `IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750` (`queue_name`(100),`available_at`,`delivered_at`,`id`)',
+        ];
+
+        return strtr($dump, $replacements);
     }
 
     /**
