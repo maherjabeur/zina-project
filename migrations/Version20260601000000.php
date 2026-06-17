@@ -37,13 +37,14 @@ final class Version20260601000000 extends AbstractMigration
 
     public function getDescription(): string
     {
-        return 'Create the PostgreSQL schema and import application data from zina-project.sql.';
+        return 'Create the database schema and import application data from zina-project.sql.';
     }
 
     public function up(Schema $schema): void
     {
-        if ($this->connection->getDatabasePlatform()->getName() !== 'postgresql') {
-            $this->warnIf(true, 'This migration is intended for PostgreSQL deployments such as Render.');
+        if ($this->connection->getDatabasePlatform()->getName() === 'mysql') {
+            $this->importMysqlDump();
+            return;
         }
 
         $this->createSchema($schema);
@@ -53,9 +54,105 @@ final class Version20260601000000 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        foreach (['promotion', 'product_sizes', 'product_image', 'order_item', '"order"', 'product', 'slider_image', 'settings', 'contact', 'category', 'size', '"user"', 'messenger_messages'] as $table) {
-            $this->addSql(sprintf('DROP TABLE IF EXISTS %s CASCADE', $table));
+        $isMysql = $this->connection->getDatabasePlatform()->getName() === 'mysql';
+        foreach (['promotion', 'product_sizes', 'product_image', 'order_item', 'order', 'product', 'slider_image', 'settings', 'contact', 'category', 'size', 'user', 'messenger_messages'] as $table) {
+            $this->addSql(sprintf(
+                'DROP TABLE IF EXISTS %s%s',
+                $isMysql ? '`' . $table . '`' : $this->quoteTable($table),
+                $isMysql ? '' : ' CASCADE'
+            ));
         }
+    }
+
+    private function importMysqlDump(): void
+    {
+        $dumpPath = dirname(__DIR__) . '/zina-project.sql';
+        if (!is_file($dumpPath)) {
+            throw new \RuntimeException('Missing zina-project.sql. It is required to seed the MySQL database.');
+        }
+
+        $dump = (string) file_get_contents($dumpPath);
+        $dump = preg_replace('/\/\*![\s\S]*?\*\/;/m', '', $dump) ?? $dump;
+        $dump = preg_replace('/--\s*Structure de la table `doctrine_migration_versions`[\s\S]*?-- --------------------------------------------------------/m', '-- --------------------------------------------------------', $dump) ?? $dump;
+
+        foreach ($this->splitSqlStatements($dump) as $statement) {
+            $statement = $this->stripSqlComments($statement);
+            if ($statement === '') {
+                continue;
+            }
+
+            if (!preg_match('/^(DROP TABLE|CREATE TABLE|INSERT INTO|ALTER TABLE)\b/i', $statement)) {
+                continue;
+            }
+
+            $this->addSql($statement);
+        }
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function splitSqlStatements(string $sql): array
+    {
+        $statements = [];
+        $statement = '';
+        $inString = false;
+        $escaping = false;
+        $length = strlen($sql);
+
+        for ($i = 0; $i < $length; $i++) {
+            $char = $sql[$i];
+
+            if ($inString) {
+                $statement .= $char;
+
+                if ($escaping) {
+                    $escaping = false;
+                    continue;
+                }
+
+                if ($char === '\\') {
+                    $escaping = true;
+                    continue;
+                }
+
+                if ($char === "'") {
+                    $inString = false;
+                }
+
+                continue;
+            }
+
+            if ($char === "'") {
+                $inString = true;
+                $statement .= $char;
+                continue;
+            }
+
+            if ($char === ';') {
+                $statements[] = $statement;
+                $statement = '';
+                continue;
+            }
+
+            $statement .= $char;
+        }
+
+        if (trim($statement) !== '') {
+            $statements[] = $statement;
+        }
+
+        return $statements;
+    }
+
+    private function stripSqlComments(string $statement): string
+    {
+        $lines = preg_split('/\R/', $statement) ?: [];
+        $lines = array_filter($lines, static function (string $line): bool {
+            return !str_starts_with(ltrim($line), '--');
+        });
+
+        return trim(implode("\n", $lines));
     }
 
     private function createSchema(Schema $schema): void

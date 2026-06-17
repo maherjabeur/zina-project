@@ -62,11 +62,20 @@ final class Version20260602124500 extends AbstractMigration
             return;
         }
 
+        if ($this->connection->getDatabasePlatform()->getName() === 'mysql') {
+            $this->addSql(sprintf('DROP INDEX %s ON %s', $indexName, $this->quoteTable($tableName)));
+            return;
+        }
+
         $this->addSql(sprintf('DROP INDEX %s', $indexName));
     }
 
     private function quoteTable(string $tableName): string
     {
-        return $tableName === 'order' ? '"order"' : $tableName;
+        if ($tableName !== 'order') {
+            return $tableName;
+        }
+
+        return $this->connection->getDatabasePlatform()->getName() === 'mysql' ? '`order`' : '"order"';
     }
 }

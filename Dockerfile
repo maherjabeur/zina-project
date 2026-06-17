@@ -12,6 +12,7 @@ RUN apt-get update \
         bcmath \
         intl \
         opcache \
+        pdo_mysql \
         pdo_pgsql \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
