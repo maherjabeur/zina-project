@@ -95,6 +95,7 @@ final class Version20260601000000 extends AbstractMigration
         $replacements = [
             '`slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL' => '`slug` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL',
             '`roles` json NOT NULL' => '`roles` longtext COLLATE utf8mb4_unicode_ci NOT NULL',
+            '`roles` JSON NOT NULL' => '`roles` longtext COLLATE utf8mb4_unicode_ci NOT NULL',
             'UNIQUE KEY `UNIQ_64C19C1989D9B62` (`slug`)' => 'UNIQUE KEY `UNIQ_64C19C1989D9B62` (`slug`(100))',
             'KEY `IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750` (`queue_name`,`available_at`,`delivered_at`,`id`)' => 'KEY `IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750` (`queue_name`(50),`available_at`,`delivered_at`,`id`)',
             'KEY `idx_order_status_created` (`status`,`created_at`)' => 'KEY `idx_order_status_created` (`status`(30),`created_at`)',
@@ -241,7 +242,7 @@ final class Version20260601000000 extends AbstractMigration
             $this->addSql('CREATE TABLE "user" (
                 id SERIAL NOT NULL,
                 email VARCHAR(180) NOT NULL,
-                roles JSON NOT NULL,
+                roles TEXT NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 first_name VARCHAR(100) NOT NULL,
                 last_name VARCHAR(100) NOT NULL,
