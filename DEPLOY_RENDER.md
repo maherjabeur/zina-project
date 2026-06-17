@@ -21,8 +21,10 @@ Cette configuration deploie l'application Symfony avec Docker, Apache/PHP 8.3 et
 Exemple `DATABASE_URL`:
 
 ```env
-mysql://USER:PASSWORD@HOST:3306/sql7830570?serverVersion=8.0.32&charset=utf8mb4
+mysql://sql7830570:PASSWORD@HOST:3306/sql7830570?serverVersion=8.0.32&charset=utf8mb4
 ```
+
+Sur FreeSQLDatabase, l'utilisateur est souvent le meme que la base (`sql7830570`). Remplacez `PASSWORD` et `HOST` par les valeurs donnees par FreeSQLDatabase. Si phpMyAdmin affiche une autre version via `SELECT VERSION();`, remplacez `8.0.32` par cette version exacte.
 
 ## Notes
 
