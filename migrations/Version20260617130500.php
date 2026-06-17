@@ -49,6 +49,26 @@ final class Version20260617130500 extends AbstractMigration
     {
         $table = $this->userTable();
 
+        if ($this->connection->getDatabasePlatform() instanceof AbstractMySQLPlatform) {
+            $this->addSql(
+                sprintf(
+                    'INSERT IGNORE INTO %s (email, roles, password, first_name, last_name, is_admin, created_at)
+                     VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',
+                    $table
+                ),
+                [
+                    $email,
+                    '["ROLE_ADMIN"]',
+                    $passwordHash,
+                    $firstName,
+                    $lastName,
+                    true,
+                ]
+            );
+
+            return;
+        }
+
         $this->addSql(
             sprintf(
                 'INSERT INTO %s (email, roles, password, first_name, last_name, is_admin, created_at)
