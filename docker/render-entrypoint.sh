@@ -14,6 +14,7 @@ php bin/console cache:clear --env=prod --no-debug
 
 if [ -n "${DATABASE_URL:-}" ]; then
   php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration --env=prod
+  php bin/console app:ensure-admin --env=prod --no-debug
 fi
 
 exec "$@"
