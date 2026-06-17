@@ -24,8 +24,8 @@ final class Version20260602124500 extends AbstractMigration
         $this->addIndex($schema, 'size', 'idx_size_active_position', ['is_active', 'position']);
         $this->addIndex($schema, 'size', 'idx_size_code_active', ['code', 'is_active']);
         $this->addIndex($schema, 'product_image', 'idx_product_image_product_position', ['product_id', 'position']);
-        $this->addIndex($schema, '`order`', 'idx_order_status_created', ['status', 'created_at']);
-        $this->addIndex($schema, '`order`', 'idx_order_number', ['order_number']);
+        $this->addIndex($schema, 'order', 'idx_order_status_created', ['status', 'created_at']);
+        $this->addIndex($schema, 'order', 'idx_order_number', ['order_number']);
     }
 
     public function down(Schema $schema): void
@@ -38,32 +38,35 @@ final class Version20260602124500 extends AbstractMigration
         $this->dropIndex($schema, 'size', 'idx_size_active_position');
         $this->dropIndex($schema, 'size', 'idx_size_code_active');
         $this->dropIndex($schema, 'product_image', 'idx_product_image_product_position');
-        $this->dropIndex($schema, '`order`', 'idx_order_status_created');
-        $this->dropIndex($schema, '`order`', 'idx_order_number');
+        $this->dropIndex($schema, 'order', 'idx_order_status_created');
+        $this->dropIndex($schema, 'order', 'idx_order_number');
     }
 
     private function addIndex(Schema $schema, string $tableName, string $indexName, array $columns): void
     {
-        $schemaTableName = trim($tableName, '`');
-        if (!$schema->hasTable($schemaTableName) || $schema->getTable($schemaTableName)->hasIndex($indexName)) {
+        if (!$schema->hasTable($tableName) || $schema->getTable($tableName)->hasIndex($indexName)) {
             return;
         }
 
         $this->addSql(sprintf(
             'CREATE INDEX %s ON %s (%s)',
             $indexName,
-            $tableName,
+            $this->quoteTable($tableName),
             implode(', ', $columns)
         ));
     }
 
     private function dropIndex(Schema $schema, string $tableName, string $indexName): void
     {
-        $schemaTableName = trim($tableName, '`');
-        if (!$schema->hasTable($schemaTableName) || !$schema->getTable($schemaTableName)->hasIndex($indexName)) {
+        if (!$schema->hasTable($tableName) || !$schema->getTable($tableName)->hasIndex($indexName)) {
             return;
         }
 
-        $this->addSql(sprintf('DROP INDEX %s ON %s', $indexName, $tableName));
+        $this->addSql(sprintf('DROP INDEX %s', $indexName));
+    }
+
+    private function quoteTable(string $tableName): string
+    {
+        return $tableName === 'order' ? '"order"' : $tableName;
     }
 }

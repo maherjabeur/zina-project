@@ -17,24 +17,24 @@ final class Version20260616093000 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addColumn($schema, 'product', 'name_ar', 'VARCHAR(255) DEFAULT NULL');
-        $this->addColumn($schema, 'product', 'description_ar', 'LONGTEXT DEFAULT NULL');
+        $this->addColumn($schema, 'product', 'description_ar', 'TEXT DEFAULT NULL');
         $this->addColumn($schema, 'product', 'color_ar', 'VARCHAR(255) DEFAULT NULL');
 
         $this->addColumn($schema, 'category', 'name_ar', 'VARCHAR(255) DEFAULT NULL');
-        $this->addColumn($schema, 'category', 'description_ar', 'LONGTEXT DEFAULT NULL');
+        $this->addColumn($schema, 'category', 'description_ar', 'TEXT DEFAULT NULL');
 
         $this->addColumn($schema, 'size', 'name_ar', 'VARCHAR(50) DEFAULT NULL');
 
         $this->addColumn($schema, 'slider_image', 'title_ar', 'VARCHAR(255) DEFAULT NULL');
-        $this->addColumn($schema, 'slider_image', 'description_ar', 'LONGTEXT DEFAULT NULL');
+        $this->addColumn($schema, 'slider_image', 'description_ar', 'TEXT DEFAULT NULL');
         $this->addColumn($schema, 'slider_image', 'button_text_ar', 'VARCHAR(255) DEFAULT NULL');
 
         $this->addColumn($schema, 'promotion', 'title_ar', 'VARCHAR(255) DEFAULT NULL');
-        $this->addColumn($schema, 'promotion', 'description_ar', 'LONGTEXT DEFAULT NULL');
+        $this->addColumn($schema, 'promotion', 'description_ar', 'TEXT DEFAULT NULL');
 
         $this->addColumn($schema, 'settings', 'seo_title_ar', 'VARCHAR(255) DEFAULT NULL');
-        $this->addColumn($schema, 'settings', 'seo_description_ar', 'LONGTEXT DEFAULT NULL');
-        $this->addColumn($schema, 'settings', 'seo_keywords_ar', 'LONGTEXT DEFAULT NULL');
+        $this->addColumn($schema, 'settings', 'seo_description_ar', 'TEXT DEFAULT NULL');
+        $this->addColumn($schema, 'settings', 'seo_keywords_ar', 'TEXT DEFAULT NULL');
     }
 
     public function down(Schema $schema): void

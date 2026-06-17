@@ -1,4 +1,6 @@
 {
+    "name": "zina/project",
+    "description": "Bella Couture Symfony storefront ready for Render deployment.",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",

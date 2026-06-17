@@ -1,0 +1,50 @@
+services:
+  - type: web
+    name: zina-project
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_DEBUG
+        value: "0"
+      - key: APP_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zina-project-db
+          property: connectionString
+      - key: MESSENGER_TRANSPORT_DSN
+        value: doctrine://default?auto_setup=0
+      - key: MAILER_DSN
+        value: null://null
+      - key: PHPMAILER_DRY_RUN
+        value: "true"
+      - key: MAIL_FROM_EMAIL
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: Bella Couture
+      - key: MAIL_ADMIN_EMAIL
+        sync: false
+      - key: CRITICAL_ERROR_EMAIL
+        sync: false
+      - key: PHPMAILER_HOST
+        sync: false
+      - key: PHPMAILER_PORT
+        value: "587"
+      - key: PHPMAILER_USERNAME
+        sync: false
+      - key: PHPMAILER_PASSWORD
+        sync: false
+      - key: PHPMAILER_ENCRYPTION
+        value: tls
+      - key: PHPMAILER_AUTH
+        value: "true"
+
+databases:
+  - name: zina-project-db
+    postgresMajorVersion: "16"
+    databaseName: zina_project
+    user: zina_project
+    plan: free

@@ -107,7 +107,7 @@ final class Version20260616103000 extends AbstractMigration
         $sets = [];
         foreach ($values as $column => $value) {
             $quoted = $this->connection->quote($value);
-            $sets[] = sprintf('%1$s = IF(%1$s IS NULL OR %1$s = \'\', %2$s, %1$s)', $column, $quoted);
+            $sets[] = sprintf('%1$s = CASE WHEN %1$s IS NULL OR %1$s = \'\' THEN %2$s ELSE %1$s END', $column, $quoted);
         }
 
         $this->addSql(sprintf('UPDATE %s SET %s WHERE id = %d', $table, implode(', ', $sets), $id));
