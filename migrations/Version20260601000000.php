@@ -42,7 +42,7 @@ final class Version20260601000000 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        if ($this->connection->getDatabasePlatform()->getName() === 'mysql') {
+        if ($this->connection->getDatabasePlatform()->getName() !== 'postgresql') {
             $this->importMysqlDump();
             return;
         }
