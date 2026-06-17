@@ -21,7 +21,7 @@ Cette configuration deploie l'application Symfony avec Docker, Apache/PHP 8.3 et
 Exemple `DATABASE_URL`:
 
 ```env
-mysql://USER:PASSWORD@HOST:3306/boutique?serverVersion=8.0.32&charset=utf8mb4
+mysql://USER:PASSWORD@HOST:3306/sql7830570?serverVersion=8.0.32&charset=utf8mb4
 ```
 
 ## Notes
