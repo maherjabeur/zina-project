@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -42,7 +44,7 @@ final class Version20260601000000 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        if ($this->connection->getDatabasePlatform()->getName() !== 'postgresql') {
+        if (!$this->connection->getDatabasePlatform() instanceof PostgreSQLPlatform) {
             $this->importMysqlDump();
             return;
         }
@@ -54,7 +56,7 @@ final class Version20260601000000 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $isMysql = $this->connection->getDatabasePlatform()->getName() === 'mysql';
+        $isMysql = $this->connection->getDatabasePlatform() instanceof AbstractMySQLPlatform;
         foreach (['promotion', 'product_sizes', 'product_image', 'order_item', 'order', 'product', 'slider_image', 'settings', 'contact', 'category', 'size', 'user', 'messenger_messages'] as $table) {
             $this->addSql(sprintf(
                 'DROP TABLE IF EXISTS %s%s',
