@@ -45,6 +45,6 @@ services:
 databases:
   - name: zina-project-db
     postgresMajorVersion: "16"
-    databaseName: zina_project
-    user: zina_project
+    databaseName: boutique
+    user: boutique
     plan: free

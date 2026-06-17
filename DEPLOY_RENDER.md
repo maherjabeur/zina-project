@@ -17,7 +17,7 @@ Cette configuration deploie l'application Symfony avec Docker, Apache/PHP 8.3 et
 4. Renseigner les variables marquees `sync: false` si l'envoi email doit etre actif.
 5. Lancer le blueprint.
 
-Render injecte automatiquement `DATABASE_URL` depuis la base `zina-project-db`.
+Render injecte automatiquement `DATABASE_URL` depuis la base `zina-project-db`, dont le nom PostgreSQL est `boutique`.
 
 ## Notes
 
