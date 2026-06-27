@@ -50,6 +50,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {{ current_route starts with 'admin_' and 'change_password' in current_route ? 'active' : '' }}" href="{{ path('admin_change_password') }}">
+                    <i class="fas fa-key"></i>
+                    {{ app.request.locale == 'ar' ? 'تغيير كلمة المرور' : 'Mot de passe' }}
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {{ current_route starts with 'admin_contact_' or current_route == 'admin_contacts' ? 'active' : '' }}" href="{{ path('admin_contacts') }}">
                     <i class="fas fa-envelope"></i>
                     Messages

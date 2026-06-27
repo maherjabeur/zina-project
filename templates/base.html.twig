@@ -462,8 +462,11 @@
                     {% if app.user %}
                         <span class="admin-user">{{ app.user.firstName|default('Admin') }}</span>
                     {% endif %}
+                    <a class="btn btn-outline-secondary btn-sm" href="{{ path('admin_change_password') }}">
+                        <i class="fas fa-key me-1"></i> {{ app.request.locale == 'ar' ? 'كلمة المرور' : 'Mot de passe' }}
+                    </a>
                     <a class="btn btn-primary btn-sm" href="{{ path('app_logout') }}">
-                        <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+                        <i class="fas fa-sign-out-alt me-1"></i> {{ app.request.locale == 'ar' ? 'تسجيل الخروج' : 'Deconnexion' }}
                     </a>
                 </div>
             </div>
@@ -552,8 +555,9 @@
                                     <li><a class="dropdown-item" href="{{ path('admin_sizes') }}"><i class="fas fa-ruler me-2"></i> Tailles</a></li>
                                     <li><a class="dropdown-item" href="{{ path('admin_settings') }}"><i class="fas fa-cog me-2"></i> Parametres & SEO</a></li>
                                     <li><a class="dropdown-item" href="{{ path('admin_promotion_index') }}"><i class="fas fa-gift me-2"></i> Promotions</a></li>
+                                    <li><a class="dropdown-item" href="{{ path('admin_change_password') }}"><i class="fas fa-key me-2"></i> {{ app.request.locale == 'ar' ? 'تغيير كلمة المرور' : 'Changer le mot de passe' }}</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Déconnexion</a></li>
+                                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i> {{ app.request.locale == 'ar' ? 'تسجيل الخروج' : 'Deconnexion' }}</a></li>
                                 </ul>
                             </li>
                         {% elseif app.user %}
@@ -562,11 +566,12 @@
                                     <span class="user-avatar me-2">
                                         {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
                                     </span>
-                                    Mon compte
+                                    {{ app.request.locale == 'ar' ? 'حسابي' : 'Mon compte' }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><h6 class="dropdown-header">Bonjour, {{ app.user.firstName }}</h6></li>
-                                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Déconnexion</a></li>
+                                    <li><h6 class="dropdown-header">{{ app.request.locale == 'ar' ? 'مرحبا،' : 'Bonjour,' }} {{ app.user.firstName }}</h6></li>
+                                    <li><a class="dropdown-item" href="{{ path('profile_change_password') }}"><i class="fas fa-key me-2"></i> {{ app.request.locale == 'ar' ? 'تغيير كلمة المرور' : 'Changer le mot de passe' }}</a></li>
+                                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i> {{ app.request.locale == 'ar' ? 'تسجيل الخروج' : 'Deconnexion' }}</a></li>
                                 </ul>
                             </li>
                         {% endif %}

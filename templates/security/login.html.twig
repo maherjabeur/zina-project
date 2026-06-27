@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Connexion - Bella Couture{% endblock %}
+{% set is_ar = app.request.locale == 'ar' %}
+
+{% block title %}{{ is_ar ? 'تسجيل الدخول' : 'Connexion' }} - Bella Couture{% endblock %}
 
 {% block body %}
 <div class="container">
@@ -8,29 +10,30 @@
         <div class="col-md-6">
             <div class="card mt-5">
                 <div class="card-header">
-                    <h4 class="text-center">Connexion</h4>
+                    <h4 class="text-center">{{ is_ar ? 'تسجيل الدخول' : 'Connexion' }}</h4>
                 </div>
                 <div class="card-body">
-                    <form method="post">
+                    <form method="post" action="{{ path('app_login') }}">
                         {% if error %}
                             <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                         {% endif %}
 
                         <div class="mb-3">
-                            <label for="inputEmail" class="form-label">Email</label>
+                            <label for="inputEmail" class="form-label">{{ is_ar ? 'البريد الإلكتروني' : 'Email' }}</label>
                             <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
                         </div>
                         <div class="mb-3">
-                            <label for="inputPassword" class="form-label">Mot de passe</label>
+                            <label for="inputPassword" class="form-label">{{ is_ar ? 'كلمة المرور' : 'Mot de passe' }}</label>
                             <input type="password" name="_password" id="inputPassword" class="form-control" autocomplete="current-password" required>
                         </div>
 
                         <input type="hidden" name="_csrf_token"
                             value="{{ csrf_token('authenticate') }}"
                         >
+                        <input type="hidden" name="locale" value="{{ app.request.locale }}">
 
                         <div class="d-grid">
-                            <button class="btn btn-primary" type="submit">Se connecter</button>
+                            <button class="btn btn-primary" type="submit">{{ is_ar ? 'دخول' : 'Se connecter' }}</button>
                         </div>
                     </form>
 
